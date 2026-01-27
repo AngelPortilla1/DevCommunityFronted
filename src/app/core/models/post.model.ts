@@ -1,6 +1,11 @@
-export interface User {
+export interface Post {
   id: number;
-  username: string;
-  email: string;
-  role?: 'user' | 'admin';
+  title: string;
+  content: string;
+  author?: {
+    id: number;
+    name: string;
+  };
+  createdAt?: Date;
+  updatedAt?: Date;
 }

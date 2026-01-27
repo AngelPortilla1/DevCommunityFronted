@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { Post } from '../models/post.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -8,6 +9,10 @@ export class ApiService {
 
   get<T>(url: string, params?: any) {
     return this.http.get<T>(`${environment.apiUrl}${url}`, { params });
+  }
+
+  getPosts() {
+    return this.get<Post[]>('/posts');
   }
 
   post<T>(url: string, body?: any) {

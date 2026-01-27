@@ -1,0 +1,17 @@
+/* Posts Page Styles */
+:host {
+  display: block;
+  height: 100%;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+article {
+  transition: all 0.3s ease;
+}
+
+article:hover {
+  transform: translateY(-4px);
+}
