@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Post } from '../models/post.model';
+import { Post, PostsResponse } from '../models/post.model';
+import { map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -12,7 +13,9 @@ export class ApiService {
   }
 
   getPosts() {
-    return this.get<Post[]>('/posts');
+    return this.get<PostsResponse>('/posts').pipe(
+      map(response => response.data)
+    );
   }
 
   post<T>(url: string, body?: any) {

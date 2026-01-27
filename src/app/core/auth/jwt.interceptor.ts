@@ -15,8 +15,14 @@ export class JwtInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.auth.token;
-    if (!token) return next.handle(req);
+    
+    if (!token) {
+      console.log('No token found');
+      return next.handle(req);
+    }
 
+    console.log('Token found, adding to Authorization header:', token.substring(0, 20) + '...');
+    
     const authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
@@ -26,3 +32,4 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(authReq);
   }
 }
+

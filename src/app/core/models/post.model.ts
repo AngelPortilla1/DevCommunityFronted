@@ -4,8 +4,18 @@ export interface Post {
   content: string;
   author?: {
     id: number;
-    name: string;
+    username: string;
+    email: string;
   };
-  createdAt?: Date;
-  updatedAt?: Date;
+  created_at?: string;
+  updated_at?: string | null;
+  likes_count?: number;
+  liked_by_me?: boolean;
+}
+
+export interface PostsResponse {
+  page: number;
+  limit: number;
+  total: number;
+  data: Post[];
 }
