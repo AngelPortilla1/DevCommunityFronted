@@ -21,7 +21,7 @@ export class JwtInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
-    console.log('Token found, adding to Authorization header:', token.substring(0, 20) + '...');
+    //console.log('Token found, adding to Authorization header:', token.substring(0, 20) + '...');
     
     const authReq = req.clone({
       setHeaders: {

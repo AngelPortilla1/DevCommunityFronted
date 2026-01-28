@@ -28,14 +28,14 @@ export class PostsPage implements OnInit {
     this.loading = true;
     this.error = null;
 
-    console.log('Loading posts...');
+    //console.log('Loading posts...');
     this.apiService.getPosts().subscribe({
       next: (data: Post[]) => {
         console.log('Posts loaded successfully:', data);
         console.log('Data length:', data?.length);
         this.posts = data || [];
         this.loading = false;
-        console.log('Assigned posts to component:', this.posts);
+        //console.log('Assigned posts to component:', this.posts);
         console.log('Component posts length:', this.posts.length);
         this.cdr.markForCheck();
       },
