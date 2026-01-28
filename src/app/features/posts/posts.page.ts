@@ -28,6 +28,9 @@ export class PostsPage implements OnInit {
     this.loading = true;
     this.error = null;
 
+
+    // ********************  VERIFICAR RESPUESTA DEL POST RESPONSE ********************** 
+
     //console.log('Loading posts...');
     this.apiService.getPosts().subscribe({
       next: (data: Post[]) => {
