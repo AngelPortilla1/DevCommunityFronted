@@ -52,4 +52,40 @@ export class PostsPage implements OnInit {
       }
     });
   }
+
+
+  toggleLike(post: Post): void {
+  if (post.liked_by_me) {
+    this.unlike(post);
+  } else {
+    this.like(post);
+  }
+}
+
+private like(post: Post): void {
+  this.apiService.likePost(post.id).subscribe({
+    next: () => {
+      post.liked_by_me = true;
+      post.likes_count = (post.likes_count || 0) + 1;
+      this.cdr.markForCheck();
+    },
+    error: () => {
+      console.error('Error liking post');
+    }
+  });
+}
+
+private unlike(post: Post): void {
+  this.apiService.unlikePost(post.id).subscribe({
+    next: () => {
+      post.liked_by_me = false;
+      post.likes_count = Math.max((post.likes_count || 1) - 1, 0);
+      this.cdr.markForCheck();
+    },
+    error: () => {
+      console.error('Error unliking post');
+    }
+  });
+}
+
 }

@@ -6,6 +6,8 @@ import { map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+
+  ;
   constructor(private http: HttpClient) {}
 
   get<T>(url: string, params?: any) {
@@ -29,4 +31,13 @@ export class ApiService {
   delete<T>(url: string) {
     return this.http.delete<T>(`${environment.apiUrl}${url}`);
   }
+
+  likePost(postId: number) {
+  return this.http.post(`${environment.apiUrl}/posts/${postId}/like`, {});
+}
+
+unlikePost(postId: number) {
+  return this.http.delete(`${environment.apiUrl}/posts/${postId}/like`);
+}
+
 }
