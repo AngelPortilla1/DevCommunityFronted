@@ -1,54 +1,57 @@
-<div class="container mx-auto py-12 px-4 bg-[#fdf6e3] min-h-screen">
-  <h1 class="text-5xl font-black mb-10 text-center uppercase tracking-tighter text-slate-900 drop-shadow-[4px_4px_0px_rgba(251,191,36,1)]">
-    Mis Posts
-  </h1>
+<div class="container mx-auto py-12 px-4 bg-[#fef3c7] min-h-screen selection:bg-blue-200 cursor-default">
+  
+  <div class="relative mb-20">
+    <h1 class="text-6xl font-black text-center uppercase tracking-tight text-white drop-shadow-[4px_4px_0px_#1e293b] [text-shadow:_-2px_-2px_0_#1e293b,2px_-2px_0_#1e293b,-2px_2px_0_#1e293b,2px_2px_0_#1e293b]">
+      Mis Posts
+    </h1>
+    <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full border-4 border-slate-900 rotate-12 font-bold animate-bounce">
+      ¡NUEVO!
+    </div>
+  </div>
 
   <div *ngIf="loading" class="text-center py-12">
-    <div class="animate-bounce text-4xl">⏳</div>
-    <p class="font-mono text-lg mt-2">Sincronizando archivos...</p>
+    <div class="inline-block animate-bounce text-6xl">🍭</div>
+    <p class="font-black text-xl text-slate-700 mt-4 uppercase tracking-tighter">Cargando la magia...</p>
   </div>
 
-  <div *ngIf="error" class="bg-orange-200 border-4 border-black p-4 mb-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-    <p class="font-bold uppercase italic">⚠️ Error del sistema: {{ error }}</p>
+  <div *ngIf="error" class="bg-rose-100 border-b-8 border-rose-300 rounded-[2rem] p-6 mb-10 border-4 border-slate-900 shadow-[8px_8px_0px_#1e293b]">
+    <p class="font-black uppercase italic text-rose-600 text-center text-lg">💥 ¡BOOM! Algo salió mal: {{ error }}</p>
   </div>
 
-  <div *ngIf="!loading && (!posts || posts.length === 0)" class="text-center py-16 border-4 border-dashed border-slate-400 rounded-3xl">
-    <p class="text-2xl font-serif italic text-slate-500">El archivo está vacío...</p>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
     <article 
       *ngFor="let post of posts" 
-      class="group relative bg-white border-4 border-black p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+      class="group relative bg-white border-4 border-slate-900 rounded-[2.5rem] p-8 transition-all hover:-translate-y-2 hover:shadow-[0px_20px_0px_#3b82f6] shadow-[0px_10px_0px_#1e293b] overflow-visible"
     >
-      <div class="absolute -top-4 -right-2 bg-yellow-400 border-2 border-black px-2 py-1 text-xs font-black uppercase rotate-3 group-hover:rotate-0 transition-transform">
-        {{ post?.created_at | date: 'mediumDate' }}
+      <div class="absolute -top-5 left-10 bg-emerald-400 border-4 border-slate-900 px-4 py-1 rounded-full text-xs font-black text-slate-900 shadow-[4px_4px_0px_#1e293b]">
+        {{ post?.created_at | date: 'dd/MM' }}
       </div>
 
-      <h2 class="text-2xl font-black mb-3 leading-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+      <h2 class="text-2xl font-black mb-4 leading-none text-slate-900 group-hover:text-blue-600 transition-colors">
         {{ post?.title || 'Sin título' }}
       </h2>
       
-      <p class="text-slate-700 font-medium leading-relaxed mb-6 line-clamp-3">
+      <p class="text-slate-500 font-bold leading-relaxed mb-8 line-clamp-3">
         {{ post?.content || 'Sin contenido' }}
       </p>
 
-      <div class="flex justify-between items-center pt-4 border-t-2 border-black/10 text-xs font-mono">
-        <span class="bg-slate-900 text-white px-2 py-1 rounded">
-          AUTOR: {{ post?.author?.username | uppercase }}
-        </span>
-        <span class="italic text-slate-500 tracking-tighter">
-          #{{ post?.id || 'REF-00' }}
+      <div class="flex items-center gap-3 mb-6 bg-slate-100 p-2 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_#cbd5e1]">
+        <div class="w-8 h-8 bg-blue-400 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-white text-xs">
+          {{ (post?.author?.username || 'U')?.charAt(0) | uppercase }}
+        </div>
+        <span class="text-[10px] font-black uppercase text-slate-600 tracking-tighter">
+          Autor: {{ post?.author?.username }}
         </span>
       </div>
+
       <button
         (click)="toggleLike(post)"
-        class="flex items-center gap-2 font-mono text-sm mt-4 px-3 py-1 border-2 border-black transition-all"
+        class="w-full flex items-center justify-center gap-3 font-black uppercase text-sm px-6 py-3 rounded-2xl border-4 border-slate-900 transition-all active:translate-y-1 active:shadow-none"
         [ngClass]="post.liked_by_me
-          ? 'bg-red-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
-          : 'bg-white hover:bg-red-100'">
-
-        ❤️ {{ post.likes_count || 0 }}
+          ? 'bg-rose-400 text-white shadow-[0px_6px_0px_#be123c]'
+          : 'bg-emerald-300 text-slate-900 hover:bg-emerald-200 shadow-[0px_6px_0px_#059669]'">
+        <span class="text-xl scale-125 group-hover/btn:scale-150 transition-transform">⭐</span> 
+        {{ post.likes_count || 0 }} LIKES
       </button>
 
     </article>
