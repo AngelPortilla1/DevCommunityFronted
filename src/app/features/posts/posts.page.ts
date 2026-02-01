@@ -1,12 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { Post } from '../../core/models/post.model';
 
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './posts.page.html',
   styleUrls: ['./posts.page.css']
 })
@@ -84,6 +85,49 @@ private unlike(post: Post): void {
     },
     error: () => {
       console.error('Error unliking post');
+    }
+  });
+}
+showCreateModal = false;
+
+newPost = {
+  title: '',
+  content: ''
+};
+
+creating = false;
+createError: string | null = null;
+
+
+openCreateModal() {
+  this.showCreateModal = true;
+  this.createError = null;
+}
+
+closeCreateModal() {
+  this.showCreateModal = false;
+  this.newPost = { title: '', content: '' };
+}
+
+createPost() {
+  if (!this.newPost.title || !this.newPost.content) {
+    this.createError = 'Todos los campos son obligatorios';
+    return;
+  }
+
+  this.creating = true;
+
+  this.apiService.post<Post>('/posts', this.newPost).subscribe({
+    next: (post) => {
+      this.posts.unshift(post);
+      this.creating = false;
+      this.closeCreateModal();
+      this.cdr.markForCheck();
+    },
+    error: () => {
+      this.createError = 'Error al crear el post';
+      this.creating = false;
+      this.cdr.markForCheck();
     }
   });
 }
