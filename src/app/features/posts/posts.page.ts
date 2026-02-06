@@ -16,6 +16,13 @@ export class PostsPage implements OnInit {
   loading = true;
   error: string | null = null;
 
+
+  page = 1;
+  limit = 6;
+  total = 0;
+  loadingMore = false;
+
+
   constructor(
     private apiService: ApiService,
     private cdr: ChangeDetectorRef
