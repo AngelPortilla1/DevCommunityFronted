@@ -33,34 +33,51 @@ export class PostsPage implements OnInit {
   }
 
   loadPosts(): void {
-    this.loading = true;
-    this.error = null;
+  this.loading = true;
+  this.error = null;
+  this.page = 1;
 
+  this.apiService.getPosts(this.page, this.limit).subscribe({
+    next: (res) => {
+      console.log('Posts response:', res);
+      console.log('Posts loaded:', res.data.length);
 
-    // ********************  VERIFICAR RESPUESTA DEL POST RESPONSE ********************** 
+      this.posts = res.data || [];
+      this.total = res.total;
 
-    //console.log('Loading posts...');
-    this.apiService.getPosts().subscribe({
-      next: (data: Post[]) => {
-        console.log('Posts loaded successfully:', data);
-        console.log('Data length:', data?.length);
-        this.posts = data || [];
-        this.loading = false;
-        //console.log('Assigned posts to component:', this.posts);
-        console.log('Component posts length:', this.posts.length);
-        this.cdr.markForCheck();
-      },
-      error: (err: any) => {
-        console.error('Error loading posts:', err);
-        this.error = err.status === 401 
-          ? 'Token inválido o expirado. Por favor, inicia sesión de nuevo.'
-          : 'Error al cargar los posts';
-        this.loading = false;
-        this.cdr.markForCheck();
-      }
-    });
-  }
+      this.loading = false;
+      this.cdr.markForCheck();
+    },
+    error: (err: any) => {
+      console.error('Error loading posts:', err);
+      this.error = err.status === 401
+        ? 'Token inválido o expirado. Por favor, inicia sesión de nuevo.'
+        : 'Error al cargar los posts';
 
+      this.loading = false;
+      this.cdr.markForCheck();
+    }
+  });
+}
+
+loadMore(): void {
+  if (this.posts.length >= this.total) return;
+
+  this.loadingMore = true;
+  this.page++;
+
+  this.apiService.getPosts(this.page, this.limit).subscribe({
+    next: (res) => {
+      this.posts = [...this.posts, ...res.data];
+      this.loadingMore = false;
+      this.cdr.markForCheck();
+    },
+    error: () => {
+      this.loadingMore = false;
+      this.cdr.markForCheck();
+    }
+  });
+}
 
   toggleLike(post: Post): void {
   if (post.liked_by_me) {

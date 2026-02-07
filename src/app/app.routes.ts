@@ -12,7 +12,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/posts/posts.page.js').then((m) => m.PostsPage)
   },
-  { path: '**', redirectTo: 'posts' }
+  { path: '**', redirectTo: 'login' }
 ];
 
 

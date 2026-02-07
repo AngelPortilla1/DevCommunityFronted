@@ -116,5 +116,20 @@
     </form>
   </div>
 </div>
-
+<div *ngIf="posts.length < total" class="flex justify-center mt-20 mb-12">
+  <button
+    (click)="loadMore()"
+    [disabled]="loadingMore"
+    class="group relative bg-white border-4 border-slate-900 px-10 py-4 rounded-[2rem] font-black uppercase tracking-widest text-slate-900 transition-all 
+           hover:-translate-y-1 hover:shadow-[0px_8px_0px_#3b82f6] 
+           shadow-[0px_8px_0px_#1e293b] 
+           active:translate-y-1 active:shadow-none
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[0px_8px_0px_#1e293b]">
+    
+    <span class="flex items-center gap-2">
+      <span *ngIf="loadingMore" class="inline-block animate-spin text-xl">🌀</span>
+      {{ loadingMore ? 'Invocando más posts...' : 'Ver más contenido ✨' }}
+    </span>
+  </button>
+</div>
 </div>

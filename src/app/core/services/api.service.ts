@@ -14,11 +14,10 @@ export class ApiService {
     return this.http.get<T>(`${environment.apiUrl}${url}`, { params });
   }
 
-  getPosts() {
-    return this.get<PostsResponse>('/posts').pipe(
-      map(response => response.data)
-    );
-  }
+  getPosts(page = 1, limit = 6) {
+  return this.get<PostsResponse>(`/posts?page=${page}&limit=${limit}`);
+}
+
 
   post<T>(url: string, body?: any) {
     return this.http.post<T>(`${environment.apiUrl}${url}`, body);
