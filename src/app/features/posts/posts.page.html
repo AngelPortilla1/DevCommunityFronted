@@ -62,8 +62,35 @@
         {{ post.likes_count || 0 }} LIKES
       </button>
 
+      <button
+        (click)="toggleComments(post.id)"
+        class="mt-6 flex items-center gap-2 text-xs font-black uppercase tracking-tighter hover:text-blue-600 transition-colors group/btn"
+      >
+        <span class="bg-slate-900 text-white p-1 rounded-lg group-hover/btn:bg-blue-600 transition-colors">💬</span>
+        <span class="underline decoration-4 decoration-blue-200 underline-offset-4">
+          {{ commentsVisible[post.id] ? 'Ocultar comentarios' : 'Ver comentarios' }}
+        </span>
+      </button>
+
+      <div *ngIf="commentsVisible[post.id] && commentsMap[post.id]?.length" class="mt-6 space-y-3 animate-[fadeInScale_0.2s_ease-out]">
+        <div
+          *ngFor="let comment of commentsMap[post.id]"
+          class="relative p-4 border-2 border-slate-900 bg-blue-50 rounded-2xl shadow-[4px_4px_0px_#1e293b]"
+        >
+          <div class="absolute -left-2 top-4 w-4 h-4 bg-blue-50 border-l-2 border-b-2 border-slate-900 rotate-45"></div>
+
+          <div class="relative z-10">
+            <p class="text-[10px] font-black uppercase text-blue-600 mb-1">
+              @{{ comment.author.username }}
+            </p>
+            <p class="text-sm font-bold text-slate-800 leading-tight">
+              {{ comment.content }}
+            </p>
+          </div>
+        </div>
+      </div>
+      
     </article>
-  </div>
   <div
   *ngIf="showCreateModal"
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"

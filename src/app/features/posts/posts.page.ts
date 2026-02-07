@@ -3,13 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { Post } from '../../core/models/post.model';
+import { CommentService } from '../../core/services/comment.service';
+import { Comment } from '../../core/models/comment.model';
 
 @Component({
   selector: 'app-posts',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './posts.page.html',
-  styleUrls: ['./posts.page.css']
+  styleUrls: ['./posts.page.css'],
+ 
+
 })
 export class PostsPage implements OnInit {
   posts: Post[] = [];
@@ -22,10 +26,17 @@ export class PostsPage implements OnInit {
   total = 0;
   loadingMore = false;
 
+  commentsMap: Record<number, Comment[]> = {};
+  loadingComments: Record<number, boolean> = {};
+  commentsVisible: Record<number, boolean> = {};
+
+
 
   constructor(
     private apiService: ApiService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private commentService: CommentService,
+
   ) {}
 
   ngOnInit(): void {
@@ -155,5 +166,29 @@ createPost() {
     }
   });
 }
+loadComments(postId: number): void {
+  this.loadingComments[postId] = true;
+
+  this.commentService.getCommentsByPost(postId).subscribe({
+    next: (comments) => {
+      this.commentsMap[postId] = comments;
+      this.loadingComments[postId] = false;
+      this.cdr.markForCheck();
+    },
+    error: () => {
+      this.loadingComments[postId] = false;
+    }
+  });
+}
+
+toggleComments(postId: number): void {
+  if (!this.commentsMap[postId]) {
+    this.loadComments(postId);
+  }
+  this.commentsVisible[postId] = !this.commentsVisible[postId];
+}
+
+
+
 
 }
