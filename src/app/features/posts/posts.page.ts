@@ -30,6 +30,10 @@ export class PostsPage implements OnInit {
   loadingComments: Record<number, boolean> = {};
   commentsVisible: Record<number, boolean> = {};
 
+  newComment: Record<number, string> = {};
+  submittingComment: Record<number, boolean> = {};
+
+
 
 
   constructor(
