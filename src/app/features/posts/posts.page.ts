@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { Post } from '../../core/models/post.model';
 import { CommentService } from '../../core/services/comment.service';
-import { Comment } from '../../core/models/comment.model';
-
+import { PostComment } from '../../core/models/comment.model';
 @Component({
   selector: 'app-posts',
   standalone: true,
@@ -26,7 +25,7 @@ export class PostsPage implements OnInit {
   total = 0;
   loadingMore = false;
 
-  commentsMap: Record<number, Comment[]> = {};
+  commentsMap: Record<number, PostComment[]> = {};
   loadingComments: Record<number, boolean> = {};
   commentsVisible: Record<number, boolean> = {};
 
@@ -190,6 +189,27 @@ toggleComments(postId: number): void {
     this.loadComments(postId);
   }
   this.commentsVisible[postId] = !this.commentsVisible[postId];
+}
+
+
+// Crear comentario
+createComment(postId: number): void {
+  const content = this.newComment[postId]?.trim();
+  if (!content) return;
+
+  this.submittingComment[postId] = true;
+
+  this.apiService.createComment(postId, content).subscribe({
+    next: (comment: PostComment) => {
+      this.commentsMap[postId].push(comment);
+      this.newComment[postId] = '';
+      this.submittingComment[postId] = false;
+    },
+    error: () => {
+      alert('Error al crear comentario');
+      this.submittingComment[postId] = false;
+    }
+  });
 }
 
 

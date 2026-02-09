@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Post, PostsResponse } from '../models/post.model';
+import { PostComment } from '../models/comment.model';
 import { map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -38,5 +39,13 @@ export class ApiService {
 unlikePost(postId: number) {
   return this.http.delete(`${environment.apiUrl}/posts/${postId}/like`);
 }
+
+createComment(postId: number, content: string) {
+  return this.http.post<PostComment>(
+    `${environment.apiUrl}/comments/${postId}`,
+    { content }
+  );
+}
+
 
 }
