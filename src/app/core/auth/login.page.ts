@@ -64,7 +64,7 @@ import { Router } from '@angular/router';
 
         <footer class="mt-8 text-center">
           <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-            Secure_Login_v2.0 // {{ 2024 }}
+            Secure_Login_v2.0 // {{ 2026 }}
           </p>
         </footer>
       </div>
