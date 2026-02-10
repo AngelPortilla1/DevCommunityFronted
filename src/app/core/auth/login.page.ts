@@ -8,57 +8,63 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-[#fdf6e3] p-4">
-      
-      <div class="bg-white border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] w-full max-w-md">
+    <div class="min-h-screen flex items-center justify-center bg-stone-50 p-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="fixed inset-0 pointer-events-none opacity-20"
+        style="background-image: radial-gradient(#059669 1px, transparent 1px); background-size: 32px 32px;">
+      </div>
+
+      <div class="relative w-full max-w-md bg-white border-4 border-slate-900 shadow-[12px_12px_0px_#059669] p-10 rounded-3xl transform hover:-translate-y-1 transition-transform duration-300">
         
-        <header class="text-center mb-10 border-b-4 border-black pb-4">
-          <h1 class="text-4xl font-black uppercase tracking-tighter italic text-slate-900">
-            DevCommunity
-          </h1>
-          <p class="text-xs font-mono uppercase mt-2 tracking-widest text-slate-500">
-            Est. 2024 // Acceso restringido
+        <header class="text-center mb-10">
+          <div class="inline-block bg-slate-900 text-white px-6 py-3 rounded-br-[2rem] shadow-[4px_4px_0px_#059669] mb-6">
+            <h1 class="text-2xl font-black uppercase tracking-tighter leading-none">
+              Dev<span class="text-emerald-400 font-serif italic lowercase">Community</span>
+            </h1>
+          </div>
+          <p class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-700 border-b-2 border-dashed border-emerald-200 pb-4 mx-10">
+            Acceso al Sistema
           </p>
         </header>
 
         <form (submit)="submit()" class="space-y-6">
           <div class="space-y-2">
-            <label class="block text-sm font-black uppercase tracking-tight">Correo Electrónico:</label>
+            <label class="block text-xs font-bold uppercase text-slate-500 tracking-widest pl-1">Correo Electrónico</label>
             <input
               type="email"
               [(ngModel)]="email"
               name="email"
-              placeholder="user@archive.com"
-              class="w-full border-4 border-black p-3 rounded-none focus:bg-yellow-50 outline-none transition-colors font-mono"
+              placeholder="usuario@ejemplo.com"
+              class="w-full bg-stone-50 border-2 border-slate-200 p-4 font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition-colors rounded-lg placeholder-slate-400"
             />
           </div>
 
           <div class="space-y-2">
-            <label class="block text-sm font-black uppercase tracking-tight">Contraseña:</label>
+            <label class="block text-xs font-bold uppercase text-slate-500 tracking-widest pl-1">Contraseña</label>
             <input
               type="password"
               [(ngModel)]="password"
               name="password"
-              placeholder="********"
-              class="w-full border-4 border-black p-3 rounded-none focus:bg-yellow-50 outline-none transition-colors font-mono"
+              placeholder="••••••••"
+              class="w-full bg-stone-50 border-2 border-slate-200 p-4 font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition-colors rounded-lg placeholder-slate-400"
             />
           </div>
 
           <button
             type="submit"
-            class="w-full bg-blue-600 text-white font-black uppercase py-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all active:bg-blue-700"
+            class="w-full bg-emerald-700 text-white font-black uppercase py-4 border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] rounded-lg hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:bg-emerald-800 transition-all mt-4 tracking-widest"
           >
-            Entrar al Sistema
+            Iniciar Sesión
           </button>
         </form>
 
-        <div *ngIf="error" class="mt-6 bg-red-500 text-white border-2 border-black p-3 font-bold text-center animate-pulse">
-          ⚠️ {{ error | uppercase }}
+        <div *ngIf="error" class="mt-8 bg-red-50 text-red-700 border-l-4 border-red-500 p-4 font-bold text-sm shadow-sm flex items-center gap-3">
+          <span class="text-xl">⚠️</span> {{ error }}
         </div>
 
-        <footer class="mt-8 pt-4 border-t-2 border-dashed border-slate-300 text-center">
-          <p class="text-[10px] font-mono text-slate-400 uppercase">
-            Protocolo de seguridad v.2.0 activado
+        <footer class="mt-8 text-center">
+          <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+            Secure_Login_v2.0 // {{ 2024 }}
           </p>
         </footer>
       </div>
@@ -70,7 +76,7 @@ export class LoginPage {
   password = '';
   error = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) { }
 
   submit() {
     this.auth.login(this.email, this.password).subscribe({
