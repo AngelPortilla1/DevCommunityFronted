@@ -191,8 +191,6 @@ toggleComments(postId: number): void {
   this.commentsVisible[postId] = !this.commentsVisible[postId];
 }
 
-
-// Crear comentario
 createComment(postId: number): void {
   const content = this.newComment[postId]?.trim();
   if (!content) return;
@@ -201,7 +199,14 @@ createComment(postId: number): void {
 
   this.apiService.createComment(postId, content).subscribe({
     next: (comment: PostComment) => {
+
+      // Asegurar que existe el array antes de usarlo
+      if (!this.commentsMap[postId]) {
+        this.commentsMap[postId] = [];
+      }
+
       this.commentsMap[postId].push(comment);
+
       this.newComment[postId] = '';
       this.submittingComment[postId] = false;
     },

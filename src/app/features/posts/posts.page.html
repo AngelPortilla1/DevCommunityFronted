@@ -7,8 +7,7 @@
     </h1>
 
     <div class="flex justify-end mb-8">
-      <button (click)="openCreateModal()"
-        class="bg-black text-white px-6 py-3 font-black uppercase border-4 border-black 
+      <button (click)="openCreateModal()" class="bg-black text-white px-6 py-3 font-black uppercase border-4 border-black 
                shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 
                hover:translate-y-1 transition-all">
         ➕ Nuevo Post
@@ -28,19 +27,18 @@
     </p>
   </div>
 
-  <div *ngIf="error" 
-       class="bg-rose-100 border-b-8 rounded-4xl p-6 mb-10 border-4 border-slate-900 shadow-[8px_8px_0px_#1e293b]">
+  <div *ngIf="error"
+    class="bg-rose-100 border-b-8 rounded-4xl p-6 mb-10 border-4 border-slate-900 shadow-[8px_8px_0px_#1e293b]">
     <p class="font-black uppercase italic text-rose-600 text-center text-lg">
       💥 ¡BOOM! Algo salió mal: {{ error }}
     </p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-    
-    <article *ngFor="let post of posts"
-      class="group relative bg-white border-4 border-slate-900 rounded-[2.5rem] p-8 transition-all 
+
+    <article *ngFor="let post of posts" class="group relative bg-white border-4 border-slate-900 rounded-[2.5rem] p-8 transition-all 
              hover:-translate-y-2 hover:shadow-[0px_20px_0px_#3b82f6] shadow-[0px_10px_0px_#1e293b] overflow-visible">
-      
+
       <div class="absolute -top-5 left-10 bg-emerald-400 border-4 border-slate-900 px-4 py-1 
                   rounded-full text-xs font-black text-slate-900 shadow-[4px_4px_0px_#1e293b]">
         {{ post?.created_at | date: 'dd/MM' }}
@@ -54,8 +52,10 @@
         {{ post?.content || 'Sin contenido' }}
       </p>
 
-      <div class="flex items-center gap-3 mb-6 bg-slate-100 p-2 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_#cbd5e1]">
-        <div class="w-8 h-8 bg-blue-400 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-white text-xs">
+      <div
+        class="flex items-center gap-3 mb-6 bg-slate-100 p-2 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_#cbd5e1]">
+        <div
+          class="w-8 h-8 bg-blue-400 rounded-full border-2 border-slate-900 flex items-center justify-center font-black text-white text-xs">
           {{ (post?.author?.username || 'U')?.charAt(0) | uppercase }}
         </div>
         <span class="text-[10px] font-black uppercase text-slate-600 tracking-tighter">
@@ -80,63 +80,63 @@
         </span>
       </button>
 
-      <div *ngIf="commentsVisible[post.id] && commentsMap[post.id]?.length" 
-           class="mt-6 space-y-3 animate-[fadeInScale_0.2s_ease-out]">
-        
-        <div *ngFor="let comment of commentsMap[post.id]"
-             class="relative p-4 border-2 border-slate-900 bg-blue-50 rounded-2xl shadow-[4px_4px_0px_#1e293b]">
-          
-          <div class="absolute -left-2 top-4 w-4 h-4 bg-blue-50 border-l-2 border-b-2 border-slate-900 rotate-45"></div>
+      <!-- Comentarios (solo si existen ) -->
+      <div *ngIf="commentsVisible[post.id]" class="mt-6 animate-[fadeInScale_0.2s_ease-out]">
 
-          <div class="relative z-10">
-            <p class="text-[10px] font-black uppercase text-blue-600 mb-1">
-              @{{ comment.author.username }}
-            </p>
-            <p class="text-sm font-bold text-slate-800 leading-tight">
-              {{ comment.content }}
-            </p>
+        <div *ngIf="commentsMap[post.id] && commentsMap[post.id].length > 0" class="space-y-3 mb-4">
+          <div *ngFor="let comment of commentsMap[post.id]"
+            class="relative p-4 border-2 border-slate-900 bg-blue-50 rounded-2xl shadow-[4px_4px_0px_#1e293b]">
+
+            <div class="absolute -left-2 top-4 w-4 h-4 bg-blue-50 border-l-2 border-b-2 border-slate-900 rotate-45">
+            </div>
+
+            <div class="relative z-10">
+              <p class="text-[10px] font-black uppercase text-blue-600 mb-1">
+                @{{ comment.author.username }}
+              </p>
+              <p class="text-sm font-bold text-slate-800 leading-tight">
+                {{ comment.content }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div class="mt-4 pt-4 border-t-2 border-slate-900">
-  <div class="flex gap-2">
-    <input 
-      type="text" 
-      [(ngModel)]="newComment[post.id]"
-      name="comment-{{post.id}}"
-      placeholder="Escribe un comentario..."
-      class="flex-1 border-2 border-slate-900 p-2 text-xs font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-      (keyup.enter)="createComment(post.id)"
-    />
-    
-    <button 
-      (click)="createComment(post.id)"
-      [disabled]="submittingComment[post.id]"
-      class="bg-blue-500 text-white px-3 py-1 rounded-lg border-2 border-slate-900 font-black text-[10px] uppercase shadow-[2px_2px_0px_#000] active:translate-y-0.5 active:shadow-none disabled:opacity-50">
-      
-      {{ submittingComment[post.id] ? '...' : 'Enviar' }}
-    </button>
-  </div>
-</div>
+        <!-- FORMULARIO SIEMPRE visible cuando commentsVisible = true -->
+        <div class="pt-4 border-t-2 border-slate-900">
+          <div class="flex gap-2">
+            <input type="text" [(ngModel)]="newComment[post.id]" name="comment-{{post.id}}"
+              placeholder="Escribe un comentario..." class="flex-1 border-2 border-slate-900 p-2 text-xs font-bold rounded-lg 
+               focus:outline-none focus:ring-2 focus:ring-blue-400" (keyup.enter)="createComment(post.id)" />
+
+            <button (click)="createComment(post.id)" [disabled]="submittingComment[post.id]"
+              class="bg-blue-500 text-white px-3 py-1 rounded-lg border-2 border-slate-900 font-black text-[10px] uppercase shadow-[2px_2px_0px_#000] active:translate-y-0.5 active:shadow-none disabled:opacity-50">
+
+              {{ submittingComment[post.id] ? '...' : 'Enviar' }}
+            </button>
+          </div>
+        </div>
+
       </div>
+
+
     </article>
   </div>
 
-  <div *ngIf="showCreateModal" 
-       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-       (click)="closeCreateModal()">
+  <div *ngIf="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+    (click)="closeCreateModal()">
 
-    <div class="bg-white border-4 border-black p-6 w-full max-w-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] animate-[fadeInScale_0.2s_ease-out]"
-         (click)="$event.stopPropagation()">
+    <div
+      class="bg-white border-4 border-black p-6 w-full max-w-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] animate-[fadeInScale_0.2s_ease-out]"
+      (click)="$event.stopPropagation()">
 
       <h2 class="text-3xl font-black mb-6 uppercase">Nuevo Post</h2>
 
       <form (submit)="createPost()" class="space-y-4">
         <input type="text" [(ngModel)]="newPost.title" name="title" required placeholder="Título"
-               class="w-full border-4 border-black p-3 font-mono" />
+          class="w-full border-4 border-black p-3 font-mono" />
 
         <textarea [(ngModel)]="newPost.content" name="content" required rows="5" placeholder="Contenido"
-                  class="w-full border-4 border-black p-3 font-mono resize-none"></textarea>
+          class="w-full border-4 border-black p-3 font-mono resize-none"></textarea>
 
         <div *ngIf="createError" class="bg-red-500 text-white p-2 font-bold">
           {{ createError }}
@@ -147,7 +147,7 @@
             Cancelar
           </button>
           <button type="submit" [disabled]="creating"
-                  class="bg-blue-600 text-white px-6 py-2 font-black border-4 border-black">
+            class="bg-blue-600 text-white px-6 py-2 font-black border-4 border-black">
             {{ creating ? 'Creando...' : 'Publicar' }}
           </button>
         </div>
@@ -156,8 +156,7 @@
   </div>
 
   <div *ngIf="posts.length < total" class="flex justify-center mt-20 mb-12">
-    <button (click)="loadMore()" [disabled]="loadingMore"
-      class="group relative bg-white border-4 border-slate-900 px-10 py-4 rounded-4xl font-black uppercase tracking-widest text-slate-900 transition-all 
+    <button (click)="loadMore()" [disabled]="loadingMore" class="group relative bg-white border-4 border-slate-900 px-10 py-4 rounded-4xl font-black uppercase tracking-widest text-slate-900 transition-all 
              hover:-translate-y-1 hover:shadow-[0px_8px_0px_#3b82f6] shadow-[0px_8px_0px_#1e293b] 
              active:translate-y-1 active:shadow-none
              disabled:opacity-50 disabled:cursor-not-allowed">
