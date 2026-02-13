@@ -12,7 +12,7 @@ export class AuthService {
   constructor(private api: ApiService) {
     const token = this.token;
     if (token) {
-      this.loadUserFromToken();
+      this.loadUser();
     }
   }
 
@@ -23,7 +23,7 @@ export class AuthService {
     ).pipe(
       tap(res => {
         localStorage.setItem(this.TOKEN_KEY, res.access_token);
-        this.loadUserFromToken();
+        this.loadUser();
       })
     );
   }
@@ -41,22 +41,16 @@ export class AuthService {
     return !!this.token;
   }
 
-  private loadUserFromToken() {
-    /**
-     * ⚠️ Backend aún no expone /me
-     * Solución temporal:
-     * - Decodificar JWT
-     * - Extraer datos del payload
-     */
-    const token = this.token;
-    if (!token) return;
-
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    this.user.set({
-      id: payload.sub,
-      username: payload.username,
-      email: payload.email,
-      role: payload.role,
+  private loadUser() {
+    this.api.get<User>('/auth/me').subscribe({
+      next: (user) => {
+        this.user.set(user);
+      },
+      error: () => {
+        this.logout();
+      }
     });
   }
+
+
 }
