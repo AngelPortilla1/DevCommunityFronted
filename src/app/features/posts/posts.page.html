@@ -9,7 +9,7 @@
     <div
       class="bg-slate-900 text-white px-8 py-5 rounded-br-[2.5rem] shadow-[8px_8px_0px_#059669] pointer-events-auto transform hover:scale-105 transition-transform duration-300">
       <h1 class="text-3xl font-black tracking-tighter uppercase leading-none">
-        Mis<br><span class="text-emerald-400 font-serif italic lowercase">Publicaciones</span>
+        Dev<br><span class="text-emerald-400 font-serif italic lowercase">Community</span>
       </h1>
     </div>
 
@@ -59,10 +59,23 @@
               <span class="font-mono text-xs text-emerald-600 font-bold uppercase tracking-widest">
                 // ID_{{post.id}}
               </span>
-              <span
-                class="bg-slate-900 px-4 py-1 rounded-full text-xs font-black text-emerald-400 uppercase tracking-wide">
-                @{{ post?.author?.username }}
-              </span>
+              <div class="flex items-center gap-3">
+                <span
+                  class="bg-slate-900 px-4 py-1 rounded-full text-xs font-black text-emerald-400 uppercase tracking-wide">
+                  @{{ post?.author?.username }}
+                </span>
+                <!-- Botones editar/eliminar post — solo para el autor -->
+                <ng-container *ngIf="isPostAuthor(post)">
+                  <button (click)="openEditPostModal(post)" title="Editar post"
+                    class="flex items-center gap-1 px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-slate-300 text-slate-500 hover:border-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all rounded-lg">
+                    ✏️ Editar
+                  </button>
+                  <button (click)="deletePost(post)" title="Eliminar post"
+                    class="flex items-center gap-1 px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-slate-300 text-slate-500 hover:border-red-500 hover:text-red-600 hover:bg-red-50 transition-all rounded-lg">
+                    🗑️ Borrar
+                  </button>
+                </ng-container>
+              </div>
             </div>
 
             <h2
@@ -115,31 +128,68 @@
               <button (click)="toggleComments(post.id)"
                 class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-emerald-700 transition-colors">
                 <span class="bg-stone-100 p-2 rounded-lg group-hover:bg-emerald-100">💬</span>
-                <span>Comentarios ()</span>
+                <span>Comentarios ({{ (commentsMap[post.id] || []).length }})</span>
               </button>
             </div>
           </div>
         </div>
 
+        <!-- Sección de comentarios -->
         <div *ngIf="commentsVisible[post.id]" class="ml-16 md:ml-32 mt-6 pl-10 border-l-2 border-slate-900 relative">
 
           <div class="absolute top-0 left-0 w-10 h-6 border-b-2 border-slate-900 rounded-bl-3xl"></div>
 
           <div class="space-y-4 pt-6">
+
             <div *ngFor="let comment of commentsMap[post.id]"
               class="bg-white p-5 rounded-r-xl border-l-4 border-amber-400 shadow-sm">
-              <div class="flex justify-between mb-2">
-                <p class="text-[10px] font-black uppercase text-emerald-600 tracking-wider">@{{ comment.author.username
-                  }}</p>
-                <span class="text-[10px] text-slate-300">Hace un momento</span>
-              </div>
-              <p class="text-sm font-medium text-slate-700">{{ comment.content }}</p>
+
+              <!-- Vista normal del comentario -->
+              <ng-container *ngIf="editingCommentId !== comment.id">
+                <div class="flex justify-between items-start mb-2">
+                  <p class="text-[10px] font-black uppercase text-emerald-600 tracking-wider">@{{
+                    comment.author.username }}</p>
+                  <!-- Botones editar/eliminar comentario — solo para el autor -->
+                  <div *ngIf="isCommentAuthor(comment)" class="flex items-center gap-2">
+                    <button (click)="startEditComment(comment)" title="Editar comentario"
+                      class="px-2 py-0.5 text-[9px] font-black uppercase tracking-widest border border-slate-200 text-slate-400 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all rounded">
+                      ✏️
+                    </button>
+                    <button (click)="deleteComment(post.id, comment.id)" title="Eliminar comentario"
+                      class="px-2 py-0.5 text-[9px] font-black uppercase tracking-widest border border-slate-200 text-slate-400 hover:border-red-400 hover:text-red-500 hover:bg-red-50 transition-all rounded">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm font-medium text-slate-700">{{ comment.content }}</p>
+              </ng-container>
+
+              <!-- Modo edición inline del comentario -->
+              <ng-container *ngIf="editingCommentId === comment.id">
+                <p class="text-[10px] font-black uppercase text-emerald-600 tracking-wider mb-2">@{{
+                  comment.author.username }}</p>
+                <div class="flex gap-2">
+                  <input type="text" [(ngModel)]="editCommentContent[comment.id]"
+                    class="flex-1 bg-stone-50 border-2 border-emerald-400 p-2 text-sm font-medium text-slate-700 outline-none rounded-lg focus:border-emerald-600 transition-colors"
+                    (keyup.enter)="saveComment(post.id, comment)" (keyup.escape)="cancelEditComment()" />
+                  <button (click)="saveComment(post.id, comment)" [disabled]="savingComment[comment.id]"
+                    class="px-4 py-2 bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest border-2 border-emerald-900 shadow-[2px_2px_0px_#1e293b] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-lg disabled:opacity-50">
+                    {{ savingComment[comment.id] ? '...' : 'OK' }}
+                  </button>
+                  <button (click)="cancelEditComment()"
+                    class="px-3 py-2 text-[10px] font-bold uppercase text-slate-400 hover:text-slate-700 hover:bg-stone-100 rounded-lg transition-colors">
+                    ✕
+                  </button>
+                </div>
+              </ng-container>
+
             </div>
 
+            <!-- Input nuevo comentario -->
             <div class="flex gap-0 shadow-lg mt-6 rounded-lg overflow-hidden border border-slate-200">
               <input type="text" [(ngModel)]="newComment[post.id]"
                 class="flex-1 bg-white p-4 text-sm placeholder-slate-400 outline-none font-medium text-slate-700"
-                placeholder="Escribe tu opinión..." />
+                placeholder="Escribe tu opinión..." (keyup.enter)="createComment(post.id)" />
               <button (click)="createComment(post.id)"
                 class="bg-slate-900 px-6 font-black text-white text-xs uppercase tracking-widest hover:bg-slate-800 transition-colors">
                 Enviar
@@ -151,7 +201,6 @@
       </article>
 
     </div>
-
 
     <div *ngIf="posts.length < total" class="flex justify-center mt-32">
       <button (click)="loadMore()" class="relative group cursor-pointer">
@@ -167,17 +216,16 @@
 
   </div>
 
-  <!-- Modal de crear posts -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- Modal: CREAR POST                                           -->
+  <!-- ════════════════════════════════════════════════════════════ -->
   <div *ngIf="showCreateModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-    <!-- Backdrop -->
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" (click)="closeCreateModal()">
     </div>
 
-    <!-- Modal Content -->
     <div
       class="relative w-full max-w-lg bg-white border-4 border-slate-900 shadow-[8px_8px_0px_#059669] p-8 rounded-2xl transform transition-all animate-in fade-in zoom-in duration-200">
 
-      <!-- Close Button -->
       <button (click)="closeCreateModal()"
         class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
@@ -216,6 +264,64 @@
             class="bg-emerald-700 text-white px-8 py-3 font-black uppercase tracking-widest border-2 border-emerald-900 shadow-[4px_4px_0px_#1e293b] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all rounded-lg flex items-center gap-2">
             <span *ngIf="creating">Publicando...</span>
             <span *ngIf="!creating">Publicar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- Modal: EDITAR POST                                          -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="showEditPostModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" (click)="closeEditPostModal()">
+    </div>
+
+    <div
+      class="relative w-full max-w-lg bg-white border-4 border-slate-900 shadow-[8px_8px_0px_#d97706] p-8 rounded-2xl transform transition-all animate-in fade-in zoom-in duration-200">
+
+      <!-- Acento amber para diferenciar del modal de crear -->
+      <div class="absolute -top-3 -left-3 w-8 h-8 bg-amber-400 border-2 border-slate-900 rotate-12"></div>
+
+      <button (click)="closeEditPostModal()"
+        class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+          class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h2 class="text-2xl font-black uppercase text-slate-900 mb-1 tracking-tight">Editar Post</h2>
+      <p class="text-[11px] font-mono text-amber-600 uppercase tracking-widest mb-6">// ID_{{ editingPost?.id }}</p>
+
+      <div *ngIf="editPostError" class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 text-red-700 font-bold text-sm">
+        {{ editPostError }}
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 tracking-widest mb-2">Título</label>
+          <input type="text" [(ngModel)]="editPostData.title"
+            class="w-full bg-stone-50 border-2 border-slate-200 p-4 font-bold text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors rounded-lg placeholder-slate-400"
+            placeholder="Título del post...">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-500 tracking-widest mb-2">Contenido</label>
+          <textarea [(ngModel)]="editPostData.content" rows="4"
+            class="w-full bg-stone-50 border-2 border-slate-200 p-4 font-medium text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors rounded-lg placeholder-slate-400 resize-none"
+            placeholder="Contenido del post..."></textarea>
+        </div>
+
+        <div class="flex justify-end gap-4 pt-2">
+          <button (click)="closeEditPostModal()"
+            class="px-6 py-3 font-bold text-slate-500 hover:text-slate-900 hover:bg-stone-100 rounded-lg transition-colors uppercase text-xs tracking-widest">
+            Cancelar
+          </button>
+          <button (click)="savePost()" [disabled]="savingPost"
+            class="bg-amber-500 text-slate-900 px-8 py-3 font-black uppercase tracking-widest border-2 border-slate-900 shadow-[4px_4px_0px_#1e293b] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all rounded-lg flex items-center gap-2">
+            <span *ngIf="savingPost">Guardando...</span>
+            <span *ngIf="!savingPost">Guardar Cambios</span>
           </button>
         </div>
       </div>

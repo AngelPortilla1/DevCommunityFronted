@@ -9,15 +9,15 @@ import { map } from 'rxjs';
 export class ApiService {
 
   ;
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get<T>(url: string, params?: any) {
     return this.http.get<T>(`${environment.apiUrl}${url}`, { params });
   }
 
   getPosts(page = 1, limit = 6) {
-  return this.get<PostsResponse>(`/posts?page=${page}&limit=${limit}`);
-}
+    return this.get<PostsResponse>(`/posts?page=${page}&limit=${limit}`);
+  }
 
 
   post<T>(url: string, body?: any) {
@@ -33,19 +33,27 @@ export class ApiService {
   }
 
   likePost(postId: number) {
-  return this.http.post(`${environment.apiUrl}/posts/${postId}/like`, {});
-}
+    return this.http.post(`${environment.apiUrl}/posts/${postId}/like`, {});
+  }
 
-unlikePost(postId: number) {
-  return this.http.delete(`${environment.apiUrl}/posts/${postId}/like`);
-}
+  unlikePost(postId: number) {
+    return this.http.delete(`${environment.apiUrl}/posts/${postId}/like`);
+  }
 
-createComment(postId: number, content: string) {
-  return this.http.post<PostComment>(
-    `${environment.apiUrl}/comments/${postId}`,
-    { content }
-  );
-}
+  createComment(postId: number, content: string) {
+    return this.http.post<PostComment>(
+      `${environment.apiUrl}/comments/${postId}`,
+      { content }
+    );
+  }
+
+  updatePost(postId: number, body: { title: string; content: string }) {
+    return this.http.put<Post>(`${environment.apiUrl}/posts/${postId}`, body);
+  }
+
+  deletePost(postId: number) {
+    return this.http.delete<void>(`${environment.apiUrl}/posts/${postId}`);
+  }
 
 
 }
