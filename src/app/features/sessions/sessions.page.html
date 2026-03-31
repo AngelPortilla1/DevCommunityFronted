@@ -1,0 +1,135 @@
+<div class="relative min-h-screen bg-stone-50 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white p-4 sm:p-8 overflow-x-hidden">
+
+  <!-- Background Pattern -->
+  <div class="fixed inset-0 pointer-events-none opacity-20"
+    style="background-image: radial-gradient(#059669 1px, transparent 1px); background-size: 32px 32px;">
+  </div>
+
+  <div class="max-w-5xl mx-auto space-y-12 relative z-10 mt-6 md:mt-12">
+    
+    <!-- Título de la Página -->
+    <header class="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+      <div>
+        <div class="inline-block bg-slate-900 text-white px-6 py-3 rounded-br-[2rem] shadow-[4px_4px_0px_#059669] mb-4">
+          <h1 class="text-2xl font-black uppercase tracking-tighter leading-none">
+            Seguridad y <span class="text-emerald-400 font-serif italic lowercase">Sesiones</span>
+          </h1>
+        </div>
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 border-b-2 border-dashed border-emerald-200 pb-2">
+          Supervisa tus inicios de sesión y protege tu cuenta
+        </p>
+      </div>
+      <button 
+        (click)="revokeOthers()"
+        [disabled]="sessions().length <= 1"
+        class="bg-emerald-700 text-white px-6 py-3 font-black uppercase tracking-widest border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:bg-emerald-800 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_#0f172a]">
+        Cerrar otras sesiones
+      </button>
+    </header>
+
+    <div *ngIf="loading()" class="animate-pulse space-y-6">
+      <div class="h-32 bg-stone-200 border-4 border-slate-900 rounded-xl shadow-[8px_8px_0px_#cbd5e1] w-full"></div>
+      <div class="h-64 bg-stone-200 border-4 border-slate-900 rounded-xl shadow-[8px_8px_0px_#cbd5e1] w-full"></div>
+    </div>
+
+    <!-- Panel de Métricas -->
+    <section *ngIf="!loading() && metrics()" class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <!-- Métrica 1 -->
+      <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#059669] transform hover:-translate-y-1 transition-transform duration-300">
+        <div class="flex items-center justify-between border-b-2 border-slate-100 pb-2 mb-4">
+          <dt class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Activas</dt>
+          <span class="text-xl">🟢</span>
+        </div>
+        <dd class="text-5xl font-black text-slate-900">{{ metrics()?.total_active_sessions }}</dd>
+      </div>
+      
+      <!-- Métrica 2 -->
+      <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#ef4444] transform hover:-translate-y-1 transition-transform duration-300">
+        <div class="flex items-center justify-between border-b-2 border-slate-100 pb-2 mb-4">
+          <dt class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Sospechosas</dt>
+          <span class="text-xl">⚠️</span>
+        </div>
+        <dd class="text-5xl font-black" [ngClass]="{'text-red-600': (metrics()?.suspicious_sessions || 0) > 0, 'text-emerald-500': metrics()?.suspicious_sessions === 0 }">
+          {{ metrics()?.suspicious_sessions }}
+        </dd>
+      </div>
+      
+      <!-- Métrica 3 -->
+      <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#3b82f6] transform hover:-translate-y-1 transition-transform duration-300">
+        <div class="flex items-center justify-between border-b-2 border-slate-100 pb-2 mb-2">
+          <dt class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Dispositivos</dt>
+          <span class="text-xl">📱</span>
+        </div>
+        <dd class="text-2xl font-bold text-slate-700">
+          <ul class="space-y-2 text-sm font-medium mt-2">
+            <li *ngFor="let device of metrics()?.devices_used | keyvalue" class="flex justify-between items-center bg-stone-50 border-2 border-slate-200 px-3 py-1 rounded">
+              <span class="capitalize text-xs font-bold uppercase tracking-wider text-slate-600">{{ device.key || 'Desconocido' }}</span>
+              <span class="font-black text-slate-900 bg-white border border-slate-300 px-2 py-0.5 rounded shadow-sm">{{ device.value }}</span>
+            </li>
+          </ul>
+        </dd>
+      </div>
+    </section>
+
+    <!-- Listado de Sesiones -->
+    <section *ngIf="!loading()" class="bg-white border-4 border-slate-900 rounded-3xl shadow-[12px_12px_0px_#0f172a] overflow-hidden">
+      <div class="px-8 py-6 border-b-4 border-slate-900 bg-stone-100">
+        <h3 class="text-xl font-black uppercase tracking-tight text-slate-900">Historial de Conexiones</h3>
+        <p class="mt-1 text-[11px] font-mono font-bold text-slate-500 uppercase tracking-widest">// Revisa tus accesos recientes</p>
+      </div>
+      <ul role="list" class="divide-y-4 divide-slate-100">
+        
+        <li *ngFor="let session of sessions()" class="relative group hover:bg-stone-50 transition-colors">
+          <!-- Alerta de Sesión Sospechosa -->
+          <div *ngIf="session.is_suspicious" class="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
+          
+          <div class="px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            
+            <div class="flex items-start gap-x-6">
+              <!-- Ícono de Dispositivo -->
+              <div class="flex-none rounded-xl border-2 border-slate-900 shadow-[4px_4px_0px_#cbd5e1] p-4 bg-white transform transition-transform group-hover:rotate-3" [ngClass]="session.is_current ? 'shadow-[4px_4px_0px_#059669]' : ''">
+                <span class="text-3xl" *ngIf="session.device_info?.is_mobile || session.device_info?.is_tablet">📱</span>
+                <span class="text-3xl" *ngIf="session.device_info?.is_pc || (!session.device_info?.is_mobile && !session.device_info?.is_tablet)">💻</span>
+              </div>
+
+              <!-- Metadatos de la sesión -->
+              <div class="min-w-0 mt-1">
+                <div class="flex flex-wrap items-center gap-3 mb-2">
+                  <p class="text-lg font-black uppercase tracking-tight text-slate-900">
+                    {{ session.device_info?.os || 'Sistema Desconocido' }}
+                    <span class="text-slate-400 font-medium lowercase">en</span> 
+                    {{ session.device_info?.browser || 'Navegador' }}
+                  </p>
+
+                  <span *ngIf="session.is_current" class="inline-flex items-center px-2 py-0.5 border-2 border-emerald-500 bg-emerald-50 text-[10px] font-black uppercase tracking-widest text-emerald-700 rounded-lg shadow-[2px_2px_0px_#10b981]">Actual</span>
+                  <span *ngIf="session.is_suspicious" class="inline-flex items-center px-2 py-0.5 border-2 border-red-500 bg-red-50 text-[10px] font-black uppercase tracking-widest text-red-700 rounded-lg shadow-[2px_2px_0px_#ef4444] animate-pulse">Inusual</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-x-4 text-[11px] font-mono font-bold leading-5 text-slate-500 uppercase tracking-widest">
+                  <p class="flex items-center gap-1"><span class="text-slate-400">IP</span> <span class="bg-stone-100 border border-slate-200 px-1 py-0.5 rounded">{{ session.ip_address }}</span></p>
+                  <p class="flex items-center gap-1"><span class="text-slate-400">ÚLTIMA_ACTV</span> <span>{{ session.last_activity | date:'short' }}</span></p>
+                </div>
+                
+                <!-- Razones de sospecha -->
+                <div *ngIf="session.is_suspicious && session.suspicion_reasons.length" class="mt-3 flex gap-2 flex-wrap">
+                  <span *ngFor="let msg of session.suspicion_reasons" class="text-[9px] font-black tracking-widest bg-white border border-red-300 shadow-[2px_2px_0px_#fca5a5] text-red-600 py-1 px-2 rounded uppercase">
+                    {{ msg }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Acción de Cerrar -->
+            <div class="flex flex-none items-center mt-4 md:mt-0">
+              <button *ngIf="!session.is_current" (click)="revokeSession(session.session_id)" class="bg-white text-slate-600 hover:text-red-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-300 hover:border-red-500 hover:bg-red-50 hover:shadow-[3px_3px_0px_#ef4444] hover:-translate-y-0.5 transition-all rounded-lg">
+                Revocar Acceso
+              </button>
+            </div>
+
+          </div>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</div>
