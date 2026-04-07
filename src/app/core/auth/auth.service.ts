@@ -3,6 +3,7 @@ import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
 import { tap, catchError, throwError, timer, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { HttpParams } from '@angular/common/http';
 
 export interface AuthResponse {
   access_token: string;
@@ -27,9 +28,13 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
+    const body = new HttpParams()
+      .set('username', email)
+      .set('password', password);
+
     return this.api.post<AuthResponse>(
       '/auth/login',
-      { email, password }
+      body
     ).pipe(
       tap(res => this.handleAuthResponse(res))
     );
