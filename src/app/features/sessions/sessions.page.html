@@ -121,7 +121,7 @@
 
             <!-- Acción de Cerrar -->
             <div class="flex flex-none items-center mt-4 md:mt-0">
-              <button *ngIf="!session.is_current" (click)="revokeSession(session.session_id)" class="bg-white text-slate-600 hover:text-red-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-300 hover:border-red-500 hover:bg-red-50 hover:shadow-[3px_3px_0px_#ef4444] hover:-translate-y-0.5 transition-all rounded-lg">
+              <button *ngIf="!session.is_current" (click)="revokeSession(session.device_id || session.session_id)" class="bg-white text-slate-600 hover:text-red-600 px-4 py-2 text-[10px] font-black uppercase tracking-widest border-2 border-slate-300 hover:border-red-500 hover:bg-red-50 hover:shadow-[3px_3px_0px_#ef4444] hover:-translate-y-0.5 transition-all rounded-lg">
                 Revocar Acceso
               </button>
             </div>
