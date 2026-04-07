@@ -72,7 +72,7 @@ export class PostsPage implements OnInit {
 
     this.apiService.getPosts(this.page, this.limit).subscribe({
       next: (res) => {
-        this.posts = res.data || [];
+        this.posts = res.items || [];
         this.total = res.total;
         this.loading = false;
         this.cdr.markForCheck();
@@ -94,7 +94,7 @@ export class PostsPage implements OnInit {
 
     this.apiService.getPosts(this.page, this.limit).subscribe({
       next: (res) => {
-        this.posts = [...this.posts, ...res.data];
+        this.posts = [...this.posts, ...(res.items || [])];
         this.loadingMore = false;
         this.cdr.markForCheck();
       },

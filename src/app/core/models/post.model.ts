@@ -15,7 +15,9 @@ export interface Post {
 
 export interface PostsResponse {
   page: number;
-  limit: number;
+  limit?: number; // Depending on frontend usage, might also be `size` in backend
+  size?: number;
   total: number;
-  data: Post[];
+  total_pages?: number;
+  items: Post[];
 }
