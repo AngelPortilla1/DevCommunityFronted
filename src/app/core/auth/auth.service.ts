@@ -1,7 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
-import { tap, catchError, throwError, timer, Subscription } from 'rxjs';
+import { tap, catchError, throwError, timer, Subscription, BehaviorSubject, Observable, map, of, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 
@@ -17,27 +17,64 @@ export class AuthService {
   private readonly REFRESH_TOKEN_KEY = 'devcommunity_refresh_token';
   private readonly SESSION_ID_KEY = 'devcommunity_session_id';
 
-  user = signal<User | null>(null);
+  private authState$ = new BehaviorSubject<User | null>(null);
   private refreshSubscription?: Subscription;
 
-  constructor(private api: ApiService, private router: Router) {
-    if (this.token) {
-      this.loadUser();
-      this.startTokenRotation();
-    }
+  get user$(): Observable<User | null> {
+    return this.authState$.asObservable();
   }
 
-  login(email: string, password: string) {
+  get isAuthenticated$(): Observable<boolean> {
+    return this.user$.pipe(map(user => !!user));
+  }
+
+  // Helper for components using signals
+  user = signal<User | null>(null);
+
+  constructor(private api: ApiService, private router: Router) {
+    this.user$.subscribe(u => this.user.set(u));
+  }
+
+  login(email: string, password: string): Observable<User> {
     const body = new HttpParams()
       .set('username', email)
       .set('password', password);
 
-    return this.api.post<AuthResponse>(
-      '/auth/login',
-      body
-    ).pipe(
-      tap(res => this.handleAuthResponse(res))
+    return this.api.post<AuthResponse>('/auth/login', body).pipe(
+      tap(res => this.saveTokens(res)),
+      switchMap(() => this.getMe()),
+      tap(user => this.authState$.next(user))
     );
+  }
+
+  initAuth(): Observable<User | null> {
+    if (!this.hasTokens()) {
+      this.authState$.next(null);
+      return of(null);
+    }
+
+    return this.getMe().pipe(
+      tap(user => {
+        this.authState$.next(user);
+        this.startTokenRotation();
+      }),
+      catchError(() => {
+        this.forceLogout();
+        return of(null);
+      })
+    );
+  }
+
+  getMe(): Observable<User> {
+    return this.api.get<User>('/auth/me');
+  }
+
+  hasTokens(): boolean {
+    return !!this.token && !!this.refreshToken;
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.authState$.value;
   }
 
   doRefreshToken() {
@@ -48,7 +85,7 @@ export class AuthService {
     }
     
     return this.api.post<AuthResponse>('/auth/refresh', { refresh_token: refreshToken }).pipe(
-      tap(res => this.handleAuthResponse(res)),
+      tap(res => this.saveTokens(res)),
       catchError(err => {
         this.forceLogout();
         return throwError(() => err);
@@ -77,17 +114,16 @@ export class AuthService {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.SESSION_ID_KEY);
-    this.user.set(null);
+    this.authState$.next(null);
     this.stopTokenRotation();
   }
 
-  private handleAuthResponse(res: AuthResponse) {
+  private saveTokens(res: AuthResponse) {
     if (res.access_token) localStorage.setItem(this.ACCESS_TOKEN_KEY, res.access_token);
     if (res.refresh_token) localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refresh_token);
     if (res.session_id) localStorage.setItem(this.SESSION_ID_KEY, res.session_id);
     
     this.startTokenRotation();
-    this.loadUser();
   }
 
   get token(): string | null {
@@ -102,20 +138,6 @@ export class AuthService {
     return localStorage.getItem(this.SESSION_ID_KEY);
   }
 
-  isAuthenticated(): boolean {
-    return !!this.token;
-  }
-
-  private loadUser() {
-    this.api.get<User>('/auth/me').subscribe({
-      next: (user) => {
-        this.user.set(user);
-      },
-      error: () => {
-        // En caso de fallo (ej. 401), el interceptor manejará el refresh.
-      }
-    });
-  }
 
   private startTokenRotation() {
     this.stopTokenRotation();
