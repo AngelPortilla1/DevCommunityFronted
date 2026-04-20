@@ -1,31 +1,20 @@
-<div
-  class="relative min-h-screen bg-stone-50 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white overflow-x-hidden">
-
-  <div class="fixed inset-0 pointer-events-none opacity-20"
-    style="background-image: radial-gradient(#059669 1px, transparent 1px); background-size: 32px 32px;">
-  </div>
-
-  <nav class="fixed top-6 left-6 right-6 z-50 flex justify-between items-end pointer-events-none">
-    <div
-      class="bg-slate-900 text-white px-8 py-5 rounded-br-[2.5rem] shadow-[8px_8px_0px_#059669] pointer-events-auto transform hover:scale-105 transition-transform duration-300">
-      <h1 class="text-3xl font-black tracking-tighter uppercase leading-none">
-        Dev<br><span class="text-emerald-400 font-serif italic lowercase">Community</span>
-      </h1>
-    </div>
-
+<div class="w-full relative z-10">
+  
+  <div class="flex justify-between items-center mb-8">
+    <h2 class="text-3xl font-black uppercase tracking-tighter text-slate-900">&nbsp;</h2>
     <button (click)="openCreateModal()"
-      class="bg-emerald-700 text-white px-8 py-4 font-black uppercase tracking-widest border-2 border-slate-900 shadow-[6px_6px_0px_#0f172a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all pointer-events-auto active:bg-emerald-800 rounded-lg">
+      class="bg-emerald-700 text-white px-6 py-3 font-black uppercase tracking-widest border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:bg-emerald-800 rounded-lg">
       + Algo nuevo?
     </button>
-  </nav>
+  </div>
 
-  <div class="max-w-4xl mx-auto pt-40 pb-20 px-4 relative z-10">
+  <div class="max-w-3xl lg:max-w-none mx-auto relative">
 
     <div
-      class="absolute left-[3.5rem] md:left-[8.5rem] top-0 bottom-0 w-px bg-slate-900 border-l border-dashed border-slate-900/30">
+      class="absolute left-[3.5rem] md:left-[4rem] top-0 bottom-0 w-px bg-slate-900 border-l border-dashed border-slate-900/30">
     </div>
 
-    <div class="space-y-20">
+    <div class="space-y-16">
 
       <article *ngFor="let post of posts; let i = index" class="relative group">
 

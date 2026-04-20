@@ -36,9 +36,10 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    const body = new HttpParams()
-      .set('username', email)
-      .set('password', password);
+    const body = {
+      email: email,
+      password: password
+    };
 
     return this.api.post<AuthResponse>('/auth/login', body).pipe(
       tap(res => this.saveTokens(res)),
