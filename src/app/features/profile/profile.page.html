@@ -46,28 +46,53 @@
       
       <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#f59e0b] transform hover:-translate-y-1 transition-transform duration-300 text-center">
         <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 border-b-2 border-slate-100 pb-2">Posts</p>
-        <p class="text-5xl font-black text-slate-900">{{ stats.posts }}</p>
+        <p class="text-5xl font-black text-slate-900">{{ stats().posts_count }}</p>
       </div>
 
       <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#3b82f6] transform hover:-translate-y-1 transition-transform duration-300 text-center">
         <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 border-b-2 border-slate-100 pb-2">Seguidores</p>
-        <p class="text-5xl font-black text-slate-900">{{ stats.followers }}</p>
+        <p class="text-5xl font-black text-slate-900">{{ stats().followers_count }}</p>
       </div>
 
       <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#ec4899] transform hover:-translate-y-1 transition-transform duration-300 text-center">
         <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 border-b-2 border-slate-100 pb-2">Siguiendo</p>
-        <p class="text-5xl font-black text-slate-900">{{ stats.following }}</p>
+        <p class="text-5xl font-black text-slate-900">{{ stats().following_count }}</p>
       </div>
 
     </section>
 
-    <!-- Recent Activity Placeholder -->
+    <!-- Recent Activity -->
     <section class="bg-white border-4 border-slate-900 rounded-3xl shadow-[12px_12px_0px_#0f172a] overflow-hidden">
-      <div class="px-8 py-6 border-b-4 border-slate-900 bg-stone-100">
+      <div class="px-8 py-6 border-b-4 border-slate-900 bg-stone-100 flex justify-between items-center">
         <h3 class="text-xl font-black uppercase tracking-tight text-slate-900">Actividad Reciente</h3>
       </div>
-      <div class="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-sm border-t-2 border-dashed border-slate-200 m-8">
-        Próximamente: Historial de publicaciones...
+      
+      <div *ngIf="loading()" class="p-12 flex justify-center">
+        <div class="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <div *ngIf="!loading() && recentPosts().length === 0" class="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-sm m-8 border-t-2 border-dashed border-slate-200 pt-8">
+        No hay publicaciones recientes.
+      </div>
+
+      <div *ngIf="!loading() && recentPosts().length > 0" class="divide-y-4 divide-slate-100">
+        <article *ngFor="let post of recentPosts()" class="p-8 hover:bg-stone-50 transition-colors group">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="text-xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
+              <a [routerLink]="['/posts']">{{ post.title }}</a>
+            </h4>
+            <span class="bg-white border-2 border-slate-900 px-3 py-1 text-[10px] font-mono font-bold text-slate-700 uppercase shadow-[2px_2px_0px_#cbd5e1] whitespace-nowrap">
+              {{ post.created_at | date: 'dd MMM' }}
+            </span>
+          </div>
+          <p class="text-slate-600 font-medium line-clamp-2 border-l-4 border-amber-400 pl-4 mt-4">
+            {{ post.content }}
+          </p>
+          <div class="mt-6 flex gap-4 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <span class="flex items-center gap-1"><span class="text-rose-500 text-sm">❤️</span> {{ post.likes_count }}</span>
+            <span class="flex items-center gap-1"><span class="text-slate-400 text-sm">💬</span> {{ post.comments_count }}</span>
+          </div>
+        </article>
       </div>
     </section>
 

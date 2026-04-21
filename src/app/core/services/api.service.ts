@@ -19,6 +19,13 @@ export class ApiService {
     return this.get<PostsResponse>(`/posts?page=${page}&limit=${limit}`);
   }
 
+  getUserStats(userId: number) {
+    return this.get<{posts_count: number, followers_count: number, following_count: number}>(`/users/${userId}/stats`);
+  }
+
+  getPostsByAuthor(authorId: number, page = 1, limit = 5) {
+    return this.get<PostsResponse>(`/posts?author_id=${authorId}&page=${page}&limit=${limit}`);
+  }
 
   post<T>(url: string, body?: any) {
     return this.http.post<T>(`${environment.apiUrl}${url}`, body);

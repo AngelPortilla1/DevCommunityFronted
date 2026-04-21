@@ -10,6 +10,7 @@ export interface Post {
   created_at?: string;
   updated_at?: string | null;
   likes_count?: number;
+  comments_count?: number;
   liked_by_me?: boolean;
 }
 
