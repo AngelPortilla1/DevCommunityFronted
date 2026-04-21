@@ -34,11 +34,40 @@
           <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
         </svg>
       </button>
-      <button class="action-btn-profile">
-        <svg class="action-icon-profile" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-        </svg>
-      </button>
+      <div class="relative inline-block">
+        <button class="action-btn-profile" (click)="toggleProfileMenu()">
+          <svg class="action-icon-profile" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+
+        <!-- Neo-Brutalist Profile Menu -->
+        <div *ngIf="isProfileMenuOpen" 
+             class="absolute right-0 mt-4 w-56 bg-white border-4 border-slate-900 rounded-xl shadow-[8px_8px_0px_#059669] overflow-hidden z-50 animate-in fade-in zoom-in duration-200">
+          <div class="px-4 py-3 bg-slate-900 text-white">
+            <p class="text-xs font-black uppercase tracking-widest text-emerald-400">Tu Cuenta</p>
+            <p class="text-[10px] font-mono text-slate-400 mt-1">@dev_user</p>
+          </div>
+          <ul class="py-2 border-t-4 border-slate-900">
+            <li>
+              <a routerLink="/profile" (click)="closeProfileMenu()" class="block px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-700 hover:bg-stone-100 hover:text-emerald-700 transition-colors">
+                👤 Mi Perfil
+              </a>
+            </li>
+            <li>
+              <a routerLink="/sessions" (click)="closeProfileMenu()" class="block px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-700 hover:bg-stone-100 hover:text-emerald-700 transition-colors">
+                🛡️ Sesiones
+              </a>
+            </li>
+            <div class="my-2 border-t-2 border-dashed border-slate-200"></div>
+            <li>
+              <button (click)="logout()" class="w-full text-left px-4 py-2 text-xs font-black uppercase tracking-widest text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
+                👋 Cerrar Sesión
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </header>
 

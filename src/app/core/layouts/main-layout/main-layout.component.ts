@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -12,6 +13,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class MainLayoutComponent {
   private sanitizer = inject(DomSanitizer);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  isProfileMenuOpen = false;
 
   navItems = [
     { label: 'HOME', icon: this.sanitizer.bypassSecurityTrustHtml('<svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>'), route: '/posts' },
@@ -32,4 +37,17 @@ export class MainLayoutComponent {
     '# ROSE_50',
     '# ROSE_9',
   ];
+
+  toggleProfileMenu() {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  closeProfileMenu() {
+    this.isProfileMenuOpen = false;
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
