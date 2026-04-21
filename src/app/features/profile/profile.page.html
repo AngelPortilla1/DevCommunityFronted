@@ -1,0 +1,75 @@
+<div class="relative min-h-screen bg-stone-50 text-slate-900 font-sans selection:bg-emerald-500 selection:text-white p-4 sm:p-8 overflow-x-hidden">
+  
+  <!-- Background Pattern -->
+  <div class="fixed inset-0 pointer-events-none opacity-20"
+    style="background-image: radial-gradient(#059669 1px, transparent 1px); background-size: 32px 32px;">
+  </div>
+
+  <div class="max-w-4xl mx-auto space-y-12 relative z-10 mt-6 md:mt-12">
+    
+    <!-- Profile Header Card -->
+    <section class="bg-white border-4 border-slate-900 rounded-3xl shadow-[12px_12px_0px_#0f172a] p-8 md:p-12 relative overflow-hidden">
+      <!-- Decorative accent -->
+      <div class="absolute -top-6 -right-6 w-32 h-32 bg-emerald-400 border-4 border-slate-900 rotate-12 transform"></div>
+      
+      <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start">
+        
+        <!-- Avatar -->
+        <div class="w-32 h-32 md:w-40 md:h-40 flex-none bg-amber-400 border-4 border-slate-900 shadow-[6px_6px_0px_#059669] rounded-2xl flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-300">
+          <span class="text-6xl font-black text-slate-900 uppercase">
+            {{ (user()?.username || 'U')?.charAt(0) }}
+          </span>
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
+          <div class="inline-block bg-slate-900 text-emerald-400 px-4 py-1 border-2 border-slate-900 text-[10px] font-black uppercase tracking-[0.2em] mb-4 shadow-[3px_3px_0px_#34d399]">
+            {{ user()?.role === 'admin' ? 'Administrador' : 'Desarrollador' }}
+          </div>
+          
+          <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none mb-2">
+            @{{ user()?.username || 'Usuario' }}
+          </h1>
+          <p class="text-slate-500 font-bold font-mono text-sm uppercase tracking-widest mb-6">
+            {{ user()?.email || 'correo@ejemplo.com' }}
+          </p>
+
+          <button class="bg-emerald-700 text-white px-8 py-3 font-black uppercase tracking-widest border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:bg-emerald-800 rounded-lg">
+            Editar Perfil
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Panel -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#f59e0b] transform hover:-translate-y-1 transition-transform duration-300 text-center">
+        <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 border-b-2 border-slate-100 pb-2">Posts</p>
+        <p class="text-5xl font-black text-slate-900">{{ stats.posts }}</p>
+      </div>
+
+      <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#3b82f6] transform hover:-translate-y-1 transition-transform duration-300 text-center">
+        <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 border-b-2 border-slate-100 pb-2">Seguidores</p>
+        <p class="text-5xl font-black text-slate-900">{{ stats.followers }}</p>
+      </div>
+
+      <div class="bg-white border-4 border-slate-900 p-6 rounded-2xl shadow-[8px_8px_0px_#ec4899] transform hover:-translate-y-1 transition-transform duration-300 text-center">
+        <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 border-b-2 border-slate-100 pb-2">Siguiendo</p>
+        <p class="text-5xl font-black text-slate-900">{{ stats.following }}</p>
+      </div>
+
+    </section>
+
+    <!-- Recent Activity Placeholder -->
+    <section class="bg-white border-4 border-slate-900 rounded-3xl shadow-[12px_12px_0px_#0f172a] overflow-hidden">
+      <div class="px-8 py-6 border-b-4 border-slate-900 bg-stone-100">
+        <h3 class="text-xl font-black uppercase tracking-tight text-slate-900">Actividad Reciente</h3>
+      </div>
+      <div class="p-12 text-center text-slate-400 font-bold uppercase tracking-widest text-sm border-t-2 border-dashed border-slate-200 m-8">
+        Próximamente: Historial de publicaciones...
+      </div>
+    </section>
+
+  </div>
+</div>

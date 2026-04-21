@@ -20,6 +20,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/sessions/sessions.page').then((m) => m.SessionsPage)
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile.page').then((m) => m.ProfilePage)
+      },
       { path: '', redirectTo: 'posts', pathMatch: 'full' }
     ]
   },
