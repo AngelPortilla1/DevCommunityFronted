@@ -8,66 +8,127 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-stone-50 p-4 relative overflow-hidden">
-      <!-- Background Pattern -->
-      <div class="fixed inset-0 pointer-events-none opacity-20"
-        style="background-image: radial-gradient(#059669 1px, transparent 1px); background-size: 32px 32px;">
+    <div class="min-h-screen flex flex-col md:flex-row bg-white relative overflow-hidden font-sans">
+
+      <!-- Left Section (Branding - Clean & Minimalist) -->
+<div class="hidden md:flex flex-col justify-center px-20 bg-slate-900 md:w-[45%] 
+            relative rounded-r-[80px] overflow-hidden z-10">
+
+  <!-- Soft right fade to avoid hard edge -->
+  <div class="absolute top-0 right-0 h-full w-32 bg-gradient-to-r 
+              from-transparent to-white/40 pointer-events-none"></div>
+
+  <!-- Subtle Background Glow -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+  <div class="relative z-10">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium tracking-wide uppercase mb-8">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      DevCommunity 2026
+    </div>
+
+    <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight">
+      Conecta con otros <br/>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">desarrolladores.</span>
+    </h1>
+
+    <p class="mt-6 text-lg text-slate-400 max-w-md font-light leading-relaxed">
+      La plataforma donde las ideas crecen, el código se comparte y el futuro se construye en equipo.
+    </p>
+
+    <div class="mt-12 p-6 bg-slate-800/50 backdrop-blur-md rounded-2xl border border-slate-700/50 text-slate-300 max-w-sm">
+      <div class="flex gap-2 mb-4">
+        <div class="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
       </div>
+      <p class="font-mono text-sm text-emerald-400 font-medium">~/dev-community $ npm start</p>
+      <p class="font-mono text-sm mt-2 text-slate-400">Iniciando sistema de networking...</p>
+      <p class="font-mono text-sm mt-1 text-slate-400">Cargando repositorios...</p>
+      <p class="font-mono text-sm mt-2 text-emerald-400">Estado: Online ⚡</p>
+    </div>
+  </div>
 
-      <div class="relative w-full max-w-md bg-white border-4 border-slate-900 shadow-[12px_12px_0px_#059669] p-10 rounded-3xl transform hover:-translate-y-1 transition-transform duration-300">
-        
-        <header class="text-center mb-10">
-          <div class="inline-block bg-slate-900 text-white px-6 py-3 rounded-br-[2rem] shadow-[4px_4px_0px_#059669] mb-6">
-            <h1 class="text-2xl font-black uppercase tracking-tighter leading-none">
-              Dev<span class="text-emerald-400 font-serif italic lowercase">Community</span>
-            </h1>
-          </div>
-          <p class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-700 border-b-2 border-dashed border-emerald-200 pb-4 mx-10">
-            Acceso al Sistema
-          </p>
-        </header>
+</div>
 
-        <form (submit)="submit()" class="space-y-6">
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase text-slate-500 tracking-widest pl-1">Correo Electrónico</label>
-            <input
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              placeholder="usuario@ejemplo.com"
-              class="w-full bg-stone-50 border-2 border-slate-200 p-4 font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition-colors rounded-lg placeholder-slate-400"
-            />
-          </div>
+      <!-- Right Section (Login Form - Clean) -->
+      <div class="flex-1 flex items-center justify-center p-8 relative bg-white z-0">
 
-          <div class="space-y-2">
-            <label class="block text-xs font-bold uppercase text-slate-500 tracking-widest pl-1">Contraseña</label>
-            <input
-              type="password"
-              [(ngModel)]="password"
-              name="password"
-              placeholder="••••••••"
-              class="w-full bg-stone-50 border-2 border-slate-200 p-4 font-bold text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition-colors rounded-lg placeholder-slate-400"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="w-full bg-emerald-700 text-white font-black uppercase py-4 border-2 border-slate-900 shadow-[4px_4px_0px_#0f172a] rounded-lg hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:bg-emerald-800 transition-all mt-4 tracking-widest"
-          >
-            Iniciar Sesión
-          </button>
-        </form>
-
-        <div *ngIf="error" class="mt-8 bg-red-50 text-red-700 border-l-4 border-red-500 p-4 font-bold text-sm shadow-sm flex items-center gap-3">
-          <span class="text-xl">⚠️</span> {{ error }}
+        <!-- Optional soft dotted background -->
+        <div class="fixed inset-0 pointer-events-none opacity-[0.03]"
+          style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 24px 24px;">
         </div>
 
-        <footer class="mt-8 text-center">
-          <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-            Secure_Login_v2.0 // {{ 2026 }}
-          </p>
-        </footer>
+        <div class="relative w-full max-w-sm">
+          
+          <!-- Header -->
+          <header class="mb-10 text-center">
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Bienvenido</h1>
+            <p class="text-slate-500 font-medium">Ingresa tus credenciales para continuar</p>
+          </header>
+
+          <!-- Form -->
+          <form (submit)="submit()" class="space-y-5">
+
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-700">
+                Correo Electrónico
+              </label>
+              <input
+                type="email"
+                [(ngModel)]="email"
+                name="email"
+                placeholder="usuario@ejemplo.com"
+                class="w-full bg-white border border-slate-200 px-4 py-3 text-slate-900 
+                       focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 
+                       transition-all rounded-xl placeholder-slate-400"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-700">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                [(ngModel)]="password"
+                name="password"
+                placeholder="••••••••"
+                class="w-full bg-white border border-slate-200 px-4 py-3 text-slate-900 
+                       focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 
+                       transition-all rounded-xl placeholder-slate-400"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-emerald-600 text-white font-semibold py-3 
+                     rounded-xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/20 
+                     active:scale-[0.98] transition-all mt-6"
+            >
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <!-- Error -->
+          <div *ngIf="error" class="mt-6 bg-red-50 text-red-600 border border-red-100 
+                                    p-4 rounded-xl font-medium text-sm flex items-center gap-3">
+            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            {{ error }}
+          </div>
+
+          <!-- Footer -->
+          <footer class="mt-12 text-center">
+            <p class="text-xs text-slate-400 font-medium">
+              DevCommunity © {{ 2026 }}
+            </p>
+          </footer>
+        </div>
       </div>
+
     </div>
   `
 })
