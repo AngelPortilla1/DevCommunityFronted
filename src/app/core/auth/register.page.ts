@@ -28,7 +28,7 @@ import { Router, RouterModule } from '@angular/router';
       <!-- Grid overlay -->
       <div class="grid-overlay"></div>
 
-      <!-- Login Card -->
+      <!-- Register Card -->
       <div class="login-card">
 
         <!-- Glow ring -->
@@ -48,33 +48,53 @@ import { Router, RouterModule } from '@angular/router';
 
         <!-- Heading -->
         <header class="card-header">
-          <h1 class="card-title">Bienvenido de vuelta</h1>
-          <p class="card-subtitle">Ingresa a tu cuenta de desarrollador</p>
+          <h1 class="card-title">Crea tu cuenta</h1>
+          <p class="card-subtitle">Únete a nuestra comunidad de desarrolladores</p>
         </header>
 
         <!-- Form -->
         <form (submit)="submit()" class="login-form">
 
           <div class="field-group">
-            <label class="field-label" for="login-email">Correo Electrónico</label>
+            <label class="field-label" for="register-username">Nombre de Usuario</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                id="register-username"
+                type="text"
+                [(ngModel)]="username"
+                name="username"
+                placeholder="developer_123"
+                autocomplete="username"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="register-email">Correo Electrónico</label>
             <div class="input-wrapper">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="4" width="20" height="16" rx="3"></rect>
                 <polyline points="22,5 12,13 2,5"></polyline>
               </svg>
               <input
-                id="login-email"
+                id="register-email"
                 type="email"
                 [(ngModel)]="email"
                 name="email"
                 placeholder="tu@ejemplo.com"
                 autocomplete="email"
+                required
               />
             </div>
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="login-password">Contraseña</label>
+            <label class="field-label" for="register-password">Contraseña</label>
             <div class="input-wrapper">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="3"></rect>
@@ -82,18 +102,19 @@ import { Router, RouterModule } from '@angular/router';
                 <circle cx="12" cy="16" r="1"></circle>
               </svg>
               <input
-                id="login-password"
+                id="register-password"
                 type="password"
                 [(ngModel)]="password"
                 name="password"
-                placeholder="••••••••"
-                autocomplete="current-password"
+                placeholder="Mínimo 8 caracteres"
+                autocomplete="new-password"
+                required
               />
             </div>
           </div>
 
           <button type="submit" class="submit-btn" [disabled]="isLoading">
-            <span *ngIf="!isLoading">Iniciar Sesión</span>
+            <span *ngIf="!isLoading">Registrarse</span>
             <span *ngIf="isLoading" class="loader-dots">
               <span></span><span></span><span></span>
             </span>
@@ -102,7 +123,7 @@ import { Router, RouterModule } from '@angular/router';
 
         <div class="auth-links">
           <p class="auth-link-text">
-            ¿No tienes una cuenta? <a routerLink="/register" class="auth-link">Regístrate</a>
+            ¿Ya tienes una cuenta? <a routerLink="/login" class="auth-link">Inicia Sesión</a>
           </p>
         </div>
 
@@ -112,6 +133,14 @@ import { Router, RouterModule } from '@angular/router';
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
           </svg>
           {{ error }}
+        </div>
+
+        <!-- Success -->
+        <div *ngIf="successMsg" class="success-banner">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          {{ successMsg }}
         </div>
 
         <!-- Footer -->
@@ -439,26 +468,34 @@ import { Router, RouterModule } from '@angular/router';
       text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
     }
 
-    /* ── Error Banner ── */
-    .error-banner {
+    /* ── Error & Success Banners ── */
+    .error-banner, .success-banner {
       margin-top: 1.25rem;
       display: flex;
       align-items: center;
       gap: .6rem;
       padding: .85rem 1rem;
       border-radius: 12px;
-      background: rgba(239, 68, 68, .08);
-      border: 1px solid rgba(239, 68, 68, .18);
-      color: #fca5a5;
       font-size: .85rem;
       font-weight: 500;
       animation: shakeIn .4s ease;
     }
-    .error-banner svg {
+    .error-banner {
+      background: rgba(239, 68, 68, .08);
+      border: 1px solid rgba(239, 68, 68, .18);
+      color: #fca5a5;
+    }
+    .success-banner {
+      background: rgba(34, 197, 94, .08);
+      border: 1px solid rgba(34, 197, 94, .18);
+      color: #86efac;
+    }
+    .error-banner svg, .success-banner svg {
       width: 18px; height: 18px;
       flex-shrink: 0;
-      color: #ef4444;
     }
+    .error-banner svg { color: #ef4444; }
+    .success-banner svg { color: #22c55e; }
     @keyframes shakeIn {
       0%, 100% { transform: translateX(0); }
       25%  { transform: translateX(-6px); }
@@ -489,25 +526,42 @@ import { Router, RouterModule } from '@angular/router';
     }
   `]
 })
-export class LoginPage {
+export class RegisterPage {
+  username = '';
   email = '';
   password = '';
   error = '';
+  successMsg = '';
   isLoading = false;
 
   constructor(private auth: AuthService, private router: Router) { }
 
   submit() {
+    if (!this.username || !this.email || !this.password) {
+      this.error = 'Por favor completa todos los campos';
+      return;
+    }
+
+    if (this.password.length < 8) {
+      this.error = 'La contraseña debe tener al menos 8 caracteres';
+      return;
+    }
+
     this.isLoading = true;
     this.error = '';
-    this.auth.login(this.email, this.password).subscribe({
-      next: () => {
+    this.successMsg = '';
+    
+    this.auth.register(this.username, this.email, this.password).subscribe({
+      next: (res) => {
         this.isLoading = false;
-        this.router.navigate(['/posts']);
+        this.successMsg = '¡Cuenta creada! Redirigiendo al login...';
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.error = 'Credenciales incorrectas';
+        this.error = err.error?.detail || 'Error al registrar usuario';
       }
     });
   }
