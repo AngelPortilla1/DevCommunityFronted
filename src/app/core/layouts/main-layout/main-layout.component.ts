@@ -19,6 +19,8 @@ export class MainLayoutComponent {
   isProfileMenuOpen = false;
   isMobileMenuOpen = false;
 
+  user = this.authService.user;
+
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
