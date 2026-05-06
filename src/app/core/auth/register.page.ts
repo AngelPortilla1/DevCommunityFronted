@@ -10,10 +10,10 @@ import { Router, RouterModule } from '@angular/router';
   template: `
     <div class="login-universe">
 
-      <!-- Ambient Background Orbs -->
-      <div class="orb orb--cyan"></div>
-      <div class="orb orb--purple"></div>
-      <div class="orb orb--teal"></div>
+      <!-- Ambient Background Orbs (Updated to Emerald/Yellow) -->
+      <div class="orb orb--emerald"></div>
+      <div class="orb orb--yellow"></div>
+      <div class="orb orb--slate"></div>
 
       <!-- Floating Code Symbols -->
       <span class="code-float code-float--1">{{ '{' }} {{ '}' }}</span>
@@ -31,7 +31,7 @@ import { Router, RouterModule } from '@angular/router';
       <!-- Register Card -->
       <div class="login-card">
 
-        <!-- Glow ring -->
+        <!-- Glow ring (Updated to Emerald/Yellow) -->
         <div class="card-glow"></div>
 
         <!-- Logo -->
@@ -160,7 +160,7 @@ import { Router, RouterModule } from '@angular/router';
     }
 
     /* ══════════════════════════════════
-       UNIVERSE  (full-screen backdrop)
+       UNIVERSE  (light palette backdrop)
     ══════════════════════════════════ */
     .login-universe {
       position: relative;
@@ -168,7 +168,7 @@ import { Router, RouterModule } from '@angular/router';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #0a0a1a;
+      background: #f1f5f9;
       overflow: hidden;
       padding: 1.5rem;
     }
@@ -178,8 +178,8 @@ import { Router, RouterModule } from '@angular/router';
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+        linear-gradient(rgba(15, 23, 42, .03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, .03) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
     }
@@ -192,21 +192,21 @@ import { Router, RouterModule } from '@angular/router';
       pointer-events: none;
       animation: drift 12s ease-in-out infinite alternate;
     }
-    .orb--cyan {
+    .orb--emerald {
       width: 420px; height: 420px;
-      background: rgba(34, 211, 238, .12);
+      background: rgba(16, 185, 129, .12);
       top: -10%; right: -5%;
       animation-delay: 0s;
     }
-    .orb--purple {
+    .orb--yellow {
       width: 480px; height: 480px;
-      background: rgba(168, 85, 247, .10);
+      background: rgba(251, 191, 36, .10);
       bottom: -12%; left: -8%;
       animation-delay: -4s;
     }
-    .orb--teal {
+    .orb--slate {
       width: 300px; height: 300px;
-      background: rgba(45, 212, 191, .08);
+      background: rgba(15, 23, 42, .05);
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       animation-delay: -8s;
@@ -223,7 +223,7 @@ import { Router, RouterModule } from '@angular/router';
       font-family: 'JetBrains Mono', 'Fira Code', monospace;
       font-size: 0.85rem;
       font-weight: 600;
-      color: rgba(255, 255, 255, .06);
+      color: rgba(15, 23, 42, .08);
       pointer-events: none;
       animation: floatUp 18s linear infinite;
       user-select: none;
@@ -245,20 +245,21 @@ import { Router, RouterModule } from '@angular/router';
     }
 
     /* ══════════════════════════════════
-       LOGIN CARD  (glassmorphism)
+       REGISTER CARD  (glassmorphism light)
     ══════════════════════════════════ */
     .login-card {
       position: relative;
       width: 100%;
       max-width: 420px;
-      background: rgba(15, 15, 35, .65);
-      backdrop-filter: blur(40px) saturate(1.4);
-      -webkit-backdrop-filter: blur(40px) saturate(1.4);
-      border: 1px solid rgba(255, 255, 255, .08);
+      background: rgba(255, 255, 255, .7);
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      border: 1px solid rgba(15, 23, 42, .1);
       border-radius: 24px;
       padding: 2.5rem 2.25rem;
       z-index: 10;
       animation: cardIn .7s cubic-bezier(.16,1,.3,1) both;
+      box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.1);
     }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(30px) scale(.96); }
@@ -270,15 +271,15 @@ import { Router, RouterModule } from '@angular/router';
       position: absolute;
       inset: -2px;
       border-radius: 26px;
-      background: linear-gradient(135deg, rgba(34,211,238,.25), rgba(168,85,247,.2), rgba(45,212,191,.15));
+      background: linear-gradient(135deg, rgba(16, 185, 129, .2), rgba(251, 191, 36, .15), rgba(15, 23, 42, .1));
       z-index: -1;
       opacity: .45;
-      filter: blur(2px);
+      filter: blur(4px);
       animation: glowPulse 4s ease-in-out infinite alternate;
     }
     @keyframes glowPulse {
-      0%   { opacity: .30; }
-      100% { opacity: .55; }
+      0%   { opacity: .20; }
+      100% { opacity: .45; }
     }
 
     /* ── Logo ── */
@@ -296,7 +297,7 @@ import { Router, RouterModule } from '@angular/router';
       align-items: center;
       justify-content: center;
       border-radius: 10px;
-      background: linear-gradient(135deg, #22d3ee, #a855f7);
+      background: linear-gradient(135deg, #059669, #fbbf24);
       color: #fff;
       padding: 6px;
     }
@@ -305,9 +306,7 @@ import { Router, RouterModule } from '@angular/router';
       font-size: 1.2rem;
       font-weight: 700;
       letter-spacing: -.02em;
-      background: linear-gradient(135deg, #e2e8f0, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #0f172a;
     }
 
     /* ── Header ── */
@@ -318,7 +317,7 @@ import { Router, RouterModule } from '@angular/router';
     .card-title {
       font-size: 1.65rem;
       font-weight: 800;
-      color: #f1f5f9;
+      color: #0f172a;
       letter-spacing: -.03em;
       margin: 0 0 .4rem;
     }
@@ -343,7 +342,7 @@ import { Router, RouterModule } from '@angular/router';
     .field-label {
       font-size: .78rem;
       font-weight: 600;
-      color: #94a3b8;
+      color: #475569;
       text-transform: uppercase;
       letter-spacing: .06em;
     }
@@ -357,34 +356,33 @@ import { Router, RouterModule } from '@angular/router';
       transform: translateY(-50%);
       width: 18px;
       height: 18px;
-      color: #475569;
+      color: #94a3b8;
       transition: color .25s;
       pointer-events: none;
     }
     .input-wrapper input {
       width: 100%;
-      background: rgba(255, 255, 255, .04);
-      border: 1px solid rgba(255, 255, 255, .08);
+      background: #fff;
+      border: 1px solid #e2e8f0;
       border-radius: 14px;
       padding: .85rem 1rem .85rem 2.8rem;
       font-size: .95rem;
       font-family: inherit;
-      color: #e2e8f0;
+      color: #0f172a;
       transition: border-color .3s, box-shadow .3s, background .3s;
       outline: none;
       box-sizing: border-box;
     }
     .input-wrapper input::placeholder {
-      color: #475569;
+      color: #94a3b8;
     }
     .input-wrapper input:focus {
-      border-color: rgba(34, 211, 238, .5);
-      box-shadow: 0 0 0 3px rgba(34, 211, 238, .1), 0 0 20px rgba(34, 211, 238, .05);
-      background: rgba(255, 255, 255, .06);
+      border-color: #059669;
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
     }
     .input-wrapper input:focus ~ .input-icon,
     .input-wrapper:focus-within .input-icon {
-      color: #22d3ee;
+      color: #059669;
     }
 
     /* ── Submit Button ── */
@@ -396,7 +394,7 @@ import { Router, RouterModule } from '@angular/router';
       font-weight: 700;
       font-family: inherit;
       color: #fff;
-      background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+      background: linear-gradient(135deg, #059669, #0f172a);
       border: none;
       border-radius: 14px;
       cursor: pointer;
@@ -415,7 +413,7 @@ import { Router, RouterModule } from '@angular/router';
     }
     .submit-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 8px 30px rgba(34, 211, 238, .25), 0 4px 15px rgba(139, 92, 246, .2);
+      box-shadow: 0 8px 30px rgba(5, 150, 105, .2);
     }
     .submit-btn:hover::before { opacity: 1; }
     .submit-btn:active {
@@ -453,19 +451,18 @@ import { Router, RouterModule } from '@angular/router';
       text-align: center;
     }
     .auth-link-text {
-      color: #94a3b8;
+      color: #64748b;
       font-size: 0.9rem;
       margin: 0;
     }
     .auth-link {
-      color: #22d3ee;
+      color: #059669;
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.2s, text-shadow 0.2s;
+      transition: color 0.2s;
     }
     .auth-link:hover {
-      color: #a855f7;
-      text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+      color: #fbbf24;
     }
 
     /* ── Error & Success Banners ── */
@@ -481,14 +478,14 @@ import { Router, RouterModule } from '@angular/router';
       animation: shakeIn .4s ease;
     }
     .error-banner {
-      background: rgba(239, 68, 68, .08);
-      border: 1px solid rgba(239, 68, 68, .18);
-      color: #fca5a5;
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      color: #b91c1c;
     }
     .success-banner {
-      background: rgba(34, 197, 94, .08);
-      border: 1px solid rgba(34, 197, 94, .18);
-      color: #86efac;
+      background: #f0fdf4;
+      border: 1px solid #dcfce7;
+      color: #15803d;
     }
     .error-banner svg, .success-banner svg {
       width: 18px; height: 18px;
@@ -508,7 +505,7 @@ import { Router, RouterModule } from '@angular/router';
       margin-top: 2rem;
       text-align: center;
       font-size: .75rem;
-      color: #475569;
+      color: #94a3b8;
       font-weight: 500;
       letter-spacing: .02em;
     }
