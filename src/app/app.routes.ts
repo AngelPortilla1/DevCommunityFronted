@@ -13,7 +13,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
-        path: 'posts',
+        path: 'feed',
         loadComponent: () =>
           import('./features/posts/posts.page').then((m) => m.PostsPage)
       },
@@ -27,7 +27,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/profile/profile.page').then((m) => m.ProfilePage)
       },
-      { path: '', redirectTo: 'posts', pathMatch: 'full' }
+      { path: '', redirectTo: 'feed', pathMatch: 'full' }
     ]
   },
   { path: '**', redirectTo: 'login' }

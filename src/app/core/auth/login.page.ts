@@ -36,13 +36,7 @@ import { Router, RouterModule } from '@angular/router';
 
         <!-- Logo -->
         <div class="logo-area">
-          <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-              <line x1="12" y1="2" x2="12" y2="22" opacity="0.3"></line>
-            </svg>
-          </div>
+          <img src="assets/LogoDevCommunity.png" alt="DevCommunity Logo" class="h-16 w-auto mb-2 drop-shadow-lg">
           <span class="logo-text">DevCommunity</span>
         </div>
 
