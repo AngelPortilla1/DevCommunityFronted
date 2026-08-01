@@ -552,7 +552,16 @@ export class RegisterPage {
       },
       error: (err) => {
         this.isLoading = false;
-        this.error = err.error?.detail || 'Error al registrar usuario';
+        const detail = err.error?.detail;
+        if (Array.isArray(detail)) {
+          // Errores de validación de Pydantic (422): detail es un array
+          this.error = detail.map((d: any) => d.msg).join('. ');
+        } else if (typeof detail === 'string') {
+          // Errores de negocio (400): detail es un string
+          this.error = detail;
+        } else {
+          this.error = 'Error al registrar usuario. Inténtalo de nuevo.';
+        }
       }
     });
   }
