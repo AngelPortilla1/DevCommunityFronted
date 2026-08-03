@@ -4,8 +4,8 @@ import { authGuard } from './core/auth/auth.guard';
 import { MainLayoutComponent } from './core/layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
-  { path: 'login', loadComponent: () => import('./core/auth/login.page').then(m => m.LoginPage) },
-  { path: 'register', loadComponent: () => import('./core/auth/register.page').then(m => m.RegisterPage) },
+  { path: 'login', loadComponent: () => import('./features/auth/login/login.page').then(m => m.LoginPage) },
+  { path: 'register', loadComponent: () => import('./features/auth/register/register.page').then(m => m.RegisterPage) },
   {
     path: '',
     component: MainLayoutComponent,
