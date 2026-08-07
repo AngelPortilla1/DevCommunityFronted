@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -8,7 +7,7 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, AuthCardComponent],
+  imports: [FormsModule, RouterModule, AuthCardComponent],
   template: `
     <app-auth-card
       title="Crea tu cuenta"
@@ -76,10 +75,13 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Registrarse</span>
-          <span *ngIf="isLoading" class="loader-dots">
-            <span></span><span></span><span></span>
-          </span>
+          @if (!isLoading) {
+            <span>Registrarse</span>
+          } @else {
+            <span class="loader-dots">
+              <span></span><span></span><span></span>
+            </span>
+          }
         </button>
       </form>
 
@@ -91,20 +93,24 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       </div>
 
       <!-- Error banner -->
-      <div *ngIf="error" class="error-banner">
-        <svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-        </svg>
-        {{ error }}
-      </div>
+      @if (error) {
+        <div class="error-banner">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          {{ error }}
+        </div>
+      }
 
       <!-- Success banner -->
-      <div *ngIf="successMsg" class="success-banner">
-        <svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-        </svg>
-        {{ successMsg }}
-      </div>
+      @if (successMsg) {
+        <div class="success-banner">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+          {{ successMsg }}
+        </div>
+      }
 
     </app-auth-card>
   `,

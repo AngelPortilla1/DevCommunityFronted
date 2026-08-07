@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -8,7 +7,7 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, AuthCardComponent],
+  imports: [FormsModule, RouterModule, AuthCardComponent],
   template: `
     <app-auth-card
       title="Bienvenido de vuelta"
@@ -55,10 +54,13 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
         </div>
 
         <button type="submit" class="submit-btn" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Iniciar Sesión</span>
-          <span *ngIf="isLoading" class="loader-dots">
-            <span></span><span></span><span></span>
-          </span>
+          @if (!isLoading) {
+            <span>Iniciar Sesión</span>
+          } @else {
+            <span class="loader-dots">
+              <span></span><span></span><span></span>
+            </span>
+          }
         </button>
       </form>
 
@@ -70,12 +72,14 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       </div>
 
       <!-- Error banner -->
-      <div *ngIf="error" class="error-banner">
-        <svg viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-        </svg>
-        {{ error }}
-      </div>
+      @if (error) {
+        <div class="error-banner">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          {{ error }}
+        </div>
+      }
 
     </app-auth-card>
   `,

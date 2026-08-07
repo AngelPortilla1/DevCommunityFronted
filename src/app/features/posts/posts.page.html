@@ -13,264 +13,288 @@
 
     <div class="posts-list">
 
-      <article *ngFor="let post of posts; let i = index" class="post-article">
+      @for (post of posts; track post.id; let i = $index) {
+        <article class="post-article">
 
-        <div class="post-avatar-col">
-          <div class="avatar-diamond">
-            <span class="avatar-letter">
-              {{ (post?.author?.username || 'U')?.charAt(0) | uppercase }}
-            </span>
-          </div>
-          <div class="avatar-line"></div>
-          <div class="avatar-date">
-            {{ post?.created_at | date: 'dd MMM' }}
-          </div>
-        </div>
-
-        <div class="post-card-wrapper">
-
-          <div class="post-card-shadow"></div>
-
-          <div class="post-card">
-
-            <div class="post-meta">
-              <span class="post-id">
-                // ID_{{post.id}}
+          <div class="post-avatar-col">
+            <div class="avatar-diamond">
+              <span class="avatar-letter">
+                {{ (post?.author?.username || 'U')?.charAt(0) | uppercase }}
               </span>
-              <div class="post-meta-right">
-                <span class="post-author">
-                  @{{ post?.author?.username }}
-                </span>
-                <!-- Botones editar/eliminar post — solo para el autor -->
-                <ng-container *ngIf="isPostAuthor(post)">
-                  <button (click)="openEditPostModal(post)" title="Editar post" class="btn-edit-post">
-                    ✏️ Editar
-                  </button>
-                  <button (click)="deletePost(post)" title="Eliminar post" class="btn-delete-post">
-                    🗑️ Borrar
-                  </button>
-                </ng-container>
-              </div>
             </div>
-
-            <h2 class="post-title">
-              {{ post?.title }}
-            </h2>
-
-            <div class="post-body">
-              <div class="post-content-col">
-                <p class="post-content-text">
-                  {{ post?.content }}
-                </p>
-                <div class="post-tags">
-                  <span class="post-tag">#DesignSystem</span>
-                  <span class="post-tag">#UI_UX</span>
-                </div>
-              </div>
-
-              <div class="post-visual">
-                <div class="visual-bg-1"></div>
-                <div class="visual-bg-2">
-                  <div class="visual-placeholder">
-                    <span class="visual-icon">⚡</span>
-                    <p class="visual-label">Visual_Asset</p>
-                  </div>
-                </div>
-                <div class="visual-tape"></div>
-              </div>
-            </div>
-
-            <div class="post-actions">
-              <button (click)="toggleLike(post)" class="btn-like">
-                <div class="like-hover-bg"></div>
-                <span class="like-icon">
-                  {{ post.liked_by_me ? '❤️' : '♡' }}
-                </span>
-                <span class="like-count">
-                  {{ post.likes_count || 0 }} Likes
-                </span>
-              </button>
-
-              <button (click)="toggleComments(post.id)" class="btn-comments">
-                <span class="comments-emoji">💬</span>
-                <span>Comentarios ({{ (commentsMap[post.id] || []).length }})</span>
-              </button>
+            <div class="avatar-line"></div>
+            <div class="avatar-date">
+              {{ post?.created_at | date: 'dd MMM' }}
             </div>
           </div>
-        </div>
 
-        <!-- Sección de comentarios -->
-        <div *ngIf="commentsVisible[post.id]" class="comments-section">
+          <div class="post-card-wrapper">
 
-          <div class="comments-connector"></div>
+            <div class="post-card-shadow"></div>
 
-          <div class="comments-list">
+            <div class="post-card">
 
-            <div *ngFor="let comment of commentsMap[post.id]" class="comment-item">
-
-              <!-- Vista normal del comentario -->
-              <ng-container *ngIf="editingCommentId !== comment.id">
-                <div class="comment-header">
-                  <p class="comment-author">@{{ comment.author.username }}</p>
-                  <!-- Botones editar/eliminar comentario — solo para el autor -->
-                  <div *ngIf="isCommentAuthor(comment)" class="comment-actions">
-                    <button (click)="startEditComment(comment)" title="Editar comentario" class="btn-edit-comment">
-                      ✏️
+              <div class="post-meta">
+                <span class="post-id">
+                  // ID_{{post.id}}
+                </span>
+                <div class="post-meta-right">
+                  <span class="post-author">
+                    @{{ post?.author?.username }}
+                  </span>
+                  <!-- Botones editar/eliminar post — solo para el autor -->
+                  @if (isPostAuthor(post)) {
+                    <button (click)="openEditPostModal(post)" title="Editar post" class="btn-edit-post">
+                      ✏️ Editar
                     </button>
-                    <button (click)="deleteComment(post.id, comment.id)" title="Eliminar comentario" class="btn-delete-comment">
-                      🗑️
+                    <button (click)="deletePost(post)" title="Eliminar post" class="btn-delete-post">
+                      🗑️ Borrar
                     </button>
+                  }
+                </div>
+              </div>
+
+              <h2 class="post-title">
+                {{ post?.title }}
+              </h2>
+
+              <div class="post-body">
+                <div class="post-content-col">
+                  <p class="post-content-text">
+                    {{ post?.content }}
+                  </p>
+                  <div class="post-tags">
+                    <span class="post-tag">#DesignSystem</span>
+                    <span class="post-tag">#UI_UX</span>
                   </div>
                 </div>
-                <p class="comment-text">{{ comment.content }}</p>
-              </ng-container>
 
-              <!-- Modo edición inline del comentario -->
-              <ng-container *ngIf="editingCommentId === comment.id">
-                <p class="comment-author" style="margin-bottom: 0.5rem;">@{{ comment.author.username }}</p>
-                <div class="comment-edit-row">
-                  <input type="text" [(ngModel)]="editCommentContent[comment.id]"
-                    class="comment-edit-input"
-                    (keyup.enter)="saveComment(post.id, comment)" (keyup.escape)="cancelEditComment()" />
-                  <button (click)="saveComment(post.id, comment)" [disabled]="savingComment[comment.id]"
-                    class="btn-save-comment">
-                    {{ savingComment[comment.id] ? '...' : 'OK' }}
-                  </button>
-                  <button (click)="cancelEditComment()" class="btn-cancel-comment">
-                    ✕
-                  </button>
+                <div class="post-visual">
+                  <div class="visual-bg-1"></div>
+                  <div class="visual-bg-2">
+                    <div class="visual-placeholder">
+                      <span class="visual-icon">⚡</span>
+                      <p class="visual-label">Visual_Asset</p>
+                    </div>
+                  </div>
+                  <div class="visual-tape"></div>
                 </div>
-              </ng-container>
+              </div>
 
-            </div>
+              <div class="post-actions">
+                <button (click)="toggleLike(post)" class="btn-like">
+                  <div class="like-hover-bg"></div>
+                  <span class="like-icon">
+                    {{ post.liked_by_me ? '❤️' : '♡' }}
+                  </span>
+                  <span class="like-count">
+                    {{ post.likes_count || 0 }} Likes
+                  </span>
+                </button>
 
-            <!-- Input nuevo comentario -->
-            <div class="new-comment-row">
-              <input type="text" [(ngModel)]="newComment[post.id]"
-                class="new-comment-input"
-                placeholder="Escribe tu opinión..." (keyup.enter)="createComment(post.id)" />
-              <button (click)="createComment(post.id)" class="btn-send-comment">
-                Enviar
-              </button>
+                <button (click)="toggleComments(post.id)" class="btn-comments">
+                  <span class="comments-emoji">💬</span>
+                  <span>Comentarios ({{ (commentsMap[post.id] || []).length }})</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-      </article>
+          <!-- Sección de comentarios -->
+          @if (commentsVisible[post.id]) {
+            <div class="comments-section">
+
+              <div class="comments-connector"></div>
+
+              <div class="comments-list">
+
+                @for (comment of commentsMap[post.id]; track comment.id) {
+                  <div class="comment-item">
+
+                    <!-- Vista normal del comentario -->
+                    @if (editingCommentId !== comment.id) {
+                      <div class="comment-header">
+                        <p class="comment-author">@{{ comment.author.username }}</p>
+                        <!-- Botones editar/eliminar comentario — solo para el autor -->
+                        @if (isCommentAuthor(comment)) {
+                          <div class="comment-actions">
+                            <button (click)="startEditComment(comment)" title="Editar comentario" class="btn-edit-comment">
+                              ✏️
+                            </button>
+                            <button (click)="deleteComment(post.id, comment.id)" title="Eliminar comentario" class="btn-delete-comment">
+                              🗑️
+                            </button>
+                          </div>
+                        }
+                      </div>
+                      <p class="comment-text">{{ comment.content }}</p>
+                    }
+
+                    <!-- Modo edición inline del comentario -->
+                    @if (editingCommentId === comment.id) {
+                      <p class="comment-author" style="margin-bottom: 0.5rem;">@{{ comment.author.username }}</p>
+                      <div class="comment-edit-row">
+                        <input type="text" [(ngModel)]="editCommentContent[comment.id]"
+                          class="comment-edit-input"
+                          (keyup.enter)="saveComment(post.id, comment)" (keyup.escape)="cancelEditComment()" />
+                        <button (click)="saveComment(post.id, comment)" [disabled]="savingComment[comment.id]"
+                          class="btn-save-comment">
+                          {{ savingComment[comment.id] ? '...' : 'OK' }}
+                        </button>
+                        <button (click)="cancelEditComment()" class="btn-cancel-comment">
+                          ✕
+                        </button>
+                      </div>
+                    }
+
+                  </div>
+                }
+
+                <!-- Input nuevo comentario -->
+                <div class="new-comment-row">
+                  <input type="text" [(ngModel)]="newComment[post.id]"
+                    class="new-comment-input"
+                    placeholder="Escribe tu opinión..." (keyup.enter)="createComment(post.id)" />
+                  <button (click)="createComment(post.id)" class="btn-send-comment">
+                    Enviar
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+
+        </article>
+      }
 
     </div>
 
-    <div *ngIf="posts.length < total" class="load-more-wrapper">
-      <button (click)="loadMore()" class="btn-load-more">
-        <div class="load-more-shadow"></div>
-        <div class="load-more-face">
-          Cargar Siguientes
-        </div>
-      </button>
-    </div>
+    @if (posts.length < total) {
+      <div class="load-more-wrapper">
+        <button (click)="loadMore()" class="btn-load-more">
+          <div class="load-more-shadow"></div>
+          <div class="load-more-face">
+            Cargar Siguientes
+          </div>
+        </button>
+      </div>
+    }
 
   </div>
 
   <!-- ════════════════════════════════════════════════════════════ -->
   <!-- Modal: CREAR POST                                           -->
   <!-- ════════════════════════════════════════════════════════════ -->
-  <div *ngIf="showCreateModal" class="modal-overlay">
-    <div class="modal-backdrop" (click)="closeCreateModal()"></div>
+  @if (showCreateModal) {
+    <div class="modal-overlay">
+      <div class="modal-backdrop" (click)="closeCreateModal()"></div>
 
-    <div class="modal-container modal-create">
+      <div class="modal-container modal-create">
 
-      <button (click)="closeCreateModal()" class="modal-close-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
-          class="modal-close-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+        <button (click)="closeCreateModal()" class="modal-close-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+            class="modal-close-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-      <h2 class="modal-title">Crear Nuevo Post</h2>
+        <h2 class="modal-title">Crear Nuevo Post</h2>
 
-      <div *ngIf="createError" class="modal-error">
-        {{ createError }}
-      </div>
+        @if (createError) {
+          <div class="modal-error">
+            {{ createError }}
+          </div>
+        }
 
-      <div class="modal-form">
-        <div>
-          <label class="form-label">Title</label>
-          <input type="text" [(ngModel)]="newPost.title"
-            class="form-input"
-            placeholder="Enter an exciting title...">
-        </div>
+        <div class="modal-form">
+          <div>
+            <label class="form-label">Title</label>
+            <input type="text" [(ngModel)]="newPost.title"
+              class="form-input"
+              placeholder="Enter an exciting title...">
+          </div>
 
-        <div>
-          <label class="form-label">Content</label>
-          <textarea [(ngModel)]="newPost.content" rows="4"
-            class="form-textarea"
-            placeholder="Share your thoughts..."></textarea>
-        </div>
+          <div>
+            <label class="form-label">Content</label>
+            <textarea [(ngModel)]="newPost.content" rows="4"
+              class="form-textarea"
+              placeholder="Share your thoughts..."></textarea>
+          </div>
 
-        <div class="modal-actions">
-          <button (click)="closeCreateModal()" class="btn-modal-cancel">
-            Cancelar
-          </button>
-          <button (click)="createPost()" [disabled]="creating" class="btn-modal-submit btn-submit-create">
-            <span *ngIf="creating">Publicando...</span>
-            <span *ngIf="!creating">Publicar</span>
-          </button>
+          <div class="modal-actions">
+            <button (click)="closeCreateModal()" class="btn-modal-cancel">
+              Cancelar
+            </button>
+            <button (click)="createPost()" [disabled]="creating" class="btn-modal-submit btn-submit-create">
+              @if (creating) {
+                <span>Publicando...</span>
+              } @else {
+                <span>Publicar</span>
+              }
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 
   <!-- ════════════════════════════════════════════════════════════ -->
   <!-- Modal: EDITAR POST                                          -->
   <!-- ════════════════════════════════════════════════════════════ -->
-  <div *ngIf="showEditPostModal" class="modal-overlay">
-    <div class="modal-backdrop" (click)="closeEditPostModal()"></div>
+  @if (showEditPostModal) {
+    <div class="modal-overlay">
+      <div class="modal-backdrop" (click)="closeEditPostModal()"></div>
 
-    <div class="modal-container modal-edit">
+      <div class="modal-container modal-edit">
 
-      <!-- Acento amber para diferenciar del modal de crear -->
-      <div class="modal-edit-accent"></div>
+        <!-- Acento amber para diferenciar del modal de crear -->
+        <div class="modal-edit-accent"></div>
 
-      <button (click)="closeEditPostModal()" class="modal-close-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
-          class="modal-close-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+        <button (click)="closeEditPostModal()" class="modal-close-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+            class="modal-close-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-      <h2 class="modal-title">Editar Post</h2>
-      <p class="modal-edit-id">// ID_{{ editingPost?.id }}</p>
+        <h2 class="modal-title">Editar Post</h2>
+        <p class="modal-edit-id">// ID_{{ editingPost?.id }}</p>
 
-      <div *ngIf="editPostError" class="modal-error">
-        {{ editPostError }}
-      </div>
+        @if (editPostError) {
+          <div class="modal-error">
+            {{ editPostError }}
+          </div>
+        }
 
-      <div class="modal-form">
-        <div>
-          <label class="form-label">Título</label>
-          <input type="text" [(ngModel)]="editPostData.title"
-            class="form-input form-input-edit"
-            placeholder="Título del post...">
-        </div>
+        <div class="modal-form">
+          <div>
+            <label class="form-label">Título</label>
+            <input type="text" [(ngModel)]="editPostData.title"
+              class="form-input form-input-edit"
+              placeholder="Título del post...">
+          </div>
 
-        <div>
-          <label class="form-label">Contenido</label>
-          <textarea [(ngModel)]="editPostData.content" rows="4"
-            class="form-textarea form-input-edit"
-            placeholder="Contenido del post..."></textarea>
-        </div>
+          <div>
+            <label class="form-label">Contenido</label>
+            <textarea [(ngModel)]="editPostData.content" rows="4"
+              class="form-textarea form-input-edit"
+              placeholder="Contenido del post..."></textarea>
+          </div>
 
-        <div class="modal-actions">
-          <button (click)="closeEditPostModal()" class="btn-modal-cancel">
-            Cancelar
-          </button>
-          <button (click)="savePost()" [disabled]="savingPost" class="btn-modal-submit btn-submit-edit">
-            <span *ngIf="savingPost">Guardando...</span>
-            <span *ngIf="!savingPost">Guardar Cambios</span>
-          </button>
+          <div class="modal-actions">
+            <button (click)="closeEditPostModal()" class="btn-modal-cancel">
+              Cancelar
+            </button>
+            <button (click)="savePost()" [disabled]="savingPost" class="btn-modal-submit btn-submit-edit">
+              @if (savingPost) {
+                <span>Guardando...</span>
+              } @else {
+                <span>Guardar Cambios</span>
+              }
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 
 </div>

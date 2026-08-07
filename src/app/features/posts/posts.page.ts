@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { Post } from '../../core/models/post.model';
@@ -10,7 +10,7 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [DatePipe, UpperCasePipe, FormsModule],
   templateUrl: './posts.page.html',
   styleUrls: ['./posts.page.css'],
 })
