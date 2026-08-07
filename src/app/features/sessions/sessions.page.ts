@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -7,6 +7,7 @@ import { Session, SessionMetrics } from '../../core/models/session.model';
 @Component({
   selector: 'app-sessions',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   templateUrl: './sessions.page.html'
 })
