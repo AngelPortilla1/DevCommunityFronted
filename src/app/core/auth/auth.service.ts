@@ -1,9 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
-import { tap, catchError, throwError, timer, Subscription, BehaviorSubject, Observable, map, of, switchMap } from 'rxjs';
+import { tap, catchError, throwError, timer, Subscription, Observable, of, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 
 export interface AuthResponse {
   access_token: string;
@@ -17,55 +16,38 @@ export class AuthService {
   private readonly REFRESH_TOKEN_KEY = 'devcommunity_refresh_token';
   private readonly SESSION_ID_KEY = 'devcommunity_session_id';
 
-  private authState$ = new BehaviorSubject<User | null>(null);
+  // ✅ Signal como única fuente de verdad
+  readonly user = signal<User | null>(null);
+  readonly isAuthenticated = computed(() => !!this.user());
+
   private refreshSubscription?: Subscription;
 
-  get user$(): Observable<User | null> {
-    return this.authState$.asObservable();
-  }
-
-  get isAuthenticated$(): Observable<boolean> {
-    return this.user$.pipe(map(user => !!user));
-  }
-
-  // Helper for components using signals
-  user = signal<User | null>(null);
-
-  constructor(private api: ApiService, private router: Router) {
-    this.user$.subscribe(u => this.user.set(u));
-  }
+  constructor(private api: ApiService, private router: Router) {}
 
   login(email: string, password: string): Observable<User> {
-    const body = {
-      email: email,
-      password: password
-    };
+    const body = { email, password };
 
     return this.api.post<AuthResponse>('/auth/login', body).pipe(
       tap(res => this.saveTokens(res)),
       switchMap(() => this.getMe()),
-      tap(user => this.authState$.next(user))
+      tap(user => this.user.set(user))
     );
   }
 
   register(username: string, email: string, password: string): Observable<any> {
-    const body = {
-      username: username,
-      email: email,
-      password: password
-    };
+    const body = { username, email, password };
     return this.api.post('/auth/register', body);
   }
 
   initAuth(): Observable<User | null> {
     if (!this.hasTokens()) {
-      this.authState$.next(null);
+      this.user.set(null);
       return of(null);
     }
 
     return this.getMe().pipe(
       tap(user => {
-        this.authState$.next(user);
+        this.user.set(user);
         this.startTokenRotation();
       }),
       catchError(() => {
@@ -83,17 +65,13 @@ export class AuthService {
     return !!this.token && !!this.refreshToken;
   }
 
-  isAuthenticated(): boolean {
-    return !!this.authState$.value;
-  }
-
   doRefreshToken() {
     const refreshToken = this.refreshToken;
     if (!refreshToken) {
       this.forceLogout();
       return throwError(() => new Error('No refresh token available'));
     }
-    
+
     return this.api.post<AuthResponse>('/auth/refresh', { refresh_token: refreshToken }).pipe(
       tap(res => this.saveTokens(res)),
       catchError(err => {
@@ -124,7 +102,7 @@ export class AuthService {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.SESSION_ID_KEY);
-    this.authState$.next(null);
+    this.user.set(null);
     this.stopTokenRotation();
   }
 
@@ -132,7 +110,7 @@ export class AuthService {
     if (res.access_token) localStorage.setItem(this.ACCESS_TOKEN_KEY, res.access_token);
     if (res.refresh_token) localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refresh_token);
     if (res.session_id) localStorage.setItem(this.SESSION_ID_KEY, res.session_id);
-    
+
     this.startTokenRotation();
   }
 
@@ -147,7 +125,6 @@ export class AuthService {
   get sessionId(): string | null {
     return localStorage.getItem(this.SESSION_ID_KEY);
   }
-
 
   private startTokenRotation() {
     this.stopTokenRotation();
