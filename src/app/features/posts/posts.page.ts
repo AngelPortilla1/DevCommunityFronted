@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, inject } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
@@ -48,12 +48,10 @@ export class PostsPage implements OnInit {
   editCommentContent: Record<number, string> = {};
   savingComment: Record<number, boolean> = {};
 
-  constructor(
-    private apiService: ApiService,
-    private cdr: ChangeDetectorRef,
-    private commentService: CommentService,
-    private auth: AuthService
-  ) { }
+  private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
+  private commentService = inject(CommentService);
+  private auth = inject(AuthService);
 
   ngOnInit(): void {
     const user = this.auth.user();

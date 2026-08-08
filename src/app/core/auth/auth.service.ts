@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
 import { tap, catchError, throwError, timer, Subscription, Observable, of, switchMap } from 'rxjs';
@@ -22,7 +22,8 @@ export class AuthService {
 
   private refreshSubscription?: Subscription;
 
-  constructor(private api: ApiService, private router: Router) {}
+  private api = inject(ApiService);
+  private router = inject(Router);
 
   login(email: string, password: string): Observable<User> {
     const body = { email, password };

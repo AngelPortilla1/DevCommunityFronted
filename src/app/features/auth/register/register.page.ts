@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -264,14 +264,15 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
   `]
 })
 export class RegisterPage {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
   username = '';
   email = '';
   password = '';
   error = '';
   successMsg = '';
   isLoading = false;
-
-  constructor(private auth: AuthService, private router: Router) { }
 
   submit() {
     if (!this.username || !this.email || !this.password) {
