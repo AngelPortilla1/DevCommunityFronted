@@ -3,11 +3,12 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor } from './core/auth/jwt.interceptor';
 import { AuthService } from './core/auth/auth.service';
+import { lastValueFrom } from 'rxjs';
 
 import { routes } from './app.routes';
 
 export function initializeApp(authService: AuthService) {
-  return () => authService.initAuth();
+  return () => lastValueFrom(authService.initAuth(), { defaultValue: null });
 }
 
 export const appConfig: ApplicationConfig = {

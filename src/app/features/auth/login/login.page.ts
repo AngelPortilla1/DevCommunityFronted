@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -226,6 +226,7 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
 export class LoginPage {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   email = '';
   password = '';
@@ -238,11 +239,20 @@ export class LoginPage {
     this.auth.login(this.email, this.password).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/posts']);
+        this.cdr.markForCheck();
+        this.router.navigate(['/feed']);
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.error = 'Credenciales incorrectas';
+        const status = err?.status;
+        if (status === 401) {
+          this.error = 'Credenciales incorrectas. Verifica tu email y contraseña.';
+        } else if (status === 0 || status >= 500) {
+          this.error = 'Error del servidor. Inténtalo de nuevo más tarde.';
+        } else {
+          this.error = 'Ocurrió un error inesperado.';
+        }
+        this.cdr.markForCheck();
       }
     });
   }
