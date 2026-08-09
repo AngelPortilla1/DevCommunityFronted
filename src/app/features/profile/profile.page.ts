@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { Post } from '../../core/models/post.model';
+import { LoggerService } from '../../core/services/logger.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -15,6 +16,7 @@ import { Post } from '../../core/models/post.model';
 export class ProfilePage implements OnInit {
   authService = inject(AuthService);
   apiService = inject(ApiService);
+  private logger = inject(LoggerService);
   
   user = this.authService.user;
   
@@ -37,7 +39,7 @@ export class ProfilePage implements OnInit {
   loadProfileData(userId: number) {
     this.apiService.getUserStats(userId).subscribe({
       next: (res) => this.stats.set(res),
-      error: (err) => console.error('Error fetching stats', err)
+      error: (err) => this.logger.error('Error fetching stats', err)
     });
 
     this.apiService.getPostsByAuthor(userId, 1, 5).subscribe({
@@ -46,7 +48,7 @@ export class ProfilePage implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error fetching posts', err);
+        this.logger.error('Error fetching posts', err);
         this.loading.set(false);
       }
     });

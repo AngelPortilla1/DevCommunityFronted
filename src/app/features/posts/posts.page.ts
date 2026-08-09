@@ -6,6 +6,7 @@ import { Post } from '../../core/models/post.model';
 import { CommentService } from '../../core/services/comment.service';
 import { PostComment } from '../../core/models/comment.model';
 import { AuthService } from '../../core/auth/auth.service';
+import { LoggerService } from '../../core/services/logger.service';
 
 @Component({
   selector: 'app-posts',
@@ -52,10 +53,11 @@ export class PostsPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private commentService = inject(CommentService);
   private auth = inject(AuthService);
+  private logger = inject(LoggerService);
 
   ngOnInit(): void {
     const user = this.auth.user();
-    console.log('User State:', user);
+    this.logger.log('User State:', user);
     if (user) {
       this.currentUserId = user.id;
     }
@@ -215,7 +217,7 @@ export class PostsPage implements OnInit {
         post.likes_count = (post.likes_count || 0) + 1;
         this.cdr.markForCheck();
       },
-      error: () => console.error('Error liking post')
+      error: () => this.logger.error('Error liking post')
     });
   }
 
@@ -226,7 +228,7 @@ export class PostsPage implements OnInit {
         post.likes_count = Math.max((post.likes_count || 1) - 1, 0);
         this.cdr.markForCheck();
       },
-      error: () => console.error('Error unliking post')
+      error: () => this.logger.error('Error unliking post')
     });
   }
 
