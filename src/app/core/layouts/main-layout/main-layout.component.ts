@@ -60,14 +60,14 @@ export class MainLayoutComponent {
   }
 
   navItems = [
-    { label: 'INICIO', icon: this.Home, route: '/posts' },
-    { label: 'EXPLORAR', icon: this.Compass, route: '/explore' },
-    { label: 'NOTIFICACIONES', icon: this.Bell, route: '/notifications' },
-    { label: 'GUARDADOS', icon: this.Bookmark, route: '/saved' },
-    { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/trending' },
-    { label: 'MENSAJES', icon: this.MessageSquare, route: '/messages' },
+    { label: 'INICIO', icon: this.Home, route: '/feed' },
+    { label: 'EXPLORAR', icon: this.Compass, route: '/feed' },
+    { label: 'NOTIFICACIONES', icon: this.Bell, route: '/feed' },
+    { label: 'GUARDADOS', icon: this.Bookmark, route: '/feed' },
+    { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/feed' },
+    { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed' },
     { label: 'PERFIL', icon: this.UserIcon, route: '/profile' },
-    { label: 'AJUSTES', icon: this.Settings, route: '/settings' },
+    { label: 'AJUSTES', icon: this.Settings, route: '/sessions' },
   ];
 
   trendingTopics = [
