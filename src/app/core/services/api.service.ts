@@ -15,8 +15,12 @@ export class ApiService {
     return this.http.get<T>(`${environment.apiUrl}${url}`, { params });
   }
 
-  getPosts(page = 1, limit = 6) {
-    return this.get<PostsResponse>(`/posts?page=${page}&limit=${limit}`);
+  getPosts(page = 1, limit = 6, search?: string) {
+    let url = `/posts?page=${page}&limit=${limit}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    return this.get<PostsResponse>(url);
   }
 
   getUserStats(userId: number) {

@@ -26,6 +26,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/profile/profile.page').then((m) => m.ProfilePage)
       },
+      {
+        path: 'explore',
+        loadComponent: () =>
+          import('./features/explore/explore.page').then((m) => m.ExplorePage)
+      },
       { path: '', redirectTo: 'feed', pathMatch: 'full' }
     ]
   },
