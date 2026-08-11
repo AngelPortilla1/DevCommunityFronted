@@ -61,10 +61,10 @@ export class MainLayoutComponent {
 
   navItems = [
     { label: 'INICIO', icon: this.Home, route: '/feed' },
-    { label: 'EXPLORAR', icon: this.Compass, route: '/feed' },
+    { label: 'EXPLORAR', icon: this.Compass, route: '/explore' },
     { label: 'NOTIFICACIONES', icon: this.Bell, route: '/feed' },
     { label: 'GUARDADOS', icon: this.Bookmark, route: '/feed' },
-    { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/feed' },
+    { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/trending' },
     { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed' },
     { label: 'PERFIL', icon: this.UserIcon, route: '/profile' },
     { label: 'AJUSTES', icon: this.Settings, route: '/sessions' },

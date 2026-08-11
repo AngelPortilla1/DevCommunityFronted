@@ -1,13 +1,12 @@
 <div class="posts-container">
 
-  <div class="posts-header" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+  <div class="posts-header-vertical">
     <h2 class="posts-title">Explorar</h2>
     <input type="text" 
            [ngModel]="searchQuery" 
            (ngModelChange)="onSearchChange($event)" 
            placeholder="Buscar publicaciones..." 
-           class="form-input" 
-           style="background-color: var(--surface-100); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px; padding: 0.75rem 1rem;">
+           class="form-input">
   </div>
 
   <div class="posts-timeline">

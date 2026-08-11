@@ -22,6 +22,49 @@
   margin-bottom: 2rem;
 }
 
+.posts-header-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.trending-tabs {
+  display: flex;
+  gap: 0.75rem;
+  border-bottom: 2px dashed #e2e8f0;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-tab {
+  padding: 0.5rem 1.25rem;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 700;
+  border: 2px solid #e2e8f0;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.btn-tab:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.btn-tab.active {
+  background: #059669;
+  color: #fff;
+  border-color: #047857;
+  box-shadow: 2px 2px 0px #0f172a;
+  transform: translate(-1px, -1px);
+}
+
 .posts-title {
   font-size: 1.25rem;
   font-weight: 500;

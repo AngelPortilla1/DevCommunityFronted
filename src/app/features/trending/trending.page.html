@@ -1,11 +1,11 @@
 <div class="posts-container">
 
-  <div class="posts-header" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+  <div class="posts-header-vertical">
     <h2 class="posts-title">Tendencias</h2>
-    <div class="trending-tabs" style="display: flex; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-      <button (click)="setTab('hoy')" [class.active]="currentTab === 'hoy'" style="padding: 0.5rem 1rem; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 8px;" [style.background]="currentTab === 'hoy' ? 'var(--primary)' : 'transparent'" [style.color]="currentTab === 'hoy' ? 'white' : 'var(--text-secondary)'">Hoy</button>
-      <button (click)="setTab('semana')" [class.active]="currentTab === 'semana'" style="padding: 0.5rem 1rem; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 8px;" [style.background]="currentTab === 'semana' ? 'var(--primary)' : 'transparent'" [style.color]="currentTab === 'semana' ? 'white' : 'var(--text-secondary)'">Esta semana</button>
-      <button (click)="setTab('mes')" [class.active]="currentTab === 'mes'" style="padding: 0.5rem 1rem; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 8px;" [style.background]="currentTab === 'mes' ? 'var(--primary)' : 'transparent'" [style.color]="currentTab === 'mes' ? 'white' : 'var(--text-secondary)'">Este mes</button>
+    <div class="trending-tabs">
+      <button (click)="setTab('hoy')" class="btn-tab" [class.active]="currentTab === 'hoy'">Hoy</button>
+      <button (click)="setTab('semana')" class="btn-tab" [class.active]="currentTab === 'semana'">Esta semana</button>
+      <button (click)="setTab('mes')" class="btn-tab" [class.active]="currentTab === 'mes'">Este mes</button>
     </div>
   </div>
 
