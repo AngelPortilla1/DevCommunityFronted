@@ -31,6 +31,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/explore/explore.page').then((m) => m.ExplorePage)
       },
+      {
+        path: 'trending',
+        loadComponent: () =>
+          import('./features/trending/trending.page').then((m) => m.TrendingPage)
+      },
       { path: '', redirectTo: 'feed', pathMatch: 'full' }
     ]
   },
