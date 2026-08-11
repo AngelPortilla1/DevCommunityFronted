@@ -15,10 +15,16 @@ export class ApiService {
     return this.http.get<T>(`${environment.apiUrl}${url}`, { params });
   }
 
-  getPosts(page = 1, limit = 6, search?: string) {
+  getPosts(page = 1, limit = 6, search?: string, order?: string, sinceHours?: number) {
     let url = `/posts?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (order) {
+      url += `&order=${order}`;
+    }
+    if (sinceHours) {
+      url += `&since_hours=${sinceHours}`;
     }
     return this.get<PostsResponse>(url);
   }
