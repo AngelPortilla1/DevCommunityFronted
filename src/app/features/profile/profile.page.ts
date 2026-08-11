@@ -11,7 +11,8 @@ import { LoggerService } from '../../core/services/logger.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterLink],
-  templateUrl: './profile.page.html'
+  templateUrl: './profile.page.html',
+  styleUrls: ['./profile.page.css']
 })
 export class ProfilePage implements OnInit {
   authService = inject(AuthService);

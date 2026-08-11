@@ -4,12 +4,14 @@ import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { Session, SessionMetrics } from '../../core/models/session.model';
 
+
 @Component({
   selector: 'app-sessions',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
-  templateUrl: './sessions.page.html'
+  templateUrl: './sessions.page.html',
+  styleUrls: ['./sessions.page.css']
 })
 export class SessionsPage implements OnInit {
   sessionService = inject(SessionService);
@@ -17,7 +19,7 @@ export class SessionsPage implements OnInit {
 
   sessions = signal<Session[]>([]);
   metrics = signal<SessionMetrics | null>(null);
-  
+
   loading = signal<boolean>(true);
 
   ngOnInit() {
@@ -30,14 +32,14 @@ export class SessionsPage implements OnInit {
     this.sessionService.getActiveSessions().subscribe({
       next: (response) => {
         const mapped = response.sessions;
-        
+
         // Colocar la sesión actual siempre al principio
         mapped.sort((a, b) => {
           if (a.is_current) return -1;
           if (b.is_current) return 1;
           return new Date(b.last_activity).getTime() - new Date(a.last_activity).getTime();
         });
-        
+
         this.sessions.set(mapped);
       },
       error: () => this.loading.set(false)
