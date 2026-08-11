@@ -70,14 +70,12 @@
                 </div>
 
                 <div class="post-visual">
-                  <div class="visual-bg-1"></div>
-                  <div class="visual-bg-2">
-                    <div class="visual-placeholder">
-                      <span class="visual-icon">⚡</span>
-                      <p class="visual-label">Visual_Asset</p>
-                    </div>
-                  </div>
-                  <div class="visual-tape"></div>
+                  <img
+                    [src]="post.image_url"
+                    [alt]="post.title"
+                    class="post-image"
+                    loading="lazy"
+                  />
                 </div>
               </div>
 
@@ -220,6 +218,18 @@
               placeholder="Share your thoughts..."></textarea>
           </div>
 
+          <div>
+            <label class="form-label">Image URL <span class="label-required">*</span></label>
+            <input type="url" [(ngModel)]="newPost.image_url"
+              class="form-input"
+              placeholder="https://example.com/image.jpg">
+            @if (newPost.image_url) {
+              <div class="image-preview-wrapper">
+                <img [src]="newPost.image_url" alt="Preview" class="image-preview" />
+              </div>
+            }
+          </div>
+
           <div class="modal-actions">
             <button (click)="closeCreateModal()" class="btn-modal-cancel">
               Cancelar
@@ -278,6 +288,18 @@
             <textarea [(ngModel)]="editPostData.content" rows="4"
               class="form-textarea form-input-edit"
               placeholder="Contenido del post..."></textarea>
+          </div>
+
+          <div>
+            <label class="form-label">Image URL <span class="label-required">*</span></label>
+            <input type="url" [(ngModel)]="editPostData.image_url"
+              class="form-input form-input-edit"
+              placeholder="https://example.com/image.jpg">
+            @if (editPostData.image_url) {
+              <div class="image-preview-wrapper">
+                <img [src]="editPostData.image_url" alt="Preview" class="image-preview" />
+              </div>
+            }
           </div>
 
           <div class="modal-actions">

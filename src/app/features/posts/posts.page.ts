@@ -33,14 +33,14 @@ export class PostsPage implements OnInit {
 
   // ── Crear post ──────────────────────────────────────────────
   showCreateModal = false;
-  newPost = { title: '', content: '' };
+  newPost = { title: '', content: '', image_url: '' };
   creating = false;
   createError: string | null = null;
 
   // ── Editar post ──────────────────────────────────────────────
   showEditPostModal = false;
   editingPost: Post | null = null;
-  editPostData = { title: '', content: '' };
+  editPostData = { title: '', content: '', image_url: '' };
   savingPost = false;
   editPostError: string | null = null;
 
@@ -119,12 +119,12 @@ export class PostsPage implements OnInit {
 
   closeCreateModal() {
     this.showCreateModal = false;
-    this.newPost = { title: '', content: '' };
+    this.newPost = { title: '', content: '', image_url: '' };
   }
 
   createPost() {
-    if (!this.newPost.title || !this.newPost.content) {
-      this.createError = 'Todos los campos son obligatorios';
+    if (!this.newPost.title || !this.newPost.content || !this.newPost.image_url) {
+      this.createError = 'Todos los campos son obligatorios (incluyendo la imagen)';
       return;
     }
     this.creating = true;
@@ -148,7 +148,7 @@ export class PostsPage implements OnInit {
 
   openEditPostModal(post: Post) {
     this.editingPost = post;
-    this.editPostData = { title: post.title, content: post.content };
+    this.editPostData = { title: post.title, content: post.content, image_url: post.image_url || '' };
     this.editPostError = null;
     this.showEditPostModal = true;
   }
@@ -156,13 +156,13 @@ export class PostsPage implements OnInit {
   closeEditPostModal() {
     this.showEditPostModal = false;
     this.editingPost = null;
-    this.editPostData = { title: '', content: '' };
+    this.editPostData = { title: '', content: '', image_url: '' };
   }
 
   savePost() {
     if (!this.editingPost) return;
-    if (!this.editPostData.title || !this.editPostData.content) {
-      this.editPostError = 'Todos los campos son obligatorios';
+    if (!this.editPostData.title || !this.editPostData.content || !this.editPostData.image_url) {
+      this.editPostError = 'Todos los campos son obligatorios (incluyendo la imagen)';
       return;
     }
     this.savingPost = true;

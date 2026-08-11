@@ -2,6 +2,7 @@ export interface Post {
   id: number;
   title: string;
   content: string;
+  image_url: string;
   author?: {
     id: number;
     username: string;
