@@ -32,6 +32,11 @@ export const routes: Routes = [
           import('./features/explore/explore.page').then((m) => m.ExplorePage)
       },
       {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./features/notifications/notifications.page').then((m) => m.NotificationsPage)
+      },
+      {
         path: 'trending',
         loadComponent: () =>
           import('./features/trending/trending.page').then((m) => m.TrendingPage)

@@ -30,9 +30,12 @@
 
     <!-- Acciones top -->
     <div class="topbar-actions">
-      <button class="action-btn action-bell">
+      <a routerLink="/notifications" class="action-btn action-bell relative" title="Notificaciones">
         <lucide-icon [img]="Bell" class="action-icon"></lucide-icon>
-      </button>
+        <span *ngIf="unreadNotificationsCount() > 0" class="topbar-badge">
+          {{ unreadNotificationsCount() > 99 ? '99+' : unreadNotificationsCount() }}
+        </span>
+      </a>
       <button class="action-btn action-chat">
         <lucide-icon [img]="MessageSquare" class="action-icon"></lucide-icon>
       </button>
@@ -101,6 +104,9 @@
           class="nav-item">
           <lucide-icon [img]="item.icon" class="nav-icon"></lucide-icon>
           <span class="nav-label">{{ item.label }}</span>
+          @if (item.badge && item.badge() > 0) {
+            <span class="nav-badge">{{ item.badge() > 99 ? '99+' : item.badge() }}</span>
+          }
         </a>
         }
       </nav>

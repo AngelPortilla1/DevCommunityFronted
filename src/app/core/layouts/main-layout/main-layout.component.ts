@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { RouterLink, RouterOutlet, Router, RouterLinkActive } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../../../core/auth/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import {
   LucideAngularModule,
   Home,
@@ -29,9 +30,10 @@ import {
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css'],
 })
-export class MainLayoutComponent {
+export class MainLayoutComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
 
   // Expose icons to template
@@ -54,6 +56,15 @@ export class MainLayoutComponent {
   isMobileMenuOpen = false;
 
   user = this.authService.user;
+  unreadNotificationsCount = this.notificationService.unreadCount;
+
+  ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      this.notificationService.getUnreadCount().subscribe({
+        error: (err) => console.error('Error getting notification count:', err)
+      });
+    }
+  }
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
@@ -62,7 +73,7 @@ export class MainLayoutComponent {
   navItems = [
     { label: 'INICIO', icon: this.Home, route: '/feed' },
     { label: 'EXPLORAR', icon: this.Compass, route: '/explore' },
-    { label: 'NOTIFICACIONES', icon: this.Bell, route: '/feed' },
+    { label: 'NOTIFICACIONES', icon: this.Bell, route: '/notifications', badge: () => this.unreadNotificationsCount() },
     { label: 'GUARDADOS', icon: this.Bookmark, route: '/feed' },
     { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/trending' },
     { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed' },
