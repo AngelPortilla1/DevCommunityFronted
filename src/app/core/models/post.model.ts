@@ -8,11 +8,13 @@ export interface Post {
     username: string;
     email: string;
   };
+  author_id?: number;
   created_at?: string;
   updated_at?: string | null;
   likes_count?: number;
   comments_count?: number;
   liked_by_me?: boolean;
+  is_saved?: boolean;
 }
 
 export interface PostsResponse {

@@ -74,7 +74,7 @@ export class MainLayoutComponent implements OnInit {
     { label: 'INICIO', icon: this.Home, route: '/feed' },
     { label: 'EXPLORAR', icon: this.Compass, route: '/explore' },
     { label: 'NOTIFICACIONES', icon: this.Bell, route: '/notifications', badge: () => this.unreadNotificationsCount() },
-    { label: 'GUARDADOS', icon: this.Bookmark, route: '/feed' },
+    { label: 'GUARDADOS', icon: this.Bookmark, route: '/saved' },
     { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/trending' },
     { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed' },
     { label: 'PERFIL', icon: this.UserIcon, route: '/profile' },

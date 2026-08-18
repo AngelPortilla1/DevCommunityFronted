@@ -1,0 +1,231 @@
+<div class="saved-page-container">
+  <!-- Header de Posts Guardados -->
+  <header class="saved-header">
+    <div class="header-title-section">
+      <div class="title-with-badge">
+        <div class="header-icon-box">
+          <lucide-icon [img]="Bookmark" class="w-6 h-6 text-emerald-600"></lucide-icon>
+        </div>
+        <div>
+          <h1 class="page-title">Posts Guardados</h1>
+          <span class="saved-count-pill" *ngIf="totalItems() > 0">
+            {{ totalItems() }} guardado{{ totalItems() === 1 ? '' : 's' }}
+          </span>
+        </div>
+      </div>
+      <p class="page-subtitle">Tus publicaciones y tutoriales marcados para leer o consultar más tarde.</p>
+    </div>
+
+    <div class="header-actions">
+      <!-- Search inside saved -->
+      <div class="saved-search-box">
+        <lucide-icon [img]="Search" class="search-box-icon"></lucide-icon>
+        <input
+          type="text"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Buscar en guardados..."
+          class="saved-search-input"
+        />
+      </div>
+
+      <button
+        class="refresh-btn"
+        (click)="loadSavedPosts(currentPage())"
+        title="Recargar posts guardados"
+      >
+        <lucide-icon [img]="RefreshCw" [class.animate-spin]="loading()" class="w-4 h-4"></lucide-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Skeletons Loader -->
+  <div *ngIf="loading()" class="saved-posts-list">
+    <div *ngFor="let item of [1, 2, 3]" class="saved-post-skeleton">
+      <div class="skeleton-author-row">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-author-info">
+          <div class="skeleton-line w-32"></div>
+          <div class="skeleton-line w-20"></div>
+        </div>
+      </div>
+      <div class="skeleton-line-title"></div>
+      <div class="skeleton-line-content"></div>
+      <div class="skeleton-line-content w-4/5"></div>
+      <div class="skeleton-image"></div>
+    </div>
+  </div>
+
+  <!-- Lista de Posts Guardados -->
+  <div *ngIf="!loading() && filteredPosts().length > 0" class="saved-posts-list">
+    <article
+      *ngFor="let post of filteredPosts()"
+      class="saved-post-card"
+    >
+      <!-- Cabecera del Post -->
+      <div class="post-card-header">
+        <div class="author-info">
+          <div class="author-avatar">
+            {{ (post.author?.username || 'U').charAt(0).toUpperCase() }}
+          </div>
+          <div class="author-details">
+            <span class="author-name">@{{ post.author?.username || 'anónimo' }}</span>
+            <span class="post-date">{{ formatDate(post.created_at) }}</span>
+          </div>
+        </div>
+
+        <!-- Botón Quitar de Guardados -->
+        <button
+          class="btn-unsave"
+          [disabled]="unsavingPostId() === post.id"
+          (click)="toggleSave(post, $event)"
+          title="Quitar de guardados"
+        >
+          <lucide-icon
+            [img]="unsavingPostId() === post.id ? RefreshCw : BookmarkCheck"
+            [class.animate-spin]="unsavingPostId() === post.id"
+            class="w-4 h-4 text-emerald-600"
+          ></lucide-icon>
+          <span class="unsave-text">Guardado</span>
+        </button>
+      </div>
+
+      <!-- Contenido Principal -->
+      <div class="post-body">
+        <h2 class="post-title">{{ post.title }}</h2>
+        <p class="post-content-text">{{ post.content }}</p>
+
+        <!-- Imagen si existe -->
+        <div *ngIf="post.image_url" class="post-image-wrapper">
+          <img
+            [src]="post.image_url"
+            [alt]="post.title"
+            class="post-image"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      <!-- Barra de Acciones del Post -->
+      <div class="post-actions-bar">
+        <!-- Likes -->
+        <button
+          class="action-pill btn-like"
+          [class.liked]="post.liked_by_me"
+          (click)="toggleLike(post, $event)"
+        >
+          <lucide-icon
+            [img]="Heart"
+            class="w-4 h-4"
+            [class.fill-rose-500]="post.liked_by_me"
+            [class.text-rose-500]="post.liked_by_me"
+          ></lucide-icon>
+          <span class="action-count">{{ post.likes_count || 0 }}</span>
+          <span class="action-label">Likes</span>
+        </button>
+
+        <!-- Comentarios -->
+        <button
+          class="action-pill btn-comments"
+          [class.active]="commentsVisible[post.id]"
+          (click)="toggleComments(post.id, $event)"
+        >
+          <lucide-icon [img]="MessageSquare" class="w-4 h-4 text-sky-500"></lucide-icon>
+          <span class="action-count">{{ (commentsMap[post.id] || []).length || post.comments_count || 0 }}</span>
+          <span class="action-label">Comentarios</span>
+        </button>
+      </div>
+
+      <!-- Sección de Comentarios Expandible -->
+      <div *ngIf="commentsVisible[post.id]" class="comments-section">
+        <div class="comments-divider"></div>
+
+        <!-- Input para nuevo comentario -->
+        <div class="new-comment-box">
+          <input
+            type="text"
+            [(ngModel)]="newCommentText[post.id]"
+            (keyup.enter)="addComment(post.id)"
+            placeholder="Escribe un comentario respetuoso..."
+            class="new-comment-input"
+          />
+          <button
+            class="send-comment-btn"
+            [disabled]="!newCommentText[post.id]?.trim() || submittingComment[post.id]"
+            (click)="addComment(post.id)"
+          >
+            <lucide-icon [img]="Send" class="w-4 h-4"></lucide-icon>
+          </button>
+        </div>
+
+        <!-- Spinner de carga de comentarios -->
+        <div *ngIf="loadingComments[post.id]" class="comments-loading">
+          <lucide-icon [img]="RefreshCw" class="w-5 h-5 animate-spin text-emerald-600"></lucide-icon>
+          <span>Cargando comentarios...</span>
+        </div>
+
+        <!-- Lista de Comentarios -->
+        <div *ngIf="!loadingComments[post.id] && (commentsMap[post.id] || []).length > 0" class="comments-list">
+          <div *ngFor="let comment of commentsMap[post.id]" class="comment-item">
+            <div class="comment-avatar">
+              {{ (comment.author.username || 'U').charAt(0).toUpperCase() }}
+            </div>
+            <div class="comment-bubble">
+              <div class="comment-header">
+                <span class="comment-author">@{{ comment.author.username }}</span>
+                <span class="comment-time">{{ formatDate(comment.created_at) }}</span>
+              </div>
+              <p class="comment-text">{{ comment.content }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!loadingComments[post.id] && (!commentsMap[post.id] || commentsMap[post.id].length === 0)" class="no-comments-msg">
+          Sé el primero en comentar este post guardado.
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Estado Vacío -->
+  <div *ngIf="!loading() && filteredPosts().length === 0" class="empty-state">
+    <div class="empty-icon-wrapper">
+      <lucide-icon [img]="Bookmark" class="w-12 h-12 text-emerald-600"></lucide-icon>
+    </div>
+    <h3 class="empty-title">
+      {{ searchTerm() ? 'No se encontraron resultados' : 'No tienes posts guardados' }}
+    </h3>
+    <p class="empty-desc">
+      {{ searchTerm() ? 'Intenta buscar con otras palabras o limpia el filtro.' : 'Cuando encuentres publicaciones interesantes en el Feed o Explorar, haz clic en el botón de guardar para verlas aquí.' }}
+    </p>
+    <a *ngIf="!searchTerm()" routerLink="/feed" class="empty-cta-btn">
+      <lucide-icon [img]="Compass" class="w-4 h-4"></lucide-icon>
+      <span>Explorar el Feed</span>
+    </a>
+  </div>
+
+  <!-- Paginación -->
+  <footer *ngIf="!loading() && totalPages() > 1" class="pagination-footer">
+    <div class="pagination-info">
+      Página <strong>{{ currentPage() }}</strong> de <strong>{{ totalPages() }}</strong> ({{ totalItems() }} guardados)
+    </div>
+    <div class="pagination-controls">
+      <button
+        class="page-btn"
+        [disabled]="currentPage() <= 1"
+        (click)="loadSavedPosts(currentPage() - 1)"
+      >
+        <lucide-icon [img]="ChevronLeft" class="w-4 h-4"></lucide-icon>
+        <span>Anterior</span>
+      </button>
+      <button
+        class="page-btn"
+        [disabled]="currentPage() >= totalPages()"
+        (click)="loadSavedPosts(currentPage() + 1)"
+      >
+        <span>Siguiente</span>
+        <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
+      </button>
+    </div>
+  </footer>
+</div>

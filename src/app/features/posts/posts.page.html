@@ -94,6 +94,17 @@
                   <span class="comments-emoji">💬</span>
                   <span>Comentarios ({{ (commentsMap[post.id] || []).length }})</span>
                 </button>
+
+                <button
+                  (click)="toggleBookmark(post, $event)"
+                  class="btn-bookmark"
+                  [class.saved]="post.is_saved"
+                  [disabled]="savingBookmark[post.id]"
+                  [title]="post.is_saved ? 'Quitar de guardados' : 'Guardar post'"
+                >
+                  <span class="bookmark-icon">{{ post.is_saved ? '🔖' : '📑' }}</span>
+                  <span>{{ post.is_saved ? 'Guardado' : 'Guardar' }}</span>
+                </button>
               </div>
             </div>
           </div>

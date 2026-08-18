@@ -7,6 +7,7 @@ import { CommentService } from '../../core/services/comment.service';
 import { PostComment } from '../../core/models/comment.model';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
+import { SavedService } from '../../core/services/saved.service';
 
 @Component({
   selector: 'app-posts',
@@ -29,6 +30,7 @@ export class PostsPage implements OnInit {
   commentsVisible: Record<number, boolean> = {};
   newComment: Record<number, string> = {};
   submittingComment: Record<number, boolean> = {};
+  savingBookmark: Record<number, boolean> = {};
   currentUserId: number | null = null;
 
   // ── Crear post ──────────────────────────────────────────────
@@ -52,6 +54,7 @@ export class PostsPage implements OnInit {
   private apiService = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
   private commentService = inject(CommentService);
+  private savedService = inject(SavedService);
   private auth = inject(AuthService);
   private logger = inject(LoggerService);
 
@@ -230,6 +233,43 @@ export class PostsPage implements OnInit {
       },
       error: () => this.logger.error('Error unliking post')
     });
+  }
+
+  // ── Guardados / Bookmarks ────────────────────────────────────
+
+  toggleBookmark(post: Post, event?: MouseEvent): void {
+    if (event) event.stopPropagation();
+    if (this.savingBookmark[post.id]) return;
+
+    this.savingBookmark[post.id] = true;
+
+    if (post.is_saved) {
+      this.savedService.unsavePost(post.id).subscribe({
+        next: () => {
+          post.is_saved = false;
+          this.savingBookmark[post.id] = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error removing bookmark:', err);
+          this.savingBookmark[post.id] = false;
+          this.cdr.markForCheck();
+        }
+      });
+    } else {
+      this.savedService.savePost(post.id).subscribe({
+        next: () => {
+          post.is_saved = true;
+          this.savingBookmark[post.id] = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error saving bookmark:', err);
+          this.savingBookmark[post.id] = false;
+          this.cdr.markForCheck();
+        }
+      });
+    }
   }
 
   // ── Comentarios ──────────────────────────────────────────────
