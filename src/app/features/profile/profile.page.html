@@ -1,93 +1,281 @@
-<div class="profile-container">
+<div class="profile-page-container">
 
-  <!-- ── Profile Header ───────────────────────────────────── -->
-  <section class="profile-header-card">
-
-    <div class="profile-header-inner">
-
-      <!-- Avatar -->
-      <div class="profile-avatar">
-        <span class="profile-avatar-letter">
-          {{ (user()?.username || 'U')?.charAt(0) }}
-        </span>
-      </div>
-
-      <!-- Info -->
-      <div class="profile-info">
-        <span class="profile-role-badge">
-          {{ user()?.role === 'admin' ? 'Administrador' : 'Desarrollador' }}
-        </span>
-
-        <h1 class="profile-username">
-          &#64;{{ user()?.username || 'Usuario' }}
-        </h1>
-        <p class="profile-email">
-          {{ user()?.email || 'correo@ejemplo.com' }}
-        </p>
-
-        <button class="btn-edit-profile">
-          Editar Perfil
-        </button>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ── Stats ────────────────────────────────────────────── -->
-  <section class="stats-grid">
-
-    <div class="stat-card stat-card--green">
-      <p class="stat-label">Posts</p>
-      <p class="stat-value">{{ stats().posts_count }}</p>
+  <!-- ── Profile Hero / Header Card ───────────────────────────── -->
+  <section class="profile-hero-card">
+    
+    <!-- Cover Banner -->
+    <div class="profile-cover-banner">
+      <div class="banner-gradient-overlay"></div>
+      <div class="banner-dot-pattern"></div>
     </div>
 
-    <div class="stat-card stat-card--blue">
-      <p class="stat-label">Seguidores</p>
-      <p class="stat-value">{{ stats().followers_count }}</p>
-    </div>
+    <!-- Main Profile Info -->
+    <div class="profile-hero-content">
 
-    <div class="stat-card stat-card--pink">
-      <p class="stat-label">Siguiendo</p>
-      <p class="stat-value">{{ stats().following_count }}</p>
-    </div>
-
-  </section>
-
-  <!-- ── Recent Activity ──────────────────────────────────── -->
-  <section class="activity-card">
-
-    <div class="activity-header">
-      <h3 class="activity-title">Actividad Reciente</h3>
-    </div>
-
-    <div *ngIf="loading()" class="activity-loading">
-      <div class="spinner"></div>
-    </div>
-
-    <div *ngIf="!loading() && recentPosts().length === 0" class="activity-empty">
-      No hay publicaciones recientes.
-    </div>
-
-    <div *ngIf="!loading() && recentPosts().length > 0" class="activity-list">
-      <article *ngFor="let post of recentPosts()" class="activity-post">
-        <div class="activity-post-top">
-          <h4 class="activity-post-title">
-            <a [routerLink]="['/posts']">{{ post.title }}</a>
-          </h4>
-          <span class="activity-post-date">
-            {{ post.created_at | date: 'dd MMM' }}
+      <!-- Avatar & Quick Badge -->
+      <div class="avatar-wrapper">
+        <div class="profile-avatar-main">
+          <span class="profile-avatar-letter">
+            {{ (user()?.username || 'U').charAt(0).toUpperCase() }}
           </span>
         </div>
-        <p class="activity-post-content">
-          {{ post.content }}
-        </p>
-        <div class="activity-post-meta">
-          <span class="meta-item"><span class="meta-icon">❤️</span> {{ post.likes_count }}</span>
-          <span class="meta-item"><span class="meta-icon">💬</span> {{ post.comments_count }}</span>
+        <div class="online-indicator-pill" title="Cuenta activa">
+          <span class="online-dot"></span>
         </div>
+      </div>
+
+      <!-- User Information -->
+      <div class="profile-meta-section">
+        <div class="profile-meta-top">
+          <div>
+            <div class="username-row">
+              <h1 class="profile-username">&#64;{{ user()?.username || 'Usuario' }}</h1>
+              <span class="profile-role-pill" [ngClass]="user()?.role === 'admin' ? 'role-pill--admin' : 'role-pill--dev'">
+                <lucide-icon [img]="Shield" class="w-3 h-3"></lucide-icon>
+                <span>{{ user()?.role === 'admin' ? 'Administrador' : 'Desarrollador' }}</span>
+              </span>
+            </div>
+            <p class="profile-email-text">
+              <lucide-icon [img]="Mail" class="w-3.5 h-3.5"></lucide-icon>
+              <span>{{ user()?.email || 'correo@ejemplo.com' }}</span>
+              <span class="meta-sep">•</span>
+              <span class="uid-tag">UID #{{ user()?.id }}</span>
+            </p>
+          </div>
+
+          <!-- Profile Actions -->
+          <div class="profile-actions-bar">
+            <a routerLink="/feed" class="btn-new-post">
+              <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
+              <span>Crear Post</span>
+            </a>
+            <a routerLink="/sessions" class="btn-profile-settings">
+              <lucide-icon [img]="Settings" class="w-4 h-4"></lucide-icon>
+              <span>Ajustes</span>
+            </a>
+            <button (click)="refresh()" class="refresh-profile-btn" title="Recargar datos">
+              <lucide-icon [img]="RefreshCw" [class.animate-spin]="isRefreshing()" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dev Tags / Stack -->
+        <div class="profile-stack-tags">
+          <span class="stack-tag">
+            <lucide-icon [img]="Code2" class="w-3 h-3 text-emerald-500"></lucide-icon>
+            <span>TypeScript</span>
+          </span>
+          <span class="stack-tag">
+            <lucide-icon [img]="Layers" class="w-3 h-3 text-sky-500"></lucide-icon>
+            <span>Angular</span>
+          </span>
+          <span class="stack-tag">
+            <lucide-icon [img]="Sparkles" class="w-3 h-3 text-amber-500"></lucide-icon>
+            <span>FastAPI</span>
+          </span>
+          <span class="stack-tag">
+            <lucide-icon [img]="Globe" class="w-3 h-3 text-indigo-500"></lucide-icon>
+            <span>TailwindCSS</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ── Stats Grid ───────────────────────────────────────────── -->
+  <section class="stats-grid">
+
+    <div class="stat-card stat-card--emerald">
+      <div class="stat-top">
+        <span class="stat-label">Publicaciones</span>
+        <div class="stat-icon-wrapper stat-icon--emerald">
+          <lucide-icon [img]="FileText" class="w-4 h-4 text-emerald-600"></lucide-icon>
+        </div>
+      </div>
+      <p class="stat-value">{{ stats().posts_count }}</p>
+      <span class="stat-subtitle">Aportes a la comunidad</span>
+    </div>
+
+    <div class="stat-card stat-card--sky">
+      <div class="stat-top">
+        <span class="stat-label">Seguidores</span>
+        <div class="stat-icon-wrapper stat-icon--sky">
+          <lucide-icon [img]="Users" class="w-4 h-4 text-sky-600"></lucide-icon>
+        </div>
+      </div>
+      <p class="stat-value">{{ stats().followers_count }}</p>
+      <span class="stat-subtitle">Desarrolladores conectados</span>
+    </div>
+
+    <div class="stat-card stat-card--indigo">
+      <div class="stat-top">
+        <span class="stat-label">Siguiendo</span>
+        <div class="stat-icon-wrapper stat-icon--indigo">
+          <lucide-icon [img]="UserCheck" class="w-4 h-4 text-indigo-600"></lucide-icon>
+        </div>
+      </div>
+      <p class="stat-value">{{ stats().following_count }}</p>
+      <span class="stat-subtitle">Compañeros seguidos</span>
+    </div>
+
+    <div class="stat-card stat-card--rose">
+      <div class="stat-top">
+        <span class="stat-label">Interacciones</span>
+        <div class="stat-icon-wrapper stat-icon--rose">
+          <lucide-icon [img]="Heart" class="w-4 h-4 text-rose-600"></lucide-icon>
+        </div>
+      </div>
+      <p class="stat-value">{{ totalLikesReceived() }}</p>
+      <span class="stat-subtitle">Likes en publicaciones</span>
+    </div>
+
+  </section>
+
+  <!-- ── Navigation Tabs ───────────────────────────────────────── -->
+  <div class="profile-tabs-bar">
+    <button
+      class="profile-tab"
+      [class.active]="activeTab() === 'posts'"
+      (click)="activeTab.set('posts')">
+      <lucide-icon [img]="FileText" class="w-4 h-4"></lucide-icon>
+      <span>Mis Publicaciones</span>
+      <span class="tab-count-pill">{{ recentPosts().length }}</span>
+    </button>
+
+    <button
+      class="profile-tab"
+      [class.active]="activeTab() === 'about'"
+      (click)="activeTab.set('about')">
+      <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
+      <span>Información de Perfil</span>
+    </button>
+  </div>
+
+  <!-- ── Tab Content: Publicaciones ────────────────────────────── -->
+  <div *ngIf="activeTab() === 'posts'" class="tab-pane">
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="loading()" class="posts-skeleton-list">
+      <div *ngFor="let s of [1, 2]" class="post-card-skeleton">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-bar w-32"></div>
+            <div class="skeleton-bar w-20"></div>
+          </div>
+        </div>
+        <div class="skeleton-bar w-3/4 h-5 mt-3"></div>
+        <div class="skeleton-bar w-full h-16 mt-2"></div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading() && recentPosts().length === 0" class="empty-profile-posts">
+      <div class="empty-icon-box">
+        <lucide-icon [img]="FileText" class="w-10 h-10 text-emerald-600"></lucide-icon>
+      </div>
+      <h3 class="empty-title">Aún no has publicado nada</h3>
+      <p class="empty-desc">Comparte snippets de código, tutoriales o novedades técnicas con la comunidad de desarrolladores.</p>
+      <a routerLink="/feed" class="btn-create-first-post">
+        <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
+        <span>Crear mi primer post</span>
+      </a>
+    </div>
+
+    <!-- Posts Feed -->
+    <div *ngIf="!loading() && recentPosts().length > 0" class="profile-posts-list">
+      <article *ngFor="let post of recentPosts()" class="profile-post-card">
+
+        <!-- Post Card Header -->
+        <div class="post-card-top">
+          <div class="author-info">
+            <div class="author-avatar-small">
+              {{ (user()?.username || 'U').charAt(0).toUpperCase() }}
+            </div>
+            <div>
+              <span class="author-username">&#64;{{ user()?.username }}</span>
+              <span class="post-date-tag">{{ formatDate(post.created_at) }}</span>
+            </div>
+          </div>
+
+          <span class="post-id-badge font-mono">// ID_{{ post.id }}</span>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-card-body">
+          <h3 class="post-title">
+            <a routerLink="/feed">{{ post.title }}</a>
+          </h3>
+          <p class="post-text">{{ post.content }}</p>
+
+          <!-- Post image if any -->
+          <div *ngIf="post.image_url" class="post-image-box">
+            <img [src]="post.image_url" [alt]="post.title" loading="lazy" class="post-img" />
+          </div>
+        </div>
+
+        <!-- Post Actions / Meta -->
+        <div class="post-card-footer">
+          <div class="post-stat-pill like-stat">
+            <lucide-icon [img]="Heart" class="w-3.5 h-3.5 text-rose-500 fill-rose-500"></lucide-icon>
+            <span>{{ post.likes_count || 0 }} Likes</span>
+          </div>
+
+          <div class="post-stat-pill comment-stat">
+            <lucide-icon [img]="MessageSquare" class="w-3.5 h-3.5 text-sky-500"></lucide-icon>
+            <span>{{ post.comments_count || 0 }} Comentarios</span>
+          </div>
+
+          <a routerLink="/feed" class="post-view-link" title="Ver en el feed">
+            <span>Ver en Feed</span>
+            <lucide-icon [img]="ArrowRight" class="w-3.5 h-3.5"></lucide-icon>
+          </a>
+        </div>
+
       </article>
     </div>
 
-  </section>
+  </div>
+
+  <!-- ── Tab Content: Información de Perfil ────────────────────── -->
+  <div *ngIf="activeTab() === 'about'" class="tab-pane">
+    <section class="about-card">
+      <div class="about-header">
+        <h3 class="about-title">Resumen de Cuenta</h3>
+        <p class="about-subtitle">Detalles de registro e identidad dentro de DevCommunity.</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-item">
+          <span class="about-label">Nombre de Usuario</span>
+          <span class="about-value">&#64;{{ user()?.username }}</span>
+        </div>
+
+        <div class="about-item">
+          <span class="about-label">Correo Electrónico</span>
+          <span class="about-value">{{ user()?.email }}</span>
+        </div>
+
+        <div class="about-item">
+          <span class="about-label">Rol en la Plataforma</span>
+          <span class="about-value text-emerald-700 font-bold capitalize">{{ user()?.role === 'admin' ? 'Administrador' : 'Desarrollador' }}</span>
+        </div>
+
+        <div class="about-item">
+          <span class="about-label">Identificador Único (UID)</span>
+          <span class="about-value font-mono text-xs">#{{ user()?.id }}</span>
+        </div>
+      </div>
+
+      <div class="about-footer">
+        <a routerLink="/sessions" class="btn-go-settings">
+          <lucide-icon [img]="Settings" class="w-4 h-4"></lucide-icon>
+          <span>Ir a Ajustes y Seguridad</span>
+        </a>
+      </div>
+    </section>
+  </div>
 
 </div>
