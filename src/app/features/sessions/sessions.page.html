@@ -1,136 +1,636 @@
-<div class="sessions-container">
+<div class="settings-page-container">
 
-  <!-- ── Page Header ──────────────────────────────────────── -->
-  <header class="sessions-header">
-    <div>
-      <span class="sessions-section-label">// Seguridad</span>
-      <h1 class="sessions-title">Sesiones <span class="sessions-title-accent">Activas</span></h1>
-      <p class="sessions-subtitle">Supervisa tus inicios de sesión y protege tu cuenta</p>
-    </div>
-    <button
-      (click)="revokeOthers()"
-      [disabled]="sessions().length <= 1"
-      class="btn-revoke-others">
-      Cerrar otras sesiones
-    </button>
-  </header>
-
-  <!-- ── Loading Skeleton ─────────────────────────────────── -->
-  <div *ngIf="loading()" class="skeleton-wrapper">
-    <div class="skeleton-card"></div>
-    <div class="skeleton-card"></div>
-    <div class="skeleton-card"></div>
+  <!-- ── Floating Toast Feedback ─────────────────────────────── -->
+  <div *ngIf="toastMessage()" class="toast-floating" [ngClass]="'toast--' + toastMessage()?.type">
+    <lucide-icon [img]="toastMessage()?.type === 'success' ? CheckCircle2 : (toastMessage()?.type === 'danger' ? AlertTriangle : Info)" class="w-4 h-4"></lucide-icon>
+    <span>{{ toastMessage()?.text }}</span>
   </div>
 
-  <!-- ── Metrics ──────────────────────────────────────────── -->
-  <section *ngIf="!loading() && metrics()" class="metrics-grid">
-
-    <div class="metric-card metric-card--green">
-      <div class="metric-top">
-        <dt class="metric-label">Activas</dt>
-        <span class="metric-icon">🟢</span>
-      </div>
-      <dd class="metric-value">{{ metrics()?.total_active_sessions }}</dd>
-    </div>
-
-    <div class="metric-card metric-card--red">
-      <div class="metric-top">
-        <dt class="metric-label">Sospechosas</dt>
-        <span class="metric-icon">⚠️</span>
-      </div>
-      <dd class="metric-value"
-        [class.metric-value--danger]="(metrics()?.suspicious_sessions || 0) > 0"
-        [class.metric-value--safe]="metrics()?.suspicious_sessions === 0">
-        {{ metrics()?.suspicious_sessions }}
-      </dd>
-    </div>
-
-    <div class="metric-card metric-card--blue">
-      <div class="metric-top">
-        <dt class="metric-label">Dispositivos</dt>
-        <span class="metric-icon">📱</span>
-      </div>
-      <dd class="metric-devices">
-        <ul class="devices-list">
-          <li *ngFor="let device of metrics()?.devices_used | keyvalue" class="device-item">
-            <span class="device-name">{{ device.key || 'Desconocido' }}</span>
-            <span class="device-count">{{ device.value }}</span>
-          </li>
-        </ul>
-      </dd>
-    </div>
-
-  </section>
-
-  <!-- ── Sessions List ────────────────────────────────────── -->
-  <section *ngIf="!loading()" class="sessions-list-card">
-
-    <div class="sessions-list-header">
-      <h3 class="sessions-list-title">Historial de Conexiones</h3>
-      <p class="sessions-list-subtitle">// Revisa tus accesos recientes</p>
-    </div>
-
-    <ul role="list" class="sessions-list">
-      <li *ngFor="let session of sessions()" class="session-item"
-        [class.session-item--suspicious]="session.is_suspicious">
-
-        <!-- Suspicious indicator bar -->
-        <div *ngIf="session.is_suspicious" class="session-suspicious-bar"></div>
-
-        <div class="session-inner">
-
-          <!-- Device Icon -->
-          <div class="session-device-icon"
-            [class.session-device-icon--current]="session.is_current">
-            <span *ngIf="session.device_info?.is_mobile || session.device_info?.is_tablet">📱</span>
-            <span *ngIf="session.device_info?.is_pc || (!session.device_info?.is_mobile && !session.device_info?.is_tablet)">💻</span>
-          </div>
-
-          <!-- Session Meta -->
-          <div class="session-meta">
-
-            <div class="session-meta-top">
-              <p class="session-device-name">
-                {{ session.device_info?.os || 'Sistema Desconocido' }}
-                <span class="session-device-sep">en</span>
-                {{ session.device_info?.browser || 'Navegador' }}
-              </p>
-              <span *ngIf="session.is_current" class="session-badge session-badge--current">Actual</span>
-              <span *ngIf="session.is_suspicious" class="session-badge session-badge--suspicious">Inusual</span>
-            </div>
-
-            <div class="session-details">
-              <span class="session-detail-item">
-                <span class="session-detail-label">IP</span>
-                <span class="session-detail-value">{{ session.ip_address }}</span>
-              </span>
-              <span class="session-detail-item">
-                <span class="session-detail-label">ÚLTIMA_ACTV</span>
-                <span>{{ session.last_activity | date:'short' }}</span>
-              </span>
-            </div>
-
-            <div *ngIf="session.is_suspicious && session.suspicion_reasons.length" class="session-reasons">
-              <span *ngFor="let msg of session.suspicion_reasons" class="session-reason-tag">
-                {{ msg }}
-              </span>
-            </div>
-
-          </div>
-
-          <!-- Revoke Action -->
-          <div class="session-action">
-            <button *ngIf="!session.is_current"
-              (click)="revokeSession(session.device_id || session.session_id)"
-              class="btn-revoke-session">
-              Revocar Acceso
-            </button>
-          </div>
-
+  <!-- ── Page Header ─────────────────────────────────────────── -->
+  <header class="settings-header">
+    <div class="header-title-section">
+      <div class="title-with-badge">
+        <div class="header-icon-box">
+          <lucide-icon [img]="Settings" class="w-6 h-6 text-emerald-600"></lucide-icon>
         </div>
-      </li>
-    </ul>
+        <div>
+          <h1 class="page-title">Ajustes del Sistema</h1>
+          <span class="settings-role-pill" *ngIf="user()">
+            {{ user()?.role === 'admin' ? 'Admin' : 'Desarrollador' }}
+          </span>
+        </div>
+      </div>
+      <p class="page-subtitle">Gestiona tu seguridad, dispositivos activos, cuenta y preferencias de la comunidad.</p>
+    </div>
 
-  </section>
+    <div class="header-actions">
+      <button
+        *ngIf="activeTab() === 'security'"
+        (click)="openRevokeOthersModal()"
+        [disabled]="sessions().length <= 1 || isRevokingOthers()"
+        class="btn-revoke-others"
+        title="Cerrar todas las demás sesiones excepto la actual">
+        <lucide-icon [img]="LogOut" [class.animate-spin]="isRevokingOthers()" class="w-4 h-4"></lucide-icon>
+        <span>{{ isRevokingOthers() ? 'Cerrando...' : 'Cerrar otras sesiones' }}</span>
+      </button>
+
+      <button
+        *ngIf="activeTab() !== 'security'"
+        (click)="saveAllPreferences()"
+        [disabled]="isSavingPreferences()"
+        class="btn-save-settings"
+        title="Guardar preferencias">
+        <lucide-icon [img]="isSavingPreferences() ? RefreshCw : Save" [class.animate-spin]="isSavingPreferences()" class="w-4 h-4"></lucide-icon>
+        <span>{{ isSavingPreferences() ? 'Guardando...' : 'Guardar Cambios' }}</span>
+      </button>
+
+      <button
+        class="refresh-btn"
+        (click)="loadData()"
+        title="Recargar datos">
+        <lucide-icon [img]="RefreshCw" [class.animate-spin]="isRefreshing()" class="w-4 h-4"></lucide-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Navigation Tabs ─────────────────────────────────────── -->
+  <nav class="settings-tabs-bar" aria-label="Pestañas de ajustes">
+    <button
+      class="settings-tab"
+      [class.active]="activeTab() === 'security'"
+      (click)="setTab('security')">
+      <lucide-icon [img]="ShieldCheck" class="tab-icon text-emerald-500"></lucide-icon>
+      <span>Seguridad y Sesiones</span>
+      <span class="tab-badge" *ngIf="sessions().length > 0">{{ sessions().length }}</span>
+      <span class="tab-alert-dot" *ngIf="(metrics()?.suspicious_sessions || 0) > 0"></span>
+    </button>
+
+    <button
+      class="settings-tab"
+      [class.active]="activeTab() === 'account'"
+      (click)="setTab('account')">
+      <lucide-icon [img]="UserIcon" class="tab-icon text-sky-500"></lucide-icon>
+      <span>Cuenta y Perfil</span>
+    </button>
+
+    <button
+      class="settings-tab"
+      [class.active]="activeTab() === 'notifications'"
+      (click)="setTab('notifications')">
+      <lucide-icon [img]="Bell" class="tab-icon text-amber-500"></lucide-icon>
+      <span>Notificaciones</span>
+    </button>
+
+    <button
+      class="settings-tab"
+      [class.active]="activeTab() === 'preferences'"
+      (click)="setTab('preferences')">
+      <lucide-icon [img]="Code2" class="tab-icon text-indigo-500"></lucide-icon>
+      <span>Entorno Dev & UI</span>
+    </button>
+
+    <button
+      class="settings-tab"
+      [class.active]="activeTab() === 'privacy'"
+      (click)="setTab('privacy')">
+      <lucide-icon [img]="Lock" class="tab-icon text-slate-500"></lucide-icon>
+      <span>Privacidad & Datos</span>
+    </button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 1: SEGURIDAD Y SESIONES (API REAL CONNECTED)             -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'security'" class="tab-content">
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="loading()" class="skeleton-wrapper">
+      <div class="skeleton-metrics-grid">
+        <div class="skeleton-card skeleton-metric"></div>
+        <div class="skeleton-card skeleton-metric"></div>
+        <div class="skeleton-card skeleton-metric"></div>
+      </div>
+      <div class="skeleton-card skeleton-table"></div>
+    </div>
+
+    <div *ngIf="!loading()">
+
+      <!-- Alerta si hay actividad sospechosa -->
+      <div *ngIf="(metrics()?.suspicious_sessions || 0) > 0" class="security-warning-banner">
+        <div class="warning-icon-wrapper">
+          <lucide-icon [img]="ShieldAlert" class="w-6 h-6 text-rose-600"></lucide-icon>
+        </div>
+        <div class="warning-content">
+          <h4 class="warning-title">Se detectaron accesos inusuales</h4>
+          <p class="warning-text">Hay {{ metrics()?.suspicious_sessions }} sesión(es) marcadas como sospechosas debido a ubicaciones o navegadores no habituales. Te sugerimos revisarlas y revocar su acceso si no las reconoces.</p>
+        </div>
+        <button (click)="openRevokeOthersModal()" class="btn-warning-action">
+          Proteger Cuenta
+        </button>
+      </div>
+
+      <!-- ── Metrics Overview Grid ──────────────────────────── -->
+      <section class="metrics-grid" *ngIf="metrics()">
+
+        <div class="metric-card metric-card--green">
+          <div class="metric-top">
+            <span class="metric-label">Sesiones Activas</span>
+            <div class="metric-icon-badge metric-icon-badge--green">
+              <lucide-icon [img]="Activity" class="w-4 h-4 text-emerald-600"></lucide-icon>
+            </div>
+          </div>
+          <div class="metric-main">
+            <span class="metric-value">{{ metrics()?.total_active_sessions || sessions().length }}</span>
+            <span class="metric-pill metric-pill--safe">
+              <span class="live-dot"></span> Online
+            </span>
+          </div>
+          <p class="metric-footnote">Dispositivos autenticados actualmente</p>
+        </div>
+
+        <div class="metric-card metric-card--rose" [class.metric-card--alert]="(metrics()?.suspicious_sessions || 0) > 0">
+          <div class="metric-top">
+            <span class="metric-label">Accesos Inusuales</span>
+            <div class="metric-icon-badge" [ngClass]="(metrics()?.suspicious_sessions || 0) > 0 ? 'metric-icon-badge--rose' : 'metric-icon-badge--neutral'">
+              <lucide-icon [img]="(metrics()?.suspicious_sessions || 0) > 0 ? ShieldAlert : ShieldCheck" class="w-4 h-4"></lucide-icon>
+            </div>
+          </div>
+          <div class="metric-main">
+            <span class="metric-value" [class.text-rose-600]="(metrics()?.suspicious_sessions || 0) > 0">
+              {{ metrics()?.suspicious_sessions || 0 }}
+            </span>
+            <span class="metric-pill" [ngClass]="(metrics()?.suspicious_sessions || 0) > 0 ? 'metric-pill--danger' : 'metric-pill--safe'">
+              {{ (metrics()?.suspicious_sessions || 0) > 0 ? 'Revisión sugerida' : 'Todo seguro' }}
+            </span>
+          </div>
+          <p class="metric-footnote">Análisis en tiempo real de anomalías</p>
+        </div>
+
+        <div class="metric-card metric-card--blue">
+          <div class="metric-top">
+            <span class="metric-label">Plataformas y Dispositivos</span>
+            <div class="metric-icon-badge metric-icon-badge--blue">
+              <lucide-icon [img]="Smartphone" class="w-4 h-4 text-sky-600"></lucide-icon>
+            </div>
+          </div>
+          <div class="metric-devices-container">
+            <div *ngFor="let device of metrics()?.devices_used | keyvalue" class="device-tag-chip">
+              <span class="device-name">{{ device.key || 'Desconocido' }}</span>
+              <span class="device-count-pill">{{ device.value }}</span>
+            </div>
+            <span *ngIf="!metrics()?.devices_used || (metrics()?.devices_used | keyvalue)?.length === 0" class="text-xs text-slate-400">
+              Sin desglose disponible
+            </span>
+          </div>
+          <p class="metric-footnote">Tipos de navegadores y SO registrados</p>
+        </div>
+
+      </section>
+
+      <!-- ── Sessions List Card ─────────────────────────────── -->
+      <section class="sessions-list-card">
+
+        <div class="card-header-bar">
+          <div>
+            <h3 class="card-title">Dispositivos y Conexiones Activas</h3>
+            <p class="card-subtitle">Listado de sesiones que tienen tokens activos para operar en tu nombre.</p>
+          </div>
+          <span class="sessions-count-badge">{{ sessions().length }} {{ sessions().length === 1 ? 'sesión' : 'sesiones' }}</span>
+        </div>
+
+        <!-- Empty state if 0 sessions -->
+        <div *ngIf="sessions().length === 0" class="empty-sessions-box">
+          <lucide-icon [img]="Shield" class="w-10 h-10 text-slate-300 mb-2"></lucide-icon>
+          <p class="text-sm font-bold text-slate-600">No se encontraron sesiones registradas.</p>
+        </div>
+
+        <!-- Sessions List -->
+        <div class="sessions-feed" *ngIf="sessions().length > 0">
+          <article *ngFor="let session of sessions()" class="session-card" [class.session-card--current]="session.is_current" [class.session-card--suspicious]="session.is_suspicious">
+
+            <!-- Indicator line -->
+            <div *ngIf="session.is_current" class="session-current-stripe"></div>
+            <div *ngIf="session.is_suspicious" class="session-suspicious-stripe"></div>
+
+            <div class="session-card-content">
+
+              <!-- Left: Device Icon -->
+              <div class="device-icon-container" [class.device-icon-container--current]="session.is_current" [class.device-icon-container--suspicious]="session.is_suspicious">
+                <lucide-icon [img]="getDeviceIcon(session)" class="w-6 h-6"></lucide-icon>
+              </div>
+
+              <!-- Center: Info -->
+              <div class="session-info-main">
+                <div class="session-title-row">
+                  <h4 class="session-os-browser">
+                    {{ session.device_info?.os || 'Sistema Desconocido' }}
+                    <span class="os-browser-sep">•</span>
+                    <span class="browser-name">{{ session.device_info?.browser || 'Navegador' }}</span>
+                  </h4>
+
+                  <span *ngIf="session.is_current" class="current-badge">
+                    <span class="pulse-emerald-dot"></span> Este Dispositivo (Actual)
+                  </span>
+
+                  <span *ngIf="session.is_suspicious" class="suspicious-badge">
+                    <lucide-icon [img]="AlertTriangle" class="w-3 h-3 mr-1"></lucide-icon> Inusual
+                  </span>
+                </div>
+
+                <div class="session-details-row">
+                  <!-- IP address with copy button -->
+                  <div class="detail-badge ip-badge" (click)="copyIp(session.ip_address)" title="Clic para copiar dirección IP">
+                    <lucide-icon [img]="Globe" class="w-3 h-3 text-slate-400"></lucide-icon>
+                    <span>{{ session.ip_address }}</span>
+                    <lucide-icon [img]="copiedIp() === session.ip_address ? Check : Copy" class="w-3 h-3 copy-indicator" [class.text-emerald-600]="copiedIp() === session.ip_address"></lucide-icon>
+                  </div>
+
+                  <!-- Last activity -->
+                  <div class="detail-badge">
+                    <lucide-icon [img]="Clock" class="w-3 h-3 text-slate-400"></lucide-icon>
+                    <span>Última actividad: {{ formatDate(session.last_activity) }}</span>
+                  </div>
+
+                  <!-- Session ID snippet -->
+                  <div class="detail-badge font-mono text-[10px] text-slate-400">
+                    ID: {{ (session.device_id || session.session_id)?.slice(0, 10) }}...
+                  </div>
+                </div>
+
+                <!-- Suspicion reasons if any -->
+                <div *ngIf="session.is_suspicious && session.suspicion_reasons.length" class="suspicion-tags-list">
+                  <span *ngFor="let reason of session.suspicion_reasons" class="reason-tag">
+                    <lucide-icon [img]="AlertTriangle" class="w-3 h-3"></lucide-icon>
+                    {{ reason }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Right: Actions -->
+              <div class="session-actions-right">
+                <button
+                  *ngIf="!session.is_current"
+                  (click)="openRevokeModal(session)"
+                  [disabled]="revokingSessionId() === (session.device_id || session.session_id)"
+                  class="btn-revoke-item"
+                  title="Cerrar esta sesión">
+                  <lucide-icon [img]="revokingSessionId() === (session.device_id || session.session_id) ? RefreshCw : Trash2" [class.animate-spin]="revokingSessionId() === (session.device_id || session.session_id)" class="w-3.5 h-3.5"></lucide-icon>
+                  <span>{{ revokingSessionId() === (session.device_id || session.session_id) ? 'Cerrando...' : 'Revocar' }}</span>
+                </button>
+
+                <div *ngIf="session.is_current" class="current-device-label">
+                  <lucide-icon [img]="CheckCircle2" class="w-4 h-4 text-emerald-600"></lucide-icon>
+                  <span>Sesión en uso</span>
+                </div>
+              </div>
+
+            </div>
+
+          </article>
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 2: CUENTA Y PERFIL                                       -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'account'" class="tab-content">
+    <section class="settings-card">
+      <div class="card-header-bar">
+        <div>
+          <h3 class="card-title">Información de Cuenta</h3>
+          <p class="card-subtitle">Datos personales e identidad en la plataforma de desarrolladores.</p>
+        </div>
+        <a routerLink="/profile" class="btn-link-profile">
+          <lucide-icon [img]="ExternalLink" class="w-3.5 h-3.5"></lucide-icon>
+          <span>Ver mi Perfil Público</span>
+        </a>
+      </div>
+
+      <div class="account-profile-overview">
+        <div class="account-avatar-large">
+          {{ (user()?.username || 'U').charAt(0).toUpperCase() }}
+        </div>
+        <div class="account-meta">
+          <h3 class="account-name">&#64;{{ user()?.username || 'Usuario' }}</h3>
+          <p class="account-email">{{ user()?.email || 'correo@ejemplo.com' }}</p>
+          <div class="account-badges">
+            <span class="role-chip">Rol: {{ user()?.role === 'admin' ? 'Administrador' : 'Developer' }}</span>
+            <span class="id-chip">UID: #{{ user()?.id }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid mt-6">
+        <div class="form-group">
+          <label class="form-label">Nombre de Usuario</label>
+          <input type="text" [value]="user()?.username" disabled class="form-input form-input--disabled" />
+          <span class="form-hint">El nombre de usuario es tu identificador único dentro de DevCommunity.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Correo Electrónico</label>
+          <input type="email" [value]="user()?.email" disabled class="form-input form-input--disabled" />
+          <span class="form-hint">Utilizado para iniciar sesión y recibir alertas críticas de seguridad.</span>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Especialidad / Stack Principal</label>
+          <input type="text" placeholder="Ej. Fullstack TypeScript / Python FastAPI" class="form-input" />
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Biografía para la comunidad</label>
+          <textarea rows="3" placeholder="Cuéntale a otros desarrolladores sobre tus proyectos, intereses y librerías favoritas..." class="form-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="card-footer-actions">
+        <button (click)="saveAllPreferences()" [disabled]="isSavingPreferences()" class="btn-primary-action">
+          <lucide-icon [img]="isSavingPreferences() ? RefreshCw : Save" [class.animate-spin]="isSavingPreferences()" class="w-4 h-4"></lucide-icon>
+          <span>Guardar Cambios de Perfil</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Seguridad y Contraseña Card -->
+    <section class="settings-card mt-6">
+      <div class="card-header-bar">
+        <div>
+          <h3 class="card-title">Credenciales y Acceso</h3>
+          <p class="card-subtitle">Seguridad de contraseña y autenticación persistente.</p>
+        </div>
+      </div>
+
+      <div class="security-info-box">
+        <div class="info-icon-box">
+          <lucide-icon [img]="KeyRound" class="w-5 h-5 text-emerald-600"></lucide-icon>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-800">Protección de Contraseña y Tokens</p>
+          <p class="text-xs text-slate-500 mt-0.5">Tu cuenta cuenta con rotación automática de tokens JWT y monitoreo activo de anomalías de IP.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 3: NOTIFICACIONES                                        -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'notifications'" class="tab-content">
+    <section class="settings-card">
+      <div class="card-header-bar">
+        <div>
+          <h3 class="card-title">Preferencias de Notificaciones</h3>
+          <p class="card-subtitle">Configura qué tipo de avisos deseas recibir en tiempo real y por correo.</p>
+        </div>
+      </div>
+
+      <div class="toggle-list">
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Likes y Reacciones</h4>
+            <p class="toggle-desc">Notificarme cuando alguien le dé like a una de mis publicaciones o snippets.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="notificationSettings().pushLikes" (change)="toggleNotif('pushLikes')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Comentarios y Respuestas</h4>
+            <p class="toggle-desc">Notificarme cuando un usuario comente en mis posts o responda a mis aportes.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="notificationSettings().pushComments" (change)="toggleNotif('pushComments')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Menciones e Interacciones</h4>
+            <p class="toggle-desc">Avisar cuando se mencione mi &#64;usuario en una discusión de código.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="notificationSettings().pushMentions" (change)="toggleNotif('pushMentions')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Alertas de Nuevos Inicios de Sesión (Recomendado)</h4>
+            <p class="toggle-desc">Enviar una alerta inmediata cuando se detecte un nuevo dispositivo o IP inusual.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="notificationSettings().emailSecurityAlerts" (change)="toggleNotif('emailSecurityAlerts')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Resumen Semanal de Tendencias</h4>
+            <p class="toggle-desc">Recibir un resumen semanal con los mejores posts y temas destacados de DevCommunity.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="notificationSettings().emailWeeklyDigest" (change)="toggleNotif('emailWeeklyDigest')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="card-footer-actions">
+        <button (click)="saveAllPreferences()" [disabled]="isSavingPreferences()" class="btn-primary-action">
+          <lucide-icon [img]="isSavingPreferences() ? RefreshCw : Save" [class.animate-spin]="isSavingPreferences()" class="w-4 h-4"></lucide-icon>
+          <span>Guardar Notificaciones</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 4: ENTORNO DEV & UI                                      -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'preferences'" class="tab-content">
+    <section class="settings-card">
+      <div class="card-header-bar">
+        <div>
+          <h3 class="card-title">Experiencia de Desarrollador y Feed</h3>
+          <p class="card-subtitle">Personaliza la visualización de bloques de código y el comportamiento del muro.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">Lenguaje de Código Predeterminado</label>
+          <select class="form-select" [value]="devSettings().syntaxHighlight">
+            <option value="typescript">TypeScript / JavaScript</option>
+            <option value="python">Python</option>
+            <option value="rust">Rust</option>
+            <option value="go">Go</option>
+            <option value="sql">SQL / Bases de Datos</option>
+            <option value="html">HTML & Tailwind CSS</option>
+          </select>
+          <span class="form-hint">Plantilla inicial al redactar nuevos snippets.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tamaño de Fuente en Bloques de Código</label>
+          <select class="form-select" [value]="devSettings().fontSize">
+            <option value="13px">Compacto (13px)</option>
+            <option value="14px">Estándar (14px)</option>
+            <option value="15px">Cómodo (15px)</option>
+            <option value="16px">Grande (16px)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="toggle-list mt-6">
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Números de línea en bloques de código</h4>
+            <p class="toggle-desc">Muestra el indicador de numeración lateral en fragmentos largos.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="devSettings().lineNumbers" (change)="toggleDev('lineNumbers')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Modo compacto del Feed</h4>
+            <p class="toggle-desc">Reduce el espaciado entre tarjetas para ver más publicaciones simultáneamente.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="devSettings().compactFeed" (change)="toggleDev('compactFeed')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Animaciones y GIFs automáticos</h4>
+            <p class="toggle-desc">Permite reproducir previsualizaciones interactivas en las publicaciones.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="devSettings().autoPlayGifs" (change)="toggleDev('autoPlayGifs')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="card-footer-actions">
+        <button (click)="saveAllPreferences()" [disabled]="isSavingPreferences()" class="btn-primary-action">
+          <lucide-icon [img]="isSavingPreferences() ? RefreshCw : Save" [class.animate-spin]="isSavingPreferences()" class="w-4 h-4"></lucide-icon>
+          <span>Guardar Configuración UI</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TAB 5: PRIVACIDAD & DATOS                                    -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab() === 'privacy'" class="tab-content">
+    <section class="settings-card">
+      <div class="card-header-bar">
+        <div>
+          <h3 class="card-title">Privacidad y Visibilidad</h3>
+          <p class="card-subtitle">Controla quién puede ver tu actividad y publicaciones en la plataforma.</p>
+        </div>
+      </div>
+
+      <div class="toggle-list">
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Perfil Público y Abierto</h4>
+            <p class="toggle-desc">Permite que cualquier miembro de DevCommunity pueda ver tus estadísticas y posts.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="privacySettings().publicProfile" (change)="togglePrivacy('publicProfile')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <h4 class="toggle-title">Mostrar estado de actividad</h4>
+            <p class="toggle-desc">Muestra una insignia verde en tu avatar cuando estés activo recientemente.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [checked]="privacySettings().showOnlineStatus" (change)="togglePrivacy('showOnlineStatus')">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Descarga de datos -->
+    <section class="settings-card mt-6">
+      <div class="card-header-bar">
+        <div>
+          <h3 class="card-title">Portabilidad de Datos</h3>
+          <p class="card-subtitle">Descarga una copia completa de tus registros y configuración en formato JSON.</p>
+        </div>
+      </div>
+
+      <div class="data-export-box">
+        <div class="export-icon-box">
+          <lucide-icon [img]="Database" class="w-6 h-6 text-indigo-600"></lucide-icon>
+        </div>
+        <div class="export-text-area">
+          <h4 class="export-title">Exportar archivo de cuenta</h4>
+          <p class="export-desc">Incluye información de tu usuario, historial de sesiones activas y preferencias guardadas.</p>
+        </div>
+        <button (click)="exportDataJson()" class="btn-export-data">
+          <lucide-icon [img]="Download" class="w-4 h-4"></lucide-icon>
+          <span>Descargar .JSON</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- MODAL: CONFIRMACIÓN DE REVOCACIÓN                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="modalState().isOpen" class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <div class="modal-icon-badge">
+        <lucide-icon [img]="AlertTriangle" class="w-6 h-6 text-rose-600"></lucide-icon>
+      </div>
+
+      <h3 class="modal-headline">{{ modalState().title }}</h3>
+      <p class="modal-description">{{ modalState().description }}</p>
+
+      <div class="modal-actions-row">
+        <button (click)="closeModal()" class="btn-modal-cancel">
+          Cancelar
+        </button>
+        <button (click)="confirmModalAction()" class="btn-modal-danger">
+          <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
+          <span>Sí, Cerrar Sesión</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
 
 </div>

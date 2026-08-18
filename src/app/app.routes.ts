@@ -22,6 +22,11 @@ export const routes: Routes = [
           import('./features/sessions/sessions.page').then((m) => m.SessionsPage)
       },
       {
+        path: 'settings',
+        redirectTo: 'sessions',
+        pathMatch: 'full'
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/profile/profile.page').then((m) => m.ProfilePage)
