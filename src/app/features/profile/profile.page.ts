@@ -70,6 +70,12 @@ export class ProfilePage implements OnInit {
 
   user = this.authService.user;
 
+  customProfile = signal<{ specialty: string; bio: string; skills: string[] }>({
+    specialty: 'Fullstack Developer',
+    bio: 'Desarrollador enfocado en arquitecturas web modernas, TypeScript y sistemas escalables.',
+    skills: ['TypeScript', 'Angular', 'FastAPI', 'TailwindCSS']
+  });
+
   stats = signal({
     posts_count: 0,
     followers_count: 0,
@@ -86,9 +92,30 @@ export class ProfilePage implements OnInit {
   });
 
   ngOnInit() {
+    this.loadCustomProfile();
     const currentUser = this.user();
     if (currentUser) {
       this.loadProfileData(currentUser.id);
+    }
+  }
+
+  loadCustomProfile() {
+    try {
+      const stored = localStorage.getItem('devcomm_user_custom_profile');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const skillsArr = typeof parsed.skills === 'string'
+          ? parsed.skills.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : (Array.isArray(parsed.skills) ? parsed.skills : ['TypeScript', 'Angular', 'FastAPI']);
+
+        this.customProfile.set({
+          specialty: parsed.specialty || 'Fullstack Developer',
+          bio: parsed.bio || 'Desarrollador apasionado por el código limpio y el desarrollo web.',
+          skills: skillsArr.length > 0 ? skillsArr : ['TypeScript', 'Angular', 'FastAPI', 'TailwindCSS']
+        });
+      }
+    } catch {
+      // ignore
     }
   }
 
@@ -115,6 +142,7 @@ export class ProfilePage implements OnInit {
   }
 
   refresh() {
+    this.loadCustomProfile();
     const currentUser = this.user();
     if (currentUser) {
       this.loadProfileData(currentUser.id);

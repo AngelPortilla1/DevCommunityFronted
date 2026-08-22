@@ -340,17 +340,38 @@
 
         <div class="form-group full-width">
           <label class="form-label">Especialidad / Stack Principal</label>
-          <input type="text" placeholder="Ej. Fullstack TypeScript / Python FastAPI" class="form-input" />
+          <input
+            type="text"
+            [ngModel]="profileForm().specialty"
+            (ngModelChange)="updateProfileField('specialty', $event)"
+            placeholder="Ej. Fullstack TypeScript / Python FastAPI"
+            class="form-input" />
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Tecnologías Principales (Separadas por comas)</label>
+          <input
+            type="text"
+            [ngModel]="profileForm().skills"
+            (ngModelChange)="updateProfileField('skills', $event)"
+            placeholder="Ej. TypeScript, Angular, FastAPI, TailwindCSS"
+            class="form-input" />
+          <span class="form-hint">Estas etiquetas se mostrarán en tu tarjeta de perfil público.</span>
         </div>
 
         <div class="form-group full-width">
           <label class="form-label">Biografía para la comunidad</label>
-          <textarea rows="3" placeholder="Cuéntale a otros desarrolladores sobre tus proyectos, intereses y librerías favoritas..." class="form-textarea"></textarea>
+          <textarea
+            rows="3"
+            [ngModel]="profileForm().bio"
+            (ngModelChange)="updateProfileField('bio', $event)"
+            placeholder="Cuéntale a otros desarrolladores sobre tus proyectos, intereses y librerías favoritas..."
+            class="form-textarea"></textarea>
         </div>
       </div>
 
       <div class="card-footer-actions">
-        <button (click)="saveAllPreferences()" [disabled]="isSavingPreferences()" class="btn-primary-action">
+        <button (click)="saveProfile()" [disabled]="isSavingPreferences()" class="btn-primary-action">
           <lucide-icon [img]="isSavingPreferences() ? RefreshCw : Save" [class.animate-spin]="isSavingPreferences()" class="w-4 h-4"></lucide-icon>
           <span>Guardar Cambios de Perfil</span>
         </button>

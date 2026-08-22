@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterOutlet, Router, RouterLinkActive } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -26,7 +27,7 @@ import {
   selector: 'app-main-layout',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css'],
 })
@@ -54,6 +55,7 @@ export class MainLayoutComponent implements OnInit {
 
   isProfileMenuOpen = false;
   isMobileMenuOpen = false;
+  topbarSearchQuery = '';
 
   user = this.authService.user;
   unreadNotificationsCount = this.notificationService.unreadCount;
@@ -76,7 +78,7 @@ export class MainLayoutComponent implements OnInit {
     { label: 'NOTIFICACIONES', icon: this.Bell, route: '/notifications', badge: () => this.unreadNotificationsCount() },
     { label: 'GUARDADOS', icon: this.Bookmark, route: '/saved' },
     { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/trending' },
-    { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed' },
+    { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed', badgeText: 'Pronto' },
     { label: 'PERFIL', icon: this.UserIcon, route: '/profile' },
     { label: 'AJUSTES', icon: this.Settings, route: '/sessions' },
   ];
@@ -89,6 +91,19 @@ export class MainLayoutComponent implements OnInit {
     '# ROSE_50',
     '# ROSE_9',
   ];
+
+  onTopbarSearch() {
+    const q = this.topbarSearchQuery.trim();
+    if (q) {
+      this.router.navigate(['/explore'], { queryParams: { search: q } });
+      this.topbarSearchQuery = '';
+    }
+  }
+
+  onTopicClick(topic: string) {
+    const cleanTopic = topic.replace(/^#\s*/, '').trim();
+    this.router.navigate(['/explore'], { queryParams: { search: cleanTopic } });
+  }
 
   toggleProfileMenu() {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
@@ -103,3 +118,4 @@ export class MainLayoutComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+

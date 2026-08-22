@@ -61,21 +61,9 @@
 
         <!-- Dev Tags / Stack -->
         <div class="profile-stack-tags">
-          <span class="stack-tag">
+          <span *ngFor="let skill of customProfile().skills" class="stack-tag">
             <lucide-icon [img]="Code2" class="w-3 h-3 text-emerald-500"></lucide-icon>
-            <span>TypeScript</span>
-          </span>
-          <span class="stack-tag">
-            <lucide-icon [img]="Layers" class="w-3 h-3 text-sky-500"></lucide-icon>
-            <span>Angular</span>
-          </span>
-          <span class="stack-tag">
-            <lucide-icon [img]="Sparkles" class="w-3 h-3 text-amber-500"></lucide-icon>
-            <span>FastAPI</span>
-          </span>
-          <span class="stack-tag">
-            <lucide-icon [img]="Globe" class="w-3 h-3 text-indigo-500"></lucide-icon>
-            <span>TailwindCSS</span>
+            <span>{{ skill }}</span>
           </span>
         </div>
       </div>
@@ -261,6 +249,16 @@
         <div class="about-item">
           <span class="about-label">Rol en la Plataforma</span>
           <span class="about-value text-emerald-700 font-bold capitalize">{{ user()?.role === 'admin' ? 'Administrador' : 'Desarrollador' }}</span>
+        </div>
+
+        <div class="about-item">
+          <span class="about-label">Especialidad / Stack</span>
+          <span class="about-value font-medium text-slate-800">{{ customProfile().specialty }}</span>
+        </div>
+
+        <div class="about-item" style="grid-column: 1 / -1;">
+          <span class="about-label">Biografía</span>
+          <span class="about-value text-sm text-slate-600 font-normal leading-relaxed">{{ customProfile().bio }}</span>
         </div>
 
         <div class="about-item">
