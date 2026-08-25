@@ -24,20 +24,49 @@
         </div>
       </div>
 
-      <!-- New conversation form -->
+      <!-- New conversation user search form -->
       <div *ngIf="showNewConversation()" class="new-conversation-form">
-        <p class="form-label">Iniciar conversación por ID de usuario:</p>
+        <p class="form-label">Buscar usuario para iniciar chat:</p>
         <div class="form-row">
-          <input
-            type="number"
-            [(ngModel)]="newConversationUserId"
-            placeholder="ID del usuario"
-            class="new-conv-input"
-            (keyup.enter)="startNewConversation()"
-          />
-          <button class="new-conv-btn" (click)="startNewConversation()">
-            <lucide-icon [img]="Send" class="w-4 h-4"></lucide-icon>
-          </button>
+          <div class="user-search-input-wrapper">
+            <lucide-icon [img]="Search" class="search-icon-conv w-3.5 h-3.5"></lucide-icon>
+            <input
+              type="text"
+              [(ngModel)]="userSearchQuery"
+              (ngModelChange)="searchUsers()"
+              placeholder="Escribe un nombre de usuario..."
+              class="new-conv-input pl-8"
+            />
+          </div>
+        </div>
+
+        <!-- Searching spinner -->
+        <div *ngIf="searchingUsers()" class="user-search-loading">
+          <lucide-icon [img]="RefreshCw" class="w-3.5 h-3.5 animate-spin text-emerald-600"></lucide-icon>
+          <span>Buscando usuarios...</span>
+        </div>
+
+        <!-- Results list -->
+        <div *ngIf="!searchingUsers() && userSearchResults().length > 0" class="user-search-results">
+          <div
+            *ngFor="let user of userSearchResults()"
+            class="user-search-item"
+            (click)="selectUserForConversation(user)"
+          >
+            <div class="user-search-avatar">
+              <img *ngIf="user.avatar_url" [src]="user.avatar_url" [alt]="user.username" class="w-full h-full object-cover rounded-lg" />
+              <span *ngIf="!user.avatar_url" class="text-xs font-bold text-white">{{ user.username.charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="user-search-info">
+              <span class="user-search-name">{{ user.username }}</span>
+              <span class="user-search-email">{{ user.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- No results found -->
+        <div *ngIf="!searchingUsers() && userSearchQuery.trim().length > 0 && userSearchResults().length === 0" class="user-search-empty">
+          <span>No se encontraron usuarios</span>
         </div>
       </div>
 
