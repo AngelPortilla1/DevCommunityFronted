@@ -141,7 +141,13 @@ export class SessionsPage implements OnInit {
     description: ''
   });
 
-  // User Preferences (Persisted locally for Social Network experience)
+  // User Preferences & Profile (Persisted locally for Social Network experience)
+  profileForm = signal({
+    specialty: 'Fullstack Developer',
+    bio: 'Desarrollador enfocado en arquitecturas web modernas, TypeScript y sistemas escalables.',
+    skills: 'TypeScript, Angular, FastAPI, TailwindCSS'
+  });
+
   notificationSettings = signal({
     pushLikes: true,
     pushComments: true,
@@ -293,6 +299,9 @@ export class SessionsPage implements OnInit {
   // --- Preferences persistence ---
   loadSavedPreferences() {
     try {
+      const prof = localStorage.getItem('devcomm_user_custom_profile');
+      if (prof) this.profileForm.set(JSON.parse(prof));
+
       const notifs = localStorage.getItem('devcomm_settings_notifs');
       if (notifs) this.notificationSettings.set(JSON.parse(notifs));
 
@@ -306,9 +315,28 @@ export class SessionsPage implements OnInit {
     }
   }
 
+  saveProfile() {
+    this.isSavingPreferences.set(true);
+    try {
+      localStorage.setItem('devcomm_user_custom_profile', JSON.stringify(this.profileForm()));
+      setTimeout(() => {
+        this.isSavingPreferences.set(false);
+        this.showToast('¡Perfil de usuario actualizado con éxito!', 'success');
+      }, 400);
+    } catch {
+      this.isSavingPreferences.set(false);
+      this.showToast('No se pudieron guardar los datos de perfil.', 'danger');
+    }
+  }
+
+  updateProfileField(field: 'specialty' | 'bio' | 'skills', value: string) {
+    this.profileForm.update(prev => ({ ...prev, [field]: value }));
+  }
+
   saveAllPreferences() {
     this.isSavingPreferences.set(true);
     try {
+      localStorage.setItem('devcomm_user_custom_profile', JSON.stringify(this.profileForm()));
       localStorage.setItem('devcomm_settings_notifs', JSON.stringify(this.notificationSettings()));
       localStorage.setItem('devcomm_settings_dev', JSON.stringify(this.devSettings()));
       localStorage.setItem('devcomm_settings_priv', JSON.stringify(this.privacySettings()));

@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, inject } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { Post } from '../../core/models/post.model';
 import { CommentService } from '../../core/services/comment.service';
@@ -57,6 +58,7 @@ export class ExplorePage implements OnInit {
   private commentService = inject(CommentService);
   private auth = inject(AuthService);
   private logger = inject(LoggerService);
+  private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const user = this.auth.user();
@@ -73,7 +75,15 @@ export class ExplorePage implements OnInit {
       this.loadPosts();
     });
 
-    this.loadPosts();
+    this.route.queryParams.subscribe(params => {
+      const q = params['search'] || params['q'] || '';
+      if (q !== this.searchQuery) {
+        this.searchQuery = q;
+        this.loadPosts();
+      } else if (this.posts.length === 0) {
+        this.loadPosts();
+      }
+    });
   }
 
   // ── Posts ────────────────────────────────────────────────────

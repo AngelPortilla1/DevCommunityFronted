@@ -47,6 +47,11 @@ export const routes: Routes = [
           import('./features/saved/saved.page').then((m) => m.SavedPage)
       },
       {
+        path: 'messages',
+        loadComponent: () =>
+          import('./features/messages/messages.page').then((m) => m.MessagesPage)
+      },
+      {
         path: 'trending',
         loadComponent: () =>
           import('./features/trending/trending.page').then((m) => m.TrendingPage)
