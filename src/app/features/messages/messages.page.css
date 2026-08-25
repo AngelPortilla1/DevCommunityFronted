@@ -189,14 +189,6 @@
   font-style: italic;
   padding: 0.25rem 0.5rem;
 }
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.new-conv-btn:hover {
-  background: #047857;
-  transform: scale(1.05);
-}
 
 /* Search */
 .search-wrapper {
