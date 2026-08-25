@@ -1,0 +1,231 @@
+<div class="messages-container">
+  <!-- ═══════════════════ PANEL IZQUIERDO: Lista de conversaciones ═══════════════════ -->
+  <aside class="conversations-panel" [class.hidden-mobile]="activeConversation()">
+
+    <!-- Header -->
+    <header class="panel-header">
+      <div class="panel-title-row">
+        <h1 class="panel-title">Mensajes</h1>
+        <div class="panel-actions">
+          <button
+            class="icon-action-btn"
+            title="Nueva conversación"
+            (click)="showNewConversation.set(!showNewConversation())"
+          >
+            <lucide-icon [img]="UserPlus" class="w-4 h-4"></lucide-icon>
+          </button>
+          <button
+            class="icon-action-btn"
+            title="Recargar"
+            (click)="loadConversations()"
+          >
+            <lucide-icon [img]="RefreshCw" [class.animate-spin]="loadingConversations()" class="w-4 h-4"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- New conversation form -->
+      <div *ngIf="showNewConversation()" class="new-conversation-form">
+        <p class="form-label">Iniciar conversación por ID de usuario:</p>
+        <div class="form-row">
+          <input
+            type="number"
+            [(ngModel)]="newConversationUserId"
+            placeholder="ID del usuario"
+            class="new-conv-input"
+            (keyup.enter)="startNewConversation()"
+          />
+          <button class="new-conv-btn" (click)="startNewConversation()">
+            <lucide-icon [img]="Send" class="w-4 h-4"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="search-wrapper">
+        <lucide-icon [img]="Search" class="search-icon-conv w-4 h-4"></lucide-icon>
+        <input
+          type="text"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Buscar conversación..."
+          class="search-input-conv"
+        />
+      </div>
+    </header>
+
+    <!-- Loading skeletons -->
+    <div *ngIf="loadingConversations()" class="conv-list">
+      <div *ngFor="let i of [1, 2, 3, 4, 5]" class="conv-item-skeleton">
+        <div class="skeleton-avatar-conv"></div>
+        <div class="skeleton-content-conv">
+          <div class="skeleton-line-name"></div>
+          <div class="skeleton-line-msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversations list -->
+    <div *ngIf="!loadingConversations()" class="conv-list">
+      <div
+        *ngFor="let conv of filteredConversations(); trackBy: trackByConvId"
+        class="conv-item"
+        [class.conv-active]="activeConversation()?.id === conv.id"
+        [class.conv-unread]="conv.unread_count > 0"
+        (click)="selectConversation(conv)"
+      >
+        <!-- Avatar -->
+        <div class="conv-avatar">
+          <img
+            *ngIf="conv.other_user.avatar_url"
+            [src]="conv.other_user.avatar_url"
+            [alt]="conv.other_user.username"
+            class="conv-avatar-img"
+          />
+          <span *ngIf="!conv.other_user.avatar_url" class="conv-avatar-initial">
+            {{ (conv.other_user.username || 'U').charAt(0).toUpperCase() }}
+          </span>
+        </div>
+
+        <!-- Info -->
+        <div class="conv-info">
+          <div class="conv-top-row">
+            <span class="conv-username">{{ conv.other_user.username }}</span>
+            <span *ngIf="conv.last_message" class="conv-time">
+              {{ formatTimeAgo(conv.last_message.created_at) }}
+            </span>
+          </div>
+          <div class="conv-bottom-row">
+            <p class="conv-last-msg" *ngIf="conv.last_message">
+              {{ conv.last_message.content }}
+            </p>
+            <p class="conv-last-msg conv-no-msg" *ngIf="!conv.last_message">
+              Sin mensajes aún
+            </p>
+            <span *ngIf="conv.unread_count > 0" class="conv-unread-badge">
+              {{ conv.unread_count > 99 ? '99+' : conv.unread_count }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="filteredConversations().length === 0" class="conv-empty">
+        <div class="conv-empty-icon">
+          <lucide-icon [img]="Inbox" class="w-10 h-10 text-emerald-600"></lucide-icon>
+        </div>
+        <h3 class="conv-empty-title">Sin conversaciones</h3>
+        <p class="conv-empty-desc">Inicia una nueva conversación para comenzar a chatear.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════ PANEL DERECHO: Chat activo ═══════════════════ -->
+  <section class="chat-panel" [class.hidden-mobile]="!activeConversation()">
+
+    <!-- No conversation selected -->
+    <div *ngIf="!activeConversation()" class="chat-empty-state">
+      <div class="chat-empty-icon">
+        <lucide-icon [img]="MessageSquare" class="w-14 h-14 text-emerald-500"></lucide-icon>
+      </div>
+      <h2 class="chat-empty-title">Selecciona una conversación</h2>
+      <p class="chat-empty-desc">Elige una conversación del panel izquierdo para empezar a chatear.</p>
+    </div>
+
+    <!-- Active conversation -->
+    <ng-container *ngIf="activeConversation() as conv">
+      <!-- Chat header -->
+      <header class="chat-header">
+        <button class="back-btn-mobile" (click)="goBackToList()">
+          <lucide-icon [img]="ArrowLeft" class="w-5 h-5"></lucide-icon>
+        </button>
+        <div class="chat-header-avatar">
+          <img
+            *ngIf="conv.other_user.avatar_url"
+            [src]="conv.other_user.avatar_url"
+            [alt]="conv.other_user.username"
+            class="chat-avatar-img"
+          />
+          <span *ngIf="!conv.other_user.avatar_url" class="chat-avatar-initial">
+            {{ (conv.other_user.username || 'U').charAt(0).toUpperCase() }}
+          </span>
+        </div>
+        <div class="chat-header-info">
+          <span class="chat-header-name">{{ conv.other_user.username }}</span>
+          <span class="chat-header-status">Conversación activa</span>
+        </div>
+      </header>
+
+      <!-- Messages area -->
+      <div class="chat-messages" #messagesContainer>
+        <!-- Loading -->
+        <div *ngIf="loadingMessages()" class="chat-loading">
+          <lucide-icon [img]="RefreshCw" class="w-5 h-5 animate-spin text-emerald-500"></lucide-icon>
+          <span>Cargando mensajes...</span>
+        </div>
+
+        <!-- Messages list -->
+        <ng-container *ngIf="!loadingMessages()">
+          <div *ngIf="messages().length === 0" class="chat-no-messages">
+            <lucide-icon [img]="Smile" class="w-8 h-8 text-emerald-400"></lucide-icon>
+            <p>¡Envía el primer mensaje!</p>
+          </div>
+
+          <div
+            *ngFor="let msg of messages(); trackBy: trackByMsgId"
+            class="message-row"
+            [class.own-message]="isOwnMessage(msg)"
+            [class.other-message]="!isOwnMessage(msg)"
+          >
+            <!-- Other user avatar (only for received messages) -->
+            <div *ngIf="!isOwnMessage(msg)" class="msg-avatar-small">
+              <span class="msg-avatar-letter">
+                {{ (msg.sender.username || 'U').charAt(0).toUpperCase() }}
+              </span>
+            </div>
+
+            <div class="message-bubble">
+              <p class="message-text">{{ msg.content }}</p>
+              <div class="message-meta">
+                <span class="message-time">{{ formatMessageTime(msg.created_at) }}</span>
+                <lucide-icon
+                  *ngIf="isOwnMessage(msg)"
+                  [img]="CheckCheck"
+                  class="w-3.5 h-3.5"
+                  [class.read-icon]="msg.is_read"
+                  [class.unread-icon]="!msg.is_read"
+                ></lucide-icon>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Input area -->
+      <footer class="chat-input-area">
+        <div class="chat-input-wrapper">
+          <input
+            type="text"
+            [(ngModel)]="messageText"
+            placeholder="Escribe un mensaje..."
+            class="chat-input"
+            (keyup.enter)="sendMessage()"
+            [disabled]="sendingMessage()"
+          />
+          <button
+            class="chat-send-btn"
+            (click)="sendMessage()"
+            [disabled]="!messageText.trim() || sendingMessage()"
+            title="Enviar mensaje"
+          >
+            <lucide-icon
+              [img]="sendingMessage() ? RefreshCw : Send"
+              [class.animate-spin]="sendingMessage()"
+              class="w-5 h-5"
+            ></lucide-icon>
+          </button>
+        </div>
+      </footer>
+    </ng-container>
+  </section>
+</div>

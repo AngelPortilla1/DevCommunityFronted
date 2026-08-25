@@ -5,6 +5,7 @@ import { RouterLink, RouterOutlet, Router, RouterLinkActive } from '@angular/rou
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MessageService } from '../../../core/services/message.service';
 import {
   LucideAngularModule,
   Home,
@@ -35,6 +36,7 @@ export class MainLayoutComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
+  private messageService = inject(MessageService);
   private router = inject(Router);
 
   // Expose icons to template
@@ -59,11 +61,15 @@ export class MainLayoutComponent implements OnInit {
 
   user = this.authService.user;
   unreadNotificationsCount = this.notificationService.unreadCount;
+  unreadMessagesCount = this.messageService.unreadCount;
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
       this.notificationService.getUnreadCount().subscribe({
         error: (err) => console.error('Error getting notification count:', err)
+      });
+      this.messageService.getUnreadCount().subscribe({
+        error: (err) => console.error('Error getting message count:', err)
       });
     }
   }
@@ -78,7 +84,7 @@ export class MainLayoutComponent implements OnInit {
     { label: 'NOTIFICACIONES', icon: this.Bell, route: '/notifications', badge: () => this.unreadNotificationsCount() },
     { label: 'GUARDADOS', icon: this.Bookmark, route: '/saved' },
     { label: 'TENDENCIAS', icon: this.TrendingUp, route: '/trending' },
-    { label: 'MENSAJES', icon: this.MessageSquare, route: '/feed', badgeText: 'Pronto' },
+    { label: 'MENSAJES', icon: this.MessageSquare, route: '/messages', badge: () => this.unreadMessagesCount() },
     { label: 'PERFIL', icon: this.UserIcon, route: '/profile' },
     { label: 'AJUSTES', icon: this.Settings, route: '/sessions' },
   ];

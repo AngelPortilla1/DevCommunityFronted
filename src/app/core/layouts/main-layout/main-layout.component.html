@@ -41,9 +41,12 @@
           {{ unreadNotificationsCount() > 99 ? '99+' : unreadNotificationsCount() }}
         </span>
       </a>
-      <button class="action-btn action-chat" routerLink="/feed" title="Mensajería (Pronto)">
+      <a routerLink="/messages" class="action-btn action-chat relative" title="Mensajes">
         <lucide-icon [img]="MessageSquare" class="action-icon"></lucide-icon>
-      </button>
+        <span *ngIf="unreadMessagesCount() > 0" class="topbar-badge">
+          {{ unreadMessagesCount() > 99 ? '99+' : unreadMessagesCount() }}
+        </span>
+      </a>
       <a routerLink="/explore" class="action-btn action-doc" title="Explorar documentos y posts">
         <lucide-icon [img]="FileText" class="action-icon"></lucide-icon>
       </a>
@@ -111,9 +114,6 @@
           <span class="nav-label">{{ item.label }}</span>
           @if (item.badge && item.badge() > 0) {
             <span class="nav-badge">{{ item.badge() > 99 ? '99+' : item.badge() }}</span>
-          }
-          @if (item.badgeText) {
-            <span class="nav-badge font-mono text-[9px] bg-slate-100 text-slate-500 border border-slate-200">{{ item.badgeText }}</span>
           }
         </a>
         }
