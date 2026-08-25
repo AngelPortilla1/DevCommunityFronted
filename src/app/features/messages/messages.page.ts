@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetection
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from '../../core/services/message.service';
+import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { ConversationListItem, Message } from '../../core/models/message.model';
+import { UserPublic } from '../../core/models/notification.model';
 import {
   LucideAngularModule,
   MessageSquare,
@@ -30,6 +32,7 @@ import {
 })
 export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
   private messageService = inject(MessageService);
+  private apiService = inject(ApiService);
   private auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -59,7 +62,10 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
 
   // New conversation
   showNewConversation = signal<boolean>(false);
-  newConversationUserId = '';
+  userSearchQuery = '';
+  userSearchResults = signal<UserPublic[]>([]);
+  searchingUsers = signal<boolean>(false);
+  private searchTimeout: any = null;
 
   // Search
   searchTerm = signal<string>('');
@@ -190,13 +196,35 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  startNewConversation(): void {
-    const userId = parseInt(this.newConversationUserId, 10);
-    if (isNaN(userId) || userId <= 0) return;
+  searchUsers(): void {
+    const query = this.userSearchQuery.trim();
+    if (query.length < 1) {
+      this.userSearchResults.set([]);
+      return;
+    }
 
-    this.messageService.startConversation(userId).subscribe({
+    // Debounce: wait 300ms after last keystroke
+    if (this.searchTimeout) clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.searchingUsers.set(true);
+      this.apiService.searchUsers(query).subscribe({
+        next: (users) => {
+          this.userSearchResults.set(users);
+          this.searchingUsers.set(false);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error searching users:', err);
+          this.searchingUsers.set(false);
+          this.cdr.markForCheck();
+        }
+      });
+    }, 300);
+  }
+
+  selectUserForConversation(user: UserPublic): void {
+    this.messageService.startConversation(user.id).subscribe({
       next: (conv) => {
-        // Add to list if not already there
         this.conversations.update((list) => {
           const exists = list.find((c) => c.id === conv.id);
           if (!exists) return [conv, ...list];
@@ -204,7 +232,8 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
         });
         this.selectConversation(conv);
         this.showNewConversation.set(false);
-        this.newConversationUserId = '';
+        this.userSearchQuery = '';
+        this.userSearchResults.set([]);
         this.cdr.markForCheck();
       },
       error: (err) => {
