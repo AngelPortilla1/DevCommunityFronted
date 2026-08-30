@@ -1,0 +1,235 @@
+<!-- ╔══════════════════════════════════════════════════════════════╗
+     ║  CHAT WIDGET — Flotante estilo Facebook (esquina inferior)   ║
+     ╚══════════════════════════════════════════════════════════════╝ -->
+
+<!-- ═══════════════════ VENTANA DE CHAT ACTIVO ═══════════════════ -->
+<div class="chat-window" *ngIf="isChatOpen() && activeConversation() as conv"
+     [class.minimized]="isChatMinimized()">
+
+  <!-- Header del chat -->
+  <div class="chat-win-header" (click)="toggleMinimize()">
+    <div class="chat-win-avatar">
+      <img *ngIf="conv.other_user.avatar_url"
+           [src]="conv.other_user.avatar_url"
+           [alt]="conv.other_user.username"
+           class="chat-win-avatar-img" />
+      <span *ngIf="!conv.other_user.avatar_url" class="chat-win-avatar-letter">
+        {{ (conv.other_user.username || 'U').charAt(0).toUpperCase() }}
+      </span>
+      <span class="online-dot"></span>
+    </div>
+    <div class="chat-win-info">
+      <span class="chat-win-name">{{ conv.other_user.username }}</span>
+      <span class="chat-win-status">Activo</span>
+    </div>
+    <div class="chat-win-controls" (click)="$event.stopPropagation()">
+      <button class="win-ctrl-btn" (click)="toggleMinimize()" [title]="isChatMinimized() ? 'Expandir' : 'Minimizar'">
+        <lucide-icon [img]="Minus" class="w-3.5 h-3.5"></lucide-icon>
+      </button>
+      <button class="win-ctrl-btn win-ctrl-close" (click)="closeChatWindow()" title="Cerrar">
+        <lucide-icon [img]="X" class="w-3.5 h-3.5"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Cuerpo del chat (oculto si minimizado) -->
+  <ng-container *ngIf="!isChatMinimized()">
+    <!-- Mensajes -->
+    <div class="chat-win-messages" #messagesContainer>
+      <!-- Cargando -->
+      <div *ngIf="loadingMessages()" class="win-loading">
+        <lucide-icon [img]="RefreshCw" class="w-4 h-4 animate-spin"></lucide-icon>
+        <span>Cargando...</span>
+      </div>
+
+      <!-- Sin mensajes -->
+      <div *ngIf="!loadingMessages() && messages().length === 0" class="win-empty-msgs">
+        <lucide-icon [img]="Smile" class="w-7 h-7"></lucide-icon>
+        <p>¡Envía el primer mensaje!</p>
+      </div>
+
+      <!-- Lista de mensajes -->
+      <ng-container *ngIf="!loadingMessages() && messages().length > 0">
+        <div *ngFor="let msg of messages(); trackBy: trackByMsgId"
+             class="win-msg-row"
+             [class.win-msg-own]="isOwnMessage(msg)"
+             [class.win-msg-other]="!isOwnMessage(msg)">
+
+          <!-- Avatar del otro usuario -->
+          <div *ngIf="!isOwnMessage(msg)" class="win-msg-avatar">
+            {{ (msg.sender.username || 'U').charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="win-msg-bubble">
+            <p class="win-msg-text">{{ msg.content }}</p>
+            <div class="win-msg-meta">
+              <span class="win-msg-time">{{ formatMessageTime(msg.created_at) }}</span>
+              <lucide-icon *ngIf="isOwnMessage(msg)" [img]="CheckCheck"
+                class="w-3 h-3"
+                [class.win-read]="msg.is_read"
+                [class.win-unread]="!msg.is_read">
+              </lucide-icon>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-win-input-area">
+      <input type="text"
+             [(ngModel)]="messageText"
+             placeholder="Escribe un mensaje..."
+             class="chat-win-input"
+             (keyup.enter)="sendMessage()"
+             [disabled]="sendingMessage()" />
+      <button class="chat-win-send-btn"
+              (click)="sendMessage()"
+              [disabled]="!messageText.trim() || sendingMessage()">
+        <lucide-icon [img]="sendingMessage() ? RefreshCw : Send"
+                     [class.animate-spin]="sendingMessage()"
+                     class="w-4 h-4">
+        </lucide-icon>
+      </button>
+    </div>
+  </ng-container>
+</div>
+
+<!-- ═══════════════════ PANEL DE CONVERSACIONES ═══════════════════ -->
+<div class="conversations-panel" [class.open]="isOpen()">
+
+  <!-- Header del panel -->
+  <div class="panel-header">
+    <div class="panel-header-row">
+      <span class="panel-title">Mensajes</span>
+      <div class="panel-header-actions">
+        <button class="panel-icon-btn"
+                (click)="toggleNewConvSearch()"
+                [class.active]="showNewConvSearch()"
+                title="Nueva conversación">
+          <lucide-icon [img]="UserPlus" class="w-4 h-4"></lucide-icon>
+        </button>
+        <button class="panel-icon-btn" (click)="closeWidget()" title="Cerrar">
+          <lucide-icon [img]="X" class="w-4 h-4"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Buscar nuevo usuario -->
+    <div *ngIf="showNewConvSearch()" class="new-conv-search">
+      <div class="new-conv-search-input-wrapper">
+        <lucide-icon [img]="Search" class="new-conv-search-icon w-3.5 h-3.5"></lucide-icon>
+        <input type="text"
+               [(ngModel)]="userSearchQuery"
+               (ngModelChange)="searchUsers()"
+               placeholder="Buscar usuario..."
+               class="new-conv-input" />
+      </div>
+
+      <!-- Spinner -->
+      <div *ngIf="searchingUsers()" class="new-conv-loading">
+        <lucide-icon [img]="RefreshCw" class="w-3 h-3 animate-spin"></lucide-icon>
+        <span>Buscando...</span>
+      </div>
+
+      <!-- Resultados -->
+      <div *ngIf="!searchingUsers() && userSearchResults().length > 0" class="new-conv-results">
+        <div *ngFor="let user of userSearchResults()"
+             class="new-conv-result-item"
+             (click)="selectUserForConversation(user)">
+          <div class="new-conv-avatar">
+            <img *ngIf="user.avatar_url" [src]="user.avatar_url" [alt]="user.username" class="w-full h-full object-cover rounded-lg" />
+            <span *ngIf="!user.avatar_url" class="text-xs font-bold text-white">{{ user.username.charAt(0).toUpperCase() }}</span>
+          </div>
+          <div class="new-conv-info">
+            <span class="new-conv-username">{{ user.username }}</span>
+            <span class="new-conv-email">{{ user.email }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sin resultados -->
+      <div *ngIf="!searchingUsers() && userSearchQuery.trim().length > 0 && userSearchResults().length === 0"
+           class="new-conv-empty">
+        <span>No se encontraron usuarios</span>
+      </div>
+    </div>
+
+    <!-- Buscador de conversaciones -->
+    <div class="conv-search-wrapper">
+      <lucide-icon [img]="Search" class="conv-search-icon w-3.5 h-3.5"></lucide-icon>
+      <input type="text"
+             [ngModel]="searchTerm()"
+             (ngModelChange)="searchTerm.set($event)"
+             placeholder="Buscar conversación..."
+             class="conv-search-input" />
+    </div>
+  </div>
+
+  <!-- Lista de conversaciones -->
+  <div class="conv-list">
+
+    <!-- Skeleton loading -->
+    <ng-container *ngIf="loadingConversations()">
+      <div *ngFor="let i of [1,2,3,4]" class="conv-skeleton">
+        <div class="conv-skel-avatar"></div>
+        <div class="conv-skel-content">
+          <div class="conv-skel-line-name"></div>
+          <div class="conv-skel-line-msg"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Conversaciones reales -->
+    <ng-container *ngIf="!loadingConversations()">
+      <div *ngFor="let conv of filteredConversations(); trackBy: trackByConvId"
+           class="conv-item"
+           [class.conv-active]="activeConversation()?.id === conv.id"
+           [class.conv-unread]="conv.unread_count > 0"
+           (click)="selectConversation(conv)">
+
+        <div class="conv-avatar">
+          <img *ngIf="conv.other_user.avatar_url"
+               [src]="conv.other_user.avatar_url"
+               [alt]="conv.other_user.username"
+               class="conv-avatar-img" />
+          <span *ngIf="!conv.other_user.avatar_url" class="conv-avatar-initial">
+            {{ (conv.other_user.username || 'U').charAt(0).toUpperCase() }}
+          </span>
+        </div>
+
+        <div class="conv-info">
+          <div class="conv-top-row">
+            <span class="conv-username">{{ conv.other_user.username }}</span>
+            <span class="conv-time">{{ formatTimeAgo(conv.last_message?.created_at) }}</span>
+          </div>
+          <div class="conv-bottom-row">
+            <p class="conv-last-msg" *ngIf="conv.last_message">{{ conv.last_message.content }}</p>
+            <p class="conv-last-msg conv-no-msg" *ngIf="!conv.last_message">Sin mensajes aún</p>
+            <span *ngIf="conv.unread_count > 0" class="conv-badge">
+              {{ conv.unread_count > 99 ? '99+' : conv.unread_count }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div *ngIf="filteredConversations().length === 0" class="conv-empty">
+        <lucide-icon [img]="MessageSquare" class="w-8 h-8"></lucide-icon>
+        <p>Sin conversaciones</p>
+        <span>Usa el botón <strong>+</strong> para iniciar un chat</span>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<!-- ═══════════════════ BOTÓN FLOTANTE PRINCIPAL ═══════════════════ -->
+<button class="widget-fab" (click)="toggleWidget()" [class.fab-open]="isOpen()" title="Mensajes" id="chat-widget-fab">
+  <div class="fab-icon-wrapper">
+    <lucide-icon *ngIf="!isOpen()" [img]="MessageSquare" class="w-6 h-6"></lucide-icon>
+    <lucide-icon *ngIf="isOpen()" [img]="ChevronDown" class="w-6 h-6"></lucide-icon>
+  </div>
+  <span *ngIf="unreadCount() > 0 && !isOpen()" class="fab-badge">
+    {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+  </span>
+</button>
