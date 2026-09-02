@@ -1,60 +1,68 @@
-# DevCommunityFronted
+# DevCommunity — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.1.
+> Frontend Angular 17+ de la plataforma **DevCommunity**: red social para desarrolladores con feed de posts, mensajería en tiempo real, sesiones técnicas y más.
 
-## Development server
+## Arquitectura
 
-To start a local development server, run:
+![Arquitectura DevCommunity Frontend](docs/architecture.svg)
+
+> 🔍 **[Ver diagrama interactivo completo →](docs/architecture.html)** *(pan, zoom, vistas por capas, dark/light mode)*
+
+### Capas principales
+
+| Capa | Descripción |
+|------|-------------|
+| **Routing** | `Angular Router` con lazy-loading. `AuthGuard` protege todas las rutas privadas. |
+| **Auth** | `AuthService` inicializa la sesión en `APP_INITIALIZER`. `JwtInterceptor` adjunta el Bearer token automáticamente en cada petición HTTP. |
+| **Feature Pages** | `Feed`, `Explore`, `Sessions`, `Messages`, `Notifications`, `Saved`, `Profile`, `Trending` — todas con lazy-loading bajo `MainLayout`. |
+| **Core Services** | `ApiService` centraliza las peticiones HTTP. `MessageService` (WebSocket + chat), `NotificationService`, `SavedService` lo extienden. |
+
+---
+
+## Stack
+
+- **Framework**: Angular 17+ (Standalone Components, Signals)
+- **Routing**: Angular Router con lazy-loading
+- **Auth**: JWT + `HTTP_INTERCEPTORS`
+- **Testing**: Vitest
+
+---
+
+## Desarrollo local
 
 ```bash
+# Instalar dependencias
+npm install
+
+# Servidor de desarrollo
 ng serve
+# → http://localhost:4200
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Build
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los artefactos se generan en `dist/`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Tests
 
 ```bash
-ng test
+ng test   # unit tests (Vitest)
+ng e2e    # end-to-end
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Documentación
 
-```bash
-ng e2e
-```
+| Archivo | Descripción |
+|---------|-------------|
+| [`docs/architecture.html`](docs/architecture.html) | Diagrama interactivo (Archify) con pan/zoom y vistas |
+| [`docs/architecture.svg`](docs/architecture.svg) | SVG estático para embeber en documentos |
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-Fronted del proyecto DevCommunity en Angular 21
+*Generado con [Archify](https://github.com/tt-a1i/archify) v2.17*

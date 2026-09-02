@@ -1,0 +1,182 @@
+<svg viewBox="0 0 1260 660" xmlns="http://www.w3.org/2000/svg" style="background:#0f1117" font-family="system-ui,sans-serif">
+  <defs>
+    <marker id="arr"    markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4a5080"/></marker>
+    <marker id="arr-em" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6c7bff"/></marker>
+    <marker id="arr-sec"markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ef4444"/></marker>
+    <marker id="arr-dsh"markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#555"/></marker>
+  </defs>
+
+  <!-- Angular App boundary -->
+  <rect x="160" y="30" width="1060" height="610" rx="14" fill="none" stroke="#2e3155" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="172" y="50" font-size="10" fill="#9095b8">Angular Application</text>
+
+  <!-- Auth Layer boundary -->
+  <rect x="385" y="58" width="420" height="80" rx="10" fill="rgba(239,68,68,0.04)" stroke="#9b2c2c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="397" y="74" font-size="10" fill="#f87171">Auth Layer</text>
+
+  <!-- Feature Pages boundary -->
+  <rect x="610" y="178" width="160" height="344" rx="10" fill="rgba(108,123,255,0.04)" stroke="#6c7bff" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="622" y="196" font-size="10" fill="#6c7bff">Feature Pages</text>
+
+  <!-- CONNECTIONS -->
+  <!-- User → Router -->
+  <line x1="150" y1="348" x2="218" y2="348" stroke="#6c7bff" stroke-width="2" marker-end="url(#arr-em)"/>
+  <text x="158" y="342" font-size="9" fill="#9095b8">navigate</text>
+
+  <!-- Router → Auth Pages -->
+  <path d="M285,320 L285,216" stroke="#4a5080" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="290" y="268" font-size="9" fill="#9095b8">public routes</text>
+
+  <!-- Router → AuthGuard -->
+  <path d="M350,348 L388,228" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-sec)"/>
+  <text x="355" y="302" font-size="9" fill="#9095b8">canActivate</text>
+
+  <!-- AuthGuard → AuthService -->
+  <line x1="452" y1="200" x2="452" y2="136" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-sec)"/>
+  <text x="458" y="172" font-size="9" fill="#9095b8">isLoggedIn()</text>
+
+  <!-- AuthService → JwtInterceptor -->
+  <line x1="550" y1="108" x2="638" y2="108" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-sec)"/>
+  <text x="572" y="102" font-size="9" fill="#9095b8">token</text>
+
+  <!-- AuthGuard → MainLayout -->
+  <path d="M452,256 L452,340" stroke="#6c7bff" stroke-width="2" fill="none" marker-end="url(#arr-em)"/>
+  <text x="458" y="304" font-size="9" fill="#9095b8">allow</text>
+
+  <!-- MainLayout → Feature pages (dashed) -->
+  <path d="M550,368 L612,224" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <path d="M550,368 L612,284" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <path d="M550,368 L612,344" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <path d="M550,368 L612,404" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <path d="M550,368 L612,464" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <path d="M550,368 L612,524" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+
+  <!-- Feed → ApiService -->
+  <line x1="722" y1="224" x2="858" y2="324" stroke="#4a5080" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="766" y="272" font-size="9" fill="#9095b8">HTTP</text>
+
+  <!-- Messages → MessageService -->
+  <line x1="722" y1="404" x2="858" y2="194" stroke="#4a5080" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+  <text x="742" y="296" font-size="9" fill="#9095b8">WS/HTTP</text>
+
+  <!-- Notifications → NotificationService -->
+  <line x1="722" y1="464" x2="858" y2="254" stroke="#4a5080" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+  <!-- Saved → SavedService -->
+  <line x1="722" y1="524" x2="858" y2="394" stroke="#4a5080" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+  <!-- Services → ApiService -->
+  <line x1="925" y1="218" x2="925" y2="298" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <line x1="940" y1="276" x2="940" y2="298" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+  <line x1="925" y1="394" x2="925" y2="356" stroke="#555" stroke-width="1.2" fill="none" stroke-dasharray="5 4" marker-end="url(#arr-dsh)"/>
+
+  <!-- JwtInterceptor → ApiService -->
+  <path d="M703,136 L703,200 L920,200 L920,298" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr-sec)"/>
+  <text x="790" y="194" font-size="9" fill="#9095b8">Bearer token</text>
+
+  <!-- ApiService → Backend -->
+  <line x1="990" y1="328" x2="1058" y2="328" stroke="#6c7bff" stroke-width="2" fill="none" marker-end="url(#arr-em)"/>
+  <text x="998" y="322" font-size="9" fill="#9095b8">REST HTTPS</text>
+
+  <!-- NODES -->
+  <!-- User -->
+  <rect x="40" y="320" width="110" height="56" rx="10" fill="#1e1e1e" stroke="#555" stroke-width="1.5"/>
+  <text x="95" y="346" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">User</text>
+  <text x="95" y="362" text-anchor="middle" font-size="9.5" fill="#9095b8">Browser</text>
+
+  <!-- Angular Router -->
+  <rect x="220" y="320" width="130" height="56" rx="10" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="285" y="346" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">Angular Router</text>
+  <text x="285" y="362" text-anchor="middle" font-size="9.5" fill="#9095b8">app.routes.ts</text>
+
+  <!-- Auth Pages -->
+  <rect x="220" y="160" width="130" height="56" rx="10" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="285" y="186" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">Auth Pages</text>
+  <text x="285" y="202" text-anchor="middle" font-size="9.5" fill="#9095b8">Login / Register</text>
+
+  <!-- AuthGuard -->
+  <rect x="387" y="200" width="130" height="56" rx="10" fill="#2e1a1a" stroke="#9b2c2c" stroke-width="1.5"/>
+  <text x="452" y="226" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">AuthGuard</text>
+  <text x="452" y="242" text-anchor="middle" font-size="9.5" fill="#9095b8">Route protection</text>
+
+  <!-- AuthService -->
+  <rect x="387" y="80" width="130" height="56" rx="10" fill="#2e1a1a" stroke="#9b2c2c" stroke-width="1.5"/>
+  <text x="452" y="106" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">AuthService</text>
+  <text x="452" y="122" text-anchor="middle" font-size="9.5" fill="#9095b8">JWT + initAuth</text>
+
+  <!-- JwtInterceptor -->
+  <rect x="638" y="80" width="130" height="56" rx="10" fill="#2e1a1a" stroke="#9b2c2c" stroke-width="1.5"/>
+  <text x="703" y="106" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">JwtInterceptor</text>
+  <text x="703" y="122" text-anchor="middle" font-size="9.5" fill="#9095b8">HTTP_INTERCEPTORS</text>
+
+  <!-- MainLayout -->
+  <rect x="387" y="340" width="163" height="56" rx="10" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="468" y="366" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">MainLayout</text>
+  <text x="468" y="382" text-anchor="middle" font-size="9.5" fill="#9095b8">Shell + Sidebar</text>
+
+  <!-- Feature pages -->
+  <rect x="612" y="204" width="108" height="40" rx="9" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="666" y="223" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">Feed</text>
+  <text x="666" y="237" text-anchor="middle" font-size="9" fill="#9095b8">/feed</text>
+
+  <rect x="612" y="254" width="108" height="40" rx="9" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="666" y="273" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">Explore</text>
+  <text x="666" y="287" text-anchor="middle" font-size="9" fill="#9095b8">/explore</text>
+
+  <rect x="612" y="304" width="108" height="40" rx="9" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="666" y="323" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">Sessions</text>
+  <text x="666" y="337" text-anchor="middle" font-size="9" fill="#9095b8">/sessions</text>
+
+  <rect x="612" y="354" width="108" height="40" rx="9" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="666" y="373" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">Messages</text>
+  <text x="666" y="387" text-anchor="middle" font-size="9" fill="#9095b8">/messages</text>
+
+  <rect x="612" y="404" width="108" height="40" rx="9" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="666" y="423" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">Notifications</text>
+  <text x="666" y="437" text-anchor="middle" font-size="9" fill="#9095b8">/notifications</text>
+
+  <rect x="612" y="454" width="108" height="40" rx="9" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="666" y="473" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">Saved</text>
+  <text x="666" y="487" text-anchor="middle" font-size="9" fill="#9095b8">/saved</text>
+
+  <!-- Services -->
+  <rect x="858" y="170" width="130" height="48" rx="9" fill="#1a2e1a" stroke="#2d6a2d" stroke-width="1.5"/>
+  <text x="923" y="194" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">MessageService</text>
+  <text x="923" y="210" text-anchor="middle" font-size="9" fill="#9095b8">Chat + WebSocket</text>
+
+  <rect x="858" y="228" width="130" height="48" rx="9" fill="#1a2e1a" stroke="#2d6a2d" stroke-width="1.5"/>
+  <text x="923" y="250" text-anchor="middle" font-size="10.5" font-weight="700" fill="#e8eaf6">NotificationService</text>
+  <text x="923" y="266" text-anchor="middle" font-size="9" fill="#9095b8">Push updates</text>
+
+  <rect x="858" y="298" width="130" height="56" rx="10" fill="#1a2e1a" stroke="#2d6a2d" stroke-width="1.5"/>
+  <text x="923" y="324" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">ApiService</text>
+  <text x="923" y="340" text-anchor="middle" font-size="9.5" fill="#9095b8">HTTP base client</text>
+
+  <rect x="858" y="364" width="130" height="48" rx="9" fill="#1a2e1a" stroke="#2d6a2d" stroke-width="1.5"/>
+  <text x="923" y="388" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eaf6">SavedService</text>
+  <text x="923" y="404" text-anchor="middle" font-size="9" fill="#9095b8">Bookmarks</text>
+
+  <!-- Backend API -->
+  <rect x="1058" y="300" width="150" height="56" rx="10" fill="#1a2535" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="1133" y="326" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8eaf6">Backend REST API</text>
+  <text x="1133" y="342" text-anchor="middle" font-size="9.5" fill="#9095b8">HTTPS</text>
+
+  <!-- Legend -->
+  <rect x="40" y="440" width="100" height="180" rx="8" fill="#1a1d2e" stroke="#2e3155" stroke-width="1"/>
+  <text x="50" y="458" font-size="9" fill="#9095b8" font-weight="700">LEYENDA</text>
+  <rect x="50" y="466" width="12" height="12" rx="3" fill="#1e2a4a" stroke="#3b5bdb" stroke-width="1.5"/>
+  <text x="68" y="477" font-size="9" fill="#9095b8">Frontend</text>
+  <rect x="50" y="484" width="12" height="12" rx="3" fill="#2e1a1a" stroke="#9b2c2c" stroke-width="1.5"/>
+  <text x="68" y="495" font-size="9" fill="#9095b8">Security</text>
+  <rect x="50" y="502" width="12" height="12" rx="3" fill="#1a2e1a" stroke="#2d6a2d" stroke-width="1.5"/>
+  <text x="68" y="513" font-size="9" fill="#9095b8">Service</text>
+  <rect x="50" y="520" width="12" height="12" rx="3" fill="#1a2535" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="68" y="531" font-size="9" fill="#9095b8">Cloud/API</text>
+  <line x1="50" y1="545" x2="80" y2="545" stroke="#6c7bff" stroke-width="2"/>
+  <text x="86" y="549" font-size="9" fill="#9095b8">Principal</text>
+  <line x1="50" y1="560" x2="80" y2="560" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="86" y="564" font-size="9" fill="#9095b8">Seguridad</text>
+  <line x1="50" y1="575" x2="80" y2="575" stroke="#555" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="86" y="579" font-size="9" fill="#9095b8">Lazy load</text>
+  <text x="50" y="606" font-size="8" fill="#555">Archify v2.17</text>
+</svg>
