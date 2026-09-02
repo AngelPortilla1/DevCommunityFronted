@@ -22,9 +22,14 @@
       <div class="search-bar">
         <div class="search-input-wrapper">
           <lucide-icon [img]="Search" class="search-icon"></lucide-icon>
-          <input type="text" placeholder="Buscar..." class="search-input">
+          <input
+            type="text"
+            [(ngModel)]="topbarSearchQuery"
+            (keyup.enter)="onTopbarSearch()"
+            placeholder="Buscar en publicaciones..."
+            class="search-input">
         </div>
-        <button class="search-btn">Buscar</button>
+        <button class="search-btn" (click)="onTopbarSearch()">Buscar</button>
       </div>
     </div>
 
@@ -36,12 +41,9 @@
           {{ unreadNotificationsCount() > 99 ? '99+' : unreadNotificationsCount() }}
         </span>
       </a>
-      <button class="action-btn action-chat">
-        <lucide-icon [img]="MessageSquare" class="action-icon"></lucide-icon>
-      </button>
-      <button class="action-btn action-doc">
+      <a routerLink="/explore" class="action-btn action-doc" title="Explorar documentos y posts">
         <lucide-icon [img]="FileText" class="action-icon"></lucide-icon>
-      </button>
+      </a>
       <div class="relative inline-block">
         <button class="action-btn-profile" (click)="toggleProfileMenu()">
           <span *ngIf="user()" class="text-sm font-black uppercase tracking-tighter">{{ user()?.username?.charAt(0) }}</span>
@@ -122,7 +124,7 @@
       <h2 class="trending-title">Trending Topics</h2>
       <div class="trending-list">
         @for(topic of trendingTopics; track topic) {
-        <button class="trending-item">
+        <button class="trending-item cursor-pointer" (click)="onTopicClick(topic)" title="Filtrar por {{ topic }}">
           <lucide-icon [img]="Hash" class="trending-hash w-4 h-4"></lucide-icon>
           <span class="trending-text">{{ topic.replace('# ', '') }}</span>
         </button>
@@ -130,4 +132,7 @@
       </div>
     </aside>
   </div>
+
+  <!-- ================== CHAT WIDGET FLOTANTE ================== -->
+  <app-chat-widget></app-chat-widget>
 </div>

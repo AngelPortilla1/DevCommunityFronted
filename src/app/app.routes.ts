@@ -22,6 +22,11 @@ export const routes: Routes = [
           import('./features/sessions/sessions.page').then((m) => m.SessionsPage)
       },
       {
+        path: 'settings',
+        redirectTo: 'sessions',
+        pathMatch: 'full'
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./features/profile/profile.page').then((m) => m.ProfilePage)
@@ -40,6 +45,11 @@ export const routes: Routes = [
         path: 'saved',
         loadComponent: () =>
           import('./features/saved/saved.page').then((m) => m.SavedPage)
+      },
+      {
+        path: 'messages',
+        loadComponent: () =>
+          import('./features/messages/messages.page').then((m) => m.MessagesPage)
       },
       {
         path: 'trending',
