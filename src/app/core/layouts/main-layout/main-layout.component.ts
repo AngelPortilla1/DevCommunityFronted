@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterOutlet, Router, RouterLinkActive } from '@angular/router';
+import { ChatWidgetComponent } from '../../../shared/chat-widget/chat-widget.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -28,7 +29,7 @@ import {
   selector: 'app-main-layout',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule, ChatWidgetComponent],
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css'],
 })

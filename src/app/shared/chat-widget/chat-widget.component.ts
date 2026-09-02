@@ -1,4 +1,7 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy, inject, signal, computed,
+  ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewChecked
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from '../../core/services/message.service';
@@ -11,26 +14,25 @@ import {
   MessageSquare,
   Send,
   Search,
-  ArrowLeft,
-  MoreVertical,
-  CheckCheck,
-  Clock,
-  Inbox,
-  UserPlus,
+  X,
+  ChevronDown,
   RefreshCw,
+  CheckCheck,
+  UserPlus,
   Smile,
-  ChevronDown
+  ArrowLeft,
+  Minus
 } from 'lucide-angular';
 
 @Component({
-  selector: 'app-messages-page',
+  selector: 'app-chat-widget',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, LucideAngularModule],
-  templateUrl: './messages.page.html',
-  styleUrls: ['./messages.page.css']
+  templateUrl: './chat-widget.component.html',
+  styleUrls: ['./chat-widget.component.css']
 })
-export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
+export class ChatWidgetComponent implements OnInit, OnDestroy, AfterViewChecked {
   private messageService = inject(MessageService);
   private apiService = inject(ApiService);
   private auth = inject(AuthService);
@@ -38,21 +40,25 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
 
-  // Lucide Icons
+  // Icons
   readonly MessageSquare = MessageSquare;
   readonly Send = Send;
   readonly Search = Search;
-  readonly ArrowLeft = ArrowLeft;
-  readonly MoreVertical = MoreVertical;
-  readonly CheckCheck = CheckCheck;
-  readonly Clock = Clock;
-  readonly Inbox = Inbox;
-  readonly UserPlus = UserPlus;
-  readonly RefreshCw = RefreshCw;
-  readonly Smile = Smile;
+  readonly X = X;
   readonly ChevronDown = ChevronDown;
+  readonly RefreshCw = RefreshCw;
+  readonly CheckCheck = CheckCheck;
+  readonly UserPlus = UserPlus;
+  readonly Smile = Smile;
+  readonly ArrowLeft = ArrowLeft;
+  readonly Minus = Minus;
 
-  // State
+  // Widget state
+  isOpen = signal<boolean>(false);
+  isChatOpen = signal<boolean>(false);
+  isChatMinimized = signal<boolean>(false);
+
+  // Data state
   conversations = signal<ConversationListItem[]>([]);
   loadingConversations = signal<boolean>(false);
   activeConversation = signal<ConversationListItem | null>(null);
@@ -60,24 +66,27 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
   loadingMessages = signal<boolean>(false);
   sendingMessage = signal<boolean>(false);
 
-  // New conversation
-  showNewConversation = signal<boolean>(false);
+  // New conversation search
+  showNewConvSearch = signal<boolean>(false);
   userSearchQuery = '';
   userSearchResults = signal<UserPublic[]>([]);
   searchingUsers = signal<boolean>(false);
   private searchTimeout: any = null;
 
-  // Search
+  // Conversation search
   searchTerm = signal<string>('');
 
   // Message input
   messageText = '';
 
-  // Auto-scroll flag
+  // Scroll
   private shouldScrollToBottom = false;
 
-  // Polling interval
+  // Polling
   private pollingInterval: any = null;
+
+  // Unread count from service
+  unreadCount = this.messageService.unreadCount;
 
   currentUserId = computed(() => this.auth.user()?.id ?? null);
 
@@ -85,26 +94,19 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
     const term = this.searchTerm().trim().toLowerCase();
     const list = this.conversations();
     if (!term) return list;
-    return list.filter(
-      (c) => c.other_user.username.toLowerCase().includes(term)
-    );
+    return list.filter(c => c.other_user.username.toLowerCase().includes(term));
   });
 
   ngOnInit(): void {
     this.loadConversations();
-    this.messageService.getUnreadCount().subscribe();
-
-    // Poll for new messages every 15 seconds
     this.pollingInterval = setInterval(() => {
-      this.refreshActiveConversation();
-      this.loadConversations(true);
-    }, 15000);
+      this.silentRefresh();
+    }, 20000);
   }
 
   ngOnDestroy(): void {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-    }
+    if (this.pollingInterval) clearInterval(this.pollingInterval);
+    if (this.searchTimeout) clearTimeout(this.searchTimeout);
   }
 
   ngAfterViewChecked(): void {
@@ -114,6 +116,24 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  // ─── Widget toggle ─────────────────────────────────────────────
+  toggleWidget(): void {
+    const opening = !this.isOpen();
+    this.isOpen.set(opening);
+    if (opening && this.conversations().length === 0) {
+      this.loadConversations();
+    }
+  }
+
+  closeWidget(): void {
+    this.isOpen.set(false);
+    this.isChatOpen.set(false);
+    this.isChatMinimized.set(false);
+    this.activeConversation.set(null);
+    this.messages.set([]);
+  }
+
+  // ─── Conversations ──────────────────────────────────────────────
   loadConversations(silent = false): void {
     if (!silent) this.loadingConversations.set(true);
 
@@ -123,8 +143,7 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
         this.loadingConversations.set(false);
         this.cdr.markForCheck();
       },
-      error: (err) => {
-        console.error('Error loading conversations:', err);
+      error: () => {
         this.loadingConversations.set(false);
         this.cdr.markForCheck();
       }
@@ -133,25 +152,26 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
 
   selectConversation(conv: ConversationListItem): void {
     this.activeConversation.set(conv);
+    this.isChatOpen.set(true);
+    this.isChatMinimized.set(false);
     this.loadMessages(conv.id);
 
-    // Mark as read if there are unread messages
     if (conv.unread_count > 0) {
       this.messageService.markAsRead(conv.id).subscribe({
         next: () => {
-          this.conversations.update((list) =>
-            list.map((c) => c.id === conv.id ? { ...c, unread_count: 0 } : c)
+          this.conversations.update(list =>
+            list.map(c => c.id === conv.id ? { ...c, unread_count: 0 } : c)
           );
           this.cdr.markForCheck();
         },
-        error: (err) => console.error('Error marking as read:', err)
+        error: () => {}
       });
     }
   }
 
+  // ─── Messages ──────────────────────────────────────────────────
   loadMessages(conversationId: number): void {
     this.loadingMessages.set(true);
-
     this.messageService.getMessages(conversationId).subscribe({
       next: (res) => {
         this.messages.set(res.items || []);
@@ -159,8 +179,7 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
         this.shouldScrollToBottom = true;
         this.cdr.markForCheck();
       },
-      error: (err) => {
-        console.error('Error loading messages:', err);
+      error: () => {
         this.loadingMessages.set(false);
         this.cdr.markForCheck();
       }
@@ -173,27 +192,44 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
     if (!text || !conv || this.sendingMessage()) return;
 
     this.sendingMessage.set(true);
-
     this.messageService.sendMessage(conv.id, text).subscribe({
       next: (msg) => {
-        this.messages.update((list) => [...list, msg]);
+        this.messages.update(list => [...list, msg]);
         this.messageText = '';
         this.sendingMessage.set(false);
         this.shouldScrollToBottom = true;
-
-        // Update last message in conversations list
-        this.conversations.update((list) =>
-          list.map((c) => c.id === conv.id ? { ...c, last_message: msg } : c)
+        this.conversations.update(list =>
+          list.map(c => c.id === conv.id ? { ...c, last_message: msg } : c)
         );
-
         this.cdr.markForCheck();
       },
-      error: (err) => {
-        console.error('Error sending message:', err);
+      error: () => {
         this.sendingMessage.set(false);
         this.cdr.markForCheck();
       }
     });
+  }
+
+  // ─── Chat window controls ──────────────────────────────────────
+  closeChatWindow(): void {
+    this.isChatOpen.set(false);
+    this.isChatMinimized.set(false);
+    this.activeConversation.set(null);
+    this.messages.set([]);
+    this.messageText = '';
+  }
+
+  toggleMinimize(): void {
+    this.isChatMinimized.update(v => !v);
+  }
+
+  // ─── User search for new conversations ─────────────────────────
+  toggleNewConvSearch(): void {
+    this.showNewConvSearch.update(v => !v);
+    if (!this.showNewConvSearch()) {
+      this.userSearchQuery = '';
+      this.userSearchResults.set([]);
+    }
   }
 
   searchUsers(): void {
@@ -202,8 +238,6 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
       this.userSearchResults.set([]);
       return;
     }
-
-    // Debounce: wait 300ms after last keystroke
     if (this.searchTimeout) clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
       this.searchingUsers.set(true);
@@ -213,8 +247,7 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
           this.searchingUsers.set(false);
           this.cdr.markForCheck();
         },
-        error: (err) => {
-          console.error('Error searching users:', err);
+        error: () => {
           this.searchingUsers.set(false);
           this.cdr.markForCheck();
         }
@@ -225,46 +258,48 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
   selectUserForConversation(user: UserPublic): void {
     this.messageService.startConversation(user.id).subscribe({
       next: (conv) => {
-        this.conversations.update((list) => {
-          const exists = list.find((c) => c.id === conv.id);
+        this.conversations.update(list => {
+          const exists = list.find(c => c.id === conv.id);
           if (!exists) return [conv, ...list];
           return list;
         });
-        this.selectConversation(conv);
-        this.showNewConversation.set(false);
+        this.showNewConvSearch.set(false);
         this.userSearchQuery = '';
         this.userSearchResults.set([]);
+        this.selectConversation(conv);
         this.cdr.markForCheck();
       },
-      error: (err) => {
-        console.error('Error starting conversation:', err);
-        this.cdr.markForCheck();
-      }
+      error: () => {}
     });
   }
 
-  goBackToList(): void {
-    this.activeConversation.set(null);
-    this.messages.set([]);
+  // ─── Helpers ───────────────────────────────────────────────────
+  isOwnMessage(msg: Message): boolean {
+    return msg.sender.id === this.currentUserId();
   }
 
-  private refreshActiveConversation(): void {
-    const conv = this.activeConversation();
-    if (!conv) return;
-
-    this.messageService.getMessages(conv.id).subscribe({
-      next: (res) => {
-        const current = this.messages();
-        const newItems = res.items || [];
-        if (newItems.length !== current.length) {
-          this.messages.set(newItems);
-          this.shouldScrollToBottom = true;
-          this.cdr.markForCheck();
-        }
-      },
-      error: () => {} // Silent fail on polling
-    });
+  formatTimeAgo(dateString?: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diff < 60) return 'Ahora';
+    const m = Math.floor(diff / 60);
+    if (m < 60) return `${m}m`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h`;
+    const d = Math.floor(h / 24);
+    if (d < 7) return `${d}d`;
+    return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
   }
+
+  formatMessageTime(dateString?: string): string {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  trackByConvId(_: number, item: ConversationListItem): number { return item.id; }
+  trackByMsgId(_: number, item: Message): number { return item.id; }
 
   private scrollToBottom(): void {
     try {
@@ -275,38 +310,21 @@ export class MessagesPage implements OnInit, OnDestroy, AfterViewChecked {
     } catch (_) {}
   }
 
-  isOwnMessage(msg: Message): boolean {
-    return msg.sender.id === this.currentUserId();
-  }
-
-  formatTimeAgo(dateString?: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return 'Ahora';
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `${diffInMinutes} min`;
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours} h`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays} d`;
-
-    return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
-  }
-
-  formatMessageTime(dateString?: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  trackByConvId(_: number, item: ConversationListItem): number {
-    return item.id;
-  }
-
-  trackByMsgId(_: number, item: Message): number {
-    return item.id;
+  private silentRefresh(): void {
+    this.loadConversations(true);
+    const conv = this.activeConversation();
+    if (!conv) return;
+    this.messageService.getMessages(conv.id).subscribe({
+      next: (res) => {
+        const current = this.messages();
+        const newItems = res.items || [];
+        if (newItems.length !== current.length) {
+          this.messages.set(newItems);
+          this.shouldScrollToBottom = true;
+          this.cdr.markForCheck();
+        }
+      },
+      error: () => {}
+    });
   }
 }

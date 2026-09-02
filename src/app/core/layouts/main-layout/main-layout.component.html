@@ -41,12 +41,6 @@
           {{ unreadNotificationsCount() > 99 ? '99+' : unreadNotificationsCount() }}
         </span>
       </a>
-      <a routerLink="/messages" class="action-btn action-chat relative" title="Mensajes">
-        <lucide-icon [img]="MessageSquare" class="action-icon"></lucide-icon>
-        <span *ngIf="unreadMessagesCount() > 0" class="topbar-badge">
-          {{ unreadMessagesCount() > 99 ? '99+' : unreadMessagesCount() }}
-        </span>
-      </a>
       <a routerLink="/explore" class="action-btn action-doc" title="Explorar documentos y posts">
         <lucide-icon [img]="FileText" class="action-icon"></lucide-icon>
       </a>
@@ -138,4 +132,7 @@
       </div>
     </aside>
   </div>
+
+  <!-- ================== CHAT WIDGET FLOTANTE ================== -->
+  <app-chat-widget></app-chat-widget>
 </div>

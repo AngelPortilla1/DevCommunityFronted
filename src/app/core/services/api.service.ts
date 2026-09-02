@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Post, PostsResponse } from '../models/post.model';
 import { PostComment } from '../models/comment.model';
-import { map } from 'rxjs';
+import { UserPublic } from '../models/notification.model';
+import { Observable, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -72,5 +73,13 @@ export class ApiService {
     return this.http.delete<void>(`${environment.apiUrl}/posts/${postId}`);
   }
 
+  /**
+   * Searches users by username (partial match, case-insensitive).
+   */
+  searchUsers(query: string, limit: number = 10): Observable<UserPublic[]> {
+    return this.http.get<UserPublic[]>(`${environment.apiUrl}/users/search`, {
+      params: { q: query, limit }
+    });
+  }
 
 }
