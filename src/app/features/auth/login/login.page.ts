@@ -45,12 +45,36 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
             </svg>
             <input
               id="login-password"
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
               [(ngModel)]="password"
               name="password"
               placeholder="••••••••"
               autocomplete="current-password"
+              (blur)="showPassword = false"
             />
+            <button
+              type="button"
+              class="toggle-password"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              [attr.aria-pressed]="showPassword"
+              (click)="showPassword = !showPassword"
+              tabindex="0"
+            >
+              @if (!showPassword) {
+                <!-- Ojo tachado: contraseña oculta -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.39 1 12a10.94 10.94 0 0 1 2.06-3.94"/>
+                  <path d="M9.9 4.24A9 9 0 0 1 12 4c5 0 9.27 3.61 11 8a10.94 10.94 0 0 1-1.06 2.06"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              } @else {
+                <!-- Ojo abierto: contraseña visible -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
           </div>
         </div>
 
@@ -124,7 +148,7 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       background: #fff;
       border: 1px solid #e2e8f0;
       border-radius: 14px;
-      padding: .85rem 1rem .85rem 2.8rem;
+      padding: .85rem 2.8rem .85rem 2.8rem;
       font-size: .95rem;
       font-family: inherit;
       color: #0f172a;
@@ -138,6 +162,43 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
     }
     .input-wrapper:focus-within .input-icon { color: #059669; }
+
+    /* ── Toggle password ── */
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 8px;
+      color: #94a3b8;
+      transition: color .2s, background .2s;
+      padding: 0;
+    }
+    .toggle-password svg {
+      width: 18px;
+      height: 18px;
+      transition: transform .2s;
+    }
+    .toggle-password:hover {
+      color: #059669;
+      background: rgba(5, 150, 105, .08);
+    }
+    .toggle-password:hover svg {
+      transform: scale(1.1);
+    }
+    .toggle-password:focus-visible {
+      outline: 2px solid #059669;
+      outline-offset: 2px;
+      color: #059669;
+    }
 
     /* ── Submit button ── */
     .submit-btn {
@@ -232,6 +293,7 @@ export class LoginPage {
   password = '';
   error = '';
   isLoading = false;
+  showPassword = false;
 
   submit() {
     this.isLoading = true;
