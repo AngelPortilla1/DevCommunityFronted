@@ -1,7 +1,7 @@
 <div class="layout-root">
-  <!-- Fondo con puntitos -->
-  <div class="fixed inset-0 pointer-events-none opacity-20"
-    style="background-image: radial-gradient(#059669 1px, transparent 1px); background-size: 32px 32px;">
+  <!-- Fondo con puntitos — titanio metálico -->
+  <div class="fixed inset-0 pointer-events-none opacity-30"
+    style="background-image: radial-gradient(rgba(136,153,170,0.35) 1px, transparent 1px); background-size: 36px 36px;">
   </div>
 
   <!-- ================== TOP BAR (siempre visible) ================== -->
@@ -54,14 +54,14 @@
         <div *ngIf="isProfileMenuOpen"
           class="absolute right-0 mt-4 w-64 glass-menu rounded-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-4 duration-300">
           
-          <div class="px-5 py-4 border-b border-slate-100 bg-white/40">
+          <div style="padding: 1.125rem 1.25rem; border-bottom: 1px solid rgba(136,153,170,0.15); background: rgba(136,153,170,0.04);">
             <div class="flex items-center gap-3 mb-1">
-              <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-yellow-400 flex items-center justify-center text-white font-black text-xs">
+              <div style="width:2rem;height:2rem;border-radius:8px;background:linear-gradient(135deg,#8899AA,#3A4A5A);display:flex;align-items:center;justify-content:center;color:#E8EEF4;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:0.75rem;border:1px solid rgba(192,200,216,0.25);">
                 {{ (user()?.username || 'U').charAt(0).toUpperCase() }}
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-900 leading-none">{{ user()?.username || 'Usuario' }}</p>
-                <p class="text-[10px] font-medium text-slate-500 mt-1 truncate max-w-[120px]">{{ user()?.email }}</p>
+                <p style="font-family:'Space Grotesk',sans-serif;font-size:0.875rem;font-weight:700;color:#C0C8D8;line-height:1;margin:0;">{{ user()?.username || 'Usuario' }}</p>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#556677;margin-top:4px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ user()?.email }}</p>
               </div>
             </div>
           </div>
@@ -69,23 +69,22 @@
           <ul class="py-2">
             <li>
               <a routerLink="/profile" (click)="closeProfileMenu()"
-                class="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all group">
-                <lucide-icon [img]="UserIcon" class="w-4 h-4 group-hover:scale-110 transition-transform"></lucide-icon>
+                class="dropdown-menu-item">
+                <lucide-icon [img]="UserIcon" class="w-4 h-4"></lucide-icon>
                 <span>Mi Perfil</span>
               </a>
             </li>
             <li>
               <a routerLink="/sessions" (click)="closeProfileMenu()"
-                class="flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all group">
-                <lucide-icon [img]="ShieldCheck" class="w-4 h-4 group-hover:scale-110 transition-transform"></lucide-icon>
+                class="dropdown-menu-item">
+                <lucide-icon [img]="ShieldCheck" class="w-4 h-4"></lucide-icon>
                 <span>Seguridad y Sesiones</span>
               </a>
             </li>
-            <li class="my-1 border-t border-slate-100"></li>
+            <li style="height:1px;background:rgba(136,153,170,0.12);margin:0.25rem 0;"></li>
             <li>
-              <button (click)="logout()"
-                class="w-full flex items-center gap-3 px-5 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition-all group">
-                <lucide-icon [img]="LogOut" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></lucide-icon>
+              <button (click)="logout()" class="dropdown-menu-item dropdown-menu-item--danger">
+                <lucide-icon [img]="LogOut" class="w-4 h-4"></lucide-icon>
                 <span>Cerrar Sesión</span>
               </button>
             </li>

@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 /**
  * AuthCardComponent — Shell visual compartido para las páginas de autenticación.
  *
- * Encapsula todo el diseño glassmorphism (fondo, orbs, grid, tarjeta, logo,
+ * Identidad visual: "Retrofuturismo Hacker" · Titanio Metálico · Dark Premium
+ * Encapsula todo el diseño glassmorphism oscuro (fondo, orbs, grid, tarjeta, logo,
  * header y footer). Cada página inyecta su contenido específico vía ng-content.
  *
  * @example
@@ -21,19 +22,19 @@ import { CommonModule } from '@angular/common';
     <div class="auth-universe">
 
       <!-- Ambient Background Orbs -->
-      <div class="orb orb--emerald"></div>
-      <div class="orb orb--yellow"></div>
-      <div class="orb orb--slate"></div>
+      <div class="orb orb--titanium"></div>
+      <div class="orb orb--steel"></div>
+      <div class="orb orb--platinum"></div>
 
       <!-- Floating Code Symbols -->
       <span class="code-float code-float--1">{{ '{' }} {{ '}' }}</span>
-      <span class="code-float code-float--2">&lt;/&gt;</span>
+      <span class="code-float code-float--2">&gt;_</span>
       <span class="code-float code-float--3">const</span>
       <span class="code-float code-float--4">=&gt;</span>
-      <span class="code-float code-float--5">| |</span>
-      <span class="code-float code-float--6">[ ]</span>
-      <span class="code-float code-float--7">async</span>
-      <span class="code-float code-float--8">npm</span>
+      <span class="code-float code-float--5">[ ]</span>
+      <span class="code-float code-float--6">async</span>
+      <span class="code-float code-float--7">npm</span>
+      <span class="code-float code-float--8">git</span>
 
       <!-- Grid overlay -->
       <div class="grid-overlay"></div>
@@ -61,15 +62,15 @@ import { CommonModule } from '@angular/common';
 
         <!-- Footer -->
         <footer class="card-footer">
-          DevCommunity &copy; 2026
+          DevCommunity &copy; 2026 &nbsp;·&nbsp; <span class="footer-mono">// build the future</span>
         </footer>
 
       </div>
     </div>
   `,
   styles: [`
-    /* ── Import Google Font ── */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    /* ── Import Google Fonts ── */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
     :host {
       display: block;
@@ -77,7 +78,7 @@ import { CommonModule } from '@angular/common';
     }
 
     /* ══════════════════════════════════
-       UNIVERSE  (light palette backdrop)
+       UNIVERSE — Dark Hacker Backdrop
     ══════════════════════════════════ */
     .auth-universe {
       position: relative;
@@ -85,118 +86,123 @@ import { CommonModule } from '@angular/common';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f1f5f9;
+      background: #0A0A0F;
       overflow: hidden;
       padding: 1.5rem;
     }
 
-    /* ── Grid overlay ── */
+    /* ── Grid overlay — subtle titanium grid ── */
     .grid-overlay {
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(15, 23, 42, .03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(15, 23, 42, .03) 1px, transparent 1px);
-      background-size: 60px 60px;
+        linear-gradient(rgba(136, 153, 170, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(136, 153, 170, 0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
       pointer-events: none;
     }
 
-    /* ── Ambient Orbs ── */
+    /* ── Ambient Orbs — titanium tones ── */
     .orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(100px);
+      filter: blur(110px);
       pointer-events: none;
-      animation: drift 12s ease-in-out infinite alternate;
+      animation: drift 14s ease-in-out infinite alternate;
     }
-    .orb--emerald {
-      width: 420px; height: 420px;
-      background: rgba(16, 185, 129, .12);
-      top: -10%; right: -5%;
+    .orb--titanium {
+      width: 500px; height: 500px;
+      background: rgba(85, 102, 119, 0.10);
+      top: -12%; right: -6%;
       animation-delay: 0s;
     }
-    .orb--yellow {
-      width: 480px; height: 480px;
-      background: rgba(251, 191, 36, .10);
-      bottom: -12%; left: -8%;
-      animation-delay: -4s;
+    .orb--steel {
+      width: 420px; height: 420px;
+      background: rgba(58, 74, 90, 0.12);
+      bottom: -14%; left: -8%;
+      animation-delay: -5s;
     }
-    .orb--slate {
-      width: 300px; height: 300px;
-      background: rgba(15, 23, 42, .05);
-      top: 50%; left: 50%;
+    .orb--platinum {
+      width: 320px; height: 320px;
+      background: rgba(192, 200, 216, 0.05);
+      top: 45%; left: 48%;
       transform: translate(-50%, -50%);
-      animation-delay: -8s;
+      animation-delay: -9s;
     }
     @keyframes drift {
       0%   { transform: translate(0, 0) scale(1); }
-      50%  { transform: translate(30px, -20px) scale(1.08); }
-      100% { transform: translate(-20px, 25px) scale(0.95); }
+      50%  { transform: translate(30px, -20px) scale(1.07); }
+      100% { transform: translate(-20px, 28px) scale(0.95); }
     }
 
     /* ── Floating Code Symbols ── */
     .code-float {
       position: absolute;
       font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: rgba(15, 23, 42, .08);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(136, 153, 170, 0.09);
       pointer-events: none;
-      animation: floatUp 18s linear infinite;
+      animation: floatUp 20s linear infinite;
       user-select: none;
     }
-    .code-float--1 { left: 8%;  top: 90%; animation-duration: 20s; font-size: 1.1rem; }
-    .code-float--2 { left: 18%; top: 95%; animation-duration: 24s; animation-delay: -3s; }
-    .code-float--3 { left: 35%; top: 92%; animation-duration: 22s; animation-delay: -7s; font-size: 0.75rem; }
-    .code-float--4 { left: 55%; top: 88%; animation-duration: 19s; animation-delay: -2s; }
-    .code-float--5 { left: 72%; top: 93%; animation-duration: 25s; animation-delay: -10s; font-size: 1rem; }
-    .code-float--6 { left: 85%; top: 90%; animation-duration: 21s; animation-delay: -5s; }
-    .code-float--7 { left: 45%; top: 96%; animation-duration: 26s; animation-delay: -13s; font-size: 0.7rem; }
-    .code-float--8 { left: 62%; top: 91%; animation-duration: 23s; animation-delay: -8s; }
+    .code-float--1 { left: 8%;  top: 90%; animation-duration: 22s; font-size: 1rem; }
+    .code-float--2 { left: 18%; top: 95%; animation-duration: 26s; animation-delay: -4s; }
+    .code-float--3 { left: 35%; top: 92%; animation-duration: 24s; animation-delay: -8s; font-size: 0.7rem; }
+    .code-float--4 { left: 55%; top: 88%; animation-duration: 20s; animation-delay: -2s; }
+    .code-float--5 { left: 72%; top: 93%; animation-duration: 28s; animation-delay: -11s; }
+    .code-float--6 { left: 85%; top: 90%; animation-duration: 23s; animation-delay: -6s; }
+    .code-float--7 { left: 45%; top: 96%; animation-duration: 29s; animation-delay: -14s; font-size: 0.65rem; }
+    .code-float--8 { left: 62%; top: 91%; animation-duration: 25s; animation-delay: -9s; }
 
     @keyframes floatUp {
       0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
       10%  { opacity: 1; }
       90%  { opacity: 1; }
-      100% { transform: translateY(-110vh) rotate(15deg); opacity: 0; }
+      100% { transform: translateY(-110vh) rotate(12deg); opacity: 0; }
     }
 
     /* ══════════════════════════════════
-       AUTH CARD  (glassmorphism light)
+       AUTH CARD — Dark Glassmorphism
     ══════════════════════════════════ */
     .auth-card {
       position: relative;
       width: 100%;
       max-width: 420px;
-      background: rgba(255, 255, 255, .7);
-      backdrop-filter: blur(20px) saturate(1.8);
-      -webkit-backdrop-filter: blur(20px) saturate(1.8);
-      border: 1px solid rgba(15, 23, 42, .1);
-      border-radius: 24px;
+      background: rgba(20, 20, 31, 0.78);
+      backdrop-filter: blur(24px) saturate(1.5);
+      -webkit-backdrop-filter: blur(24px) saturate(1.5);
+      border: 1px solid rgba(136, 153, 170, 0.18);
+      border-radius: 20px;
       padding: 2.5rem 2.25rem;
       z-index: 10;
-      animation: cardIn .7s cubic-bezier(.16,1,.3,1) both;
-      box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.1);
+      animation: cardIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+      box-shadow:
+        0 0 0 1px rgba(136, 153, 170, 0.06),
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(192, 200, 216, 0.07);
     }
     @keyframes cardIn {
-      from { opacity: 0; transform: translateY(30px) scale(.96); }
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Glow ring behind card */
+    /* Glow ring behind card — metallic sheen */
     .card-glow {
       position: absolute;
-      inset: -2px;
-      border-radius: 26px;
-      background: linear-gradient(135deg, rgba(16, 185, 129, .2), rgba(251, 191, 36, .15), rgba(15, 23, 42, .1));
+      inset: -1px;
+      border-radius: 21px;
+      background: linear-gradient(135deg,
+        rgba(192, 200, 216, 0.12) 0%,
+        rgba(136, 153, 170, 0.08) 40%,
+        rgba(58, 74, 90, 0.10) 100%);
       z-index: -1;
-      opacity: .45;
-      filter: blur(4px);
-      animation: glowPulse 4s ease-in-out infinite alternate;
+      filter: blur(2px);
+      animation: glowPulse 5s ease-in-out infinite alternate;
     }
     @keyframes glowPulse {
-      0%   { opacity: .20; }
-      100% { opacity: .45; }
+      0%   { opacity: 0.3; }
+      100% { opacity: 0.7; }
     }
 
     /* ── Logo ── */
@@ -204,19 +210,23 @@ import { CommonModule } from '@angular/common';
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: .65rem;
+      gap: 0.75rem;
       margin-bottom: 2rem;
     }
     .logo-img {
-      height: 4rem;
+      height: 3.25rem;
       width: auto;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,.1));
+      filter: drop-shadow(0 0 8px rgba(136, 153, 170, 0.25));
     }
     .logo-text {
+      font-family: 'Space Grotesk', system-ui, sans-serif;
       font-size: 1.2rem;
       font-weight: 700;
-      letter-spacing: -.02em;
-      color: #0f172a;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #D0D8E8 0%, #8899AA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     /* ── Header ── */
@@ -225,15 +235,17 @@ import { CommonModule } from '@angular/common';
       margin-bottom: 2rem;
     }
     .card-title {
-      font-size: 1.65rem;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -.03em;
-      margin: 0 0 .4rem;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #E8E8F0;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.4rem;
     }
     .card-subtitle {
-      font-size: .9rem;
-      color: #64748b;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.875rem;
+      color: #556677;
       font-weight: 400;
       margin: 0;
     }
@@ -242,10 +254,14 @@ import { CommonModule } from '@angular/common';
     .card-footer {
       margin-top: 2rem;
       text-align: center;
-      font-size: .75rem;
-      color: #94a3b8;
+      font-size: 0.7rem;
+      color: #2E2E45;
       font-weight: 500;
-      letter-spacing: .02em;
+      letter-spacing: 0.02em;
+    }
+    .footer-mono {
+      font-family: 'JetBrains Mono', monospace;
+      color: #3A4A5A;
     }
 
     /* ══════════════════════════════════
@@ -254,7 +270,7 @@ import { CommonModule } from '@angular/common';
     @media (max-width: 480px) {
       .auth-card {
         padding: 2rem 1.5rem;
-        border-radius: 20px;
+        border-radius: 16px;
       }
       .card-title { font-size: 1.4rem; }
       .code-float { display: none; }
