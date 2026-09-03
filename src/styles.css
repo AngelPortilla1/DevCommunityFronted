@@ -8,6 +8,42 @@
 
 @import "tailwindcss";
 
+/* ── Tailwind CSS v4 Theme Registration ──────────────────────── */
+@theme {
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+
+  --color-bg-base:       #0A0A0F;
+  --color-bg-surface:    #0F0F1A;
+  --color-bg-elevated:   #14141F;
+  --color-bg-card:       #1A1A2E;
+  --color-bg-card-hover: #1E1E38;
+
+  --color-metal-darkest:  #3A4A5A;
+  --color-metal-dark:     #556677;
+  --color-metal-mid:      #8899AA;
+  --color-metal-light:    #AAB8C8;
+  --color-metal-bright:   #C0C8D8;
+  --color-metal-platinum: #D0D8E8;
+  --color-metal-shine:    #E8EEF4;
+
+  --color-text-primary:   #E8E8F0;
+  --color-text-secondary: #8899AA;
+  --color-text-muted:     #4A4A6A;
+  --color-text-disabled:  #2E2E45;
+  --color-text-on-metal:  #0A0A0F;
+
+  --color-accent-success: #4CAF82;
+  --color-accent-warning: #C8A84B;
+  --color-accent-danger:  #C85A5A;
+  --color-accent-info:    #5A8ACC;
+
+  --shadow-metal:        0 0 20px rgba(136, 153, 170, 0.15), 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-metal-strong: 0 0 30px rgba(192, 200, 216, 0.25), 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-card:         0 4px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(192, 200, 216, 0.06);
+}
+
 /* ── CSS Custom Properties — Design Tokens ───────────────────── */
 :root {
   /* Backgrounds */
@@ -83,6 +119,11 @@
 /* ── Base Reset ───────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
 }
 
 html {
@@ -197,4 +238,16 @@ body {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.font-display {
+  font-family: var(--font-display) !important;
+}
+
+.font-body {
+  font-family: var(--font-body) !important;
+}
+
+.font-mono {
+  font-family: var(--font-mono) !important;
 }
