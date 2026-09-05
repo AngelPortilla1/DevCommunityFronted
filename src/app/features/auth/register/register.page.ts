@@ -128,11 +128,12 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       gap: .45rem;
     }
     .field-label {
-      font-size: .78rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
       font-weight: 600;
-      color: #475569;
+      color: #8899AA;
       text-transform: uppercase;
-      letter-spacing: .06em;
+      letter-spacing: .08em;
     }
 
     /* ── Input wrapper ── */
@@ -146,60 +147,66 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       transform: translateY(-50%);
       width: 18px;
       height: 18px;
-      color: #94a3b8;
+      color: #556677;
       transition: color .25s;
       pointer-events: none;
     }
     .input-wrapper input {
       width: 100%;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
+      background: rgba(10, 10, 15, 0.7);
+      border: 1px solid rgba(136, 153, 170, 0.2);
+      border-radius: 12px;
       padding: .85rem 1rem .85rem 2.8rem;
       font-size: .95rem;
-      font-family: inherit;
-      color: #0f172a;
-      transition: border-color .3s, box-shadow .3s;
+      font-family: 'Inter', sans-serif;
+      color: #E8E8F0;
+      transition: border-color .25s, box-shadow .25s, background .25s;
       outline: none;
       box-sizing: border-box;
     }
-    .input-wrapper input::placeholder { color: #94a3b8; }
+    .input-wrapper input::placeholder { color: #3A4A5A; }
     .input-wrapper input:focus {
-      border-color: #059669;
-      box-shadow: 0 0 0 3px rgba(5, 150, 105, .1);
+      border-color: rgba(192, 200, 216, 0.5);
+      background: rgba(15, 15, 26, 0.9);
+      box-shadow: 0 0 0 3px rgba(136, 153, 170, 0.12);
     }
-    .input-wrapper:focus-within .input-icon { color: #059669; }
+    .input-wrapper:focus-within .input-icon { color: #C0C8D8; }
 
     /* ── Submit button ── */
     .submit-btn {
       margin-top: .75rem;
       width: 100%;
       padding: .9rem 1rem;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      font-family: inherit;
-      color: #fff;
-      background: linear-gradient(135deg, #059669, #0f172a);
-      border: none;
-      border-radius: 14px;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      color: #E8EEF4;
+      background: linear-gradient(135deg, #8899AA 0%, #3A4A5A 100%);
+      border: 1px solid rgba(192, 200, 216, 0.25);
+      border-radius: 12px;
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform .2s, box-shadow .3s;
-      letter-spacing: -.01em;
+      transition: transform .2s, box-shadow .3s, background .2s;
+      letter-spacing: .02em;
+      box-shadow: 0 0 16px rgba(136, 153, 170, 0.15);
     }
     .submit-btn::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
+      background: linear-gradient(135deg, rgba(208, 216, 232, 0.15), transparent);
       opacity: 0;
       transition: opacity .3s;
     }
-    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(5,150,105,.2); }
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #AAB8C8 0%, #4A5A6A 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 0 24px rgba(136, 153, 170, 0.25), 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
     .submit-btn:hover::before { opacity: 1; }
     .submit-btn:active { transform: translateY(0) scale(.98); }
-    .submit-btn:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+    .submit-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 
     /* ── Loader dots ── */
     .loader-dots {
@@ -211,7 +218,7 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
     .loader-dots span {
       width: 7px; height: 7px;
       border-radius: 50%;
-      background: #fff;
+      background: #E8EEF4;
       animation: dotPulse .9s ease-in-out infinite;
     }
     .loader-dots span:nth-child(2) { animation-delay: .15s; }
@@ -226,9 +233,9 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       margin-top: 1.5rem;
       text-align: center;
     }
-    .auth-link-text { color: #64748b; font-size: .9rem; margin: 0; }
-    .auth-link { color: #059669; text-decoration: none; font-weight: 600; transition: color .2s; }
-    .auth-link:hover { color: #fbbf24; }
+    .auth-link-text { color: #556677; font-size: .875rem; margin: 0; }
+    .auth-link { color: #C0C8D8; text-decoration: none; font-weight: 600; transition: color .2s; }
+    .auth-link:hover { color: #E8EEF4; text-decoration: underline; }
 
     /* ── Error & Success banners ── */
     .error-banner, .success-banner {
@@ -243,18 +250,17 @@ import { AuthCardComponent } from '../../../shared/components/auth-card/auth-car
       animation: shakeIn .4s ease;
     }
     .error-banner {
-      background: #fef2f2;
-      border: 1px solid #fee2e2;
-      color: #b91c1c;
+      background: rgba(46, 20, 20, 0.8);
+      border: 1px solid rgba(200, 90, 90, 0.35);
+      color: #E07070;
     }
     .success-banner {
-      background: #f0fdf4;
-      border: 1px solid #dcfce7;
-      color: #15803d;
+      background: rgba(20, 46, 30, 0.8);
+      border: 1px solid rgba(76, 175, 130, 0.35);
+      color: #4CAF82;
     }
-    .error-banner svg, .success-banner svg { width: 18px; height: 18px; flex-shrink: 0; }
-    .error-banner svg { color: #ef4444; }
-    .success-banner svg { color: #22c55e; }
+    .error-banner svg { width: 18px; height: 18px; flex-shrink: 0; color: #E07070; }
+    .success-banner svg { width: 18px; height: 18px; flex-shrink: 0; color: #4CAF82; }
     @keyframes shakeIn {
       0%, 100% { transform: translateX(0); }
       25%  { transform: translateX(-6px); }
